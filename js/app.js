@@ -403,78 +403,10 @@
     });
 
     $("#btn-print").addEventListener("click", () => window.print());
-    $("#btn-pdf").addEventListener("click", downloadPdf);
   }
 
   function persist() {
     AppSettings.saveSettings(settings);
-  }
-
-  async function downloadPdf() {
-    const btn = $("#btn-pdf");
-    btn.disabled = true;
-    btn.textContent = "Preparing…";
-    try {
-      const sheet = $("#print-sheet");
-      const canvas = await html2canvas(sheet, {
-        scale: 2,
-        backgroundColor: "#ffffff",
-        useCORS: true,
-        logging: false,
-      });
-      const img = canvas.toDataURL("image/png");
-      // Landscape letter: 11 x 8.5 in
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({ orientation: "landscape", unit: "in", format: "letter" });
-      const pageW = 11;
-      const pageH = 8.5;
-      const margin = 0.25;
-      const usableW = pageW - margin * 2;
-      const usableH = pageH - margin * 2;
-
-      const imgW = canvas.width;
-      const imgH = canvas.height;
-      const ratio = Math.min(usableW / (imgW / 96), usableH / (imgH / 96));
-      // html2canvas pixels ≈ CSS px; treat 96dpi
-      let drawW = (imgW / 96) * ratio;
-      let drawH = (imgH / 96) * ratio;
-
-      // If allow page 2 / scoring, may need multi-page via height split
-      if (!settings.allowPage2 && !settings.showScoringRef) {
-        pdf.addImage(img, "PNG", margin, margin, drawW, Math.min(drawH, usableH));
-      } else {
-        // Scale to width; paginate vertically
-        const scale = usableW / (imgW / 96);
-        drawW = usableW;
-        drawH = (imgH / 96) * scale;
-        const pageContentH = usableH;
-        let yOffset = 0;
-        let page = 0;
-        while (yOffset < drawH - 0.01) {
-          if (page > 0) pdf.addPage();
-          const srcY = (yOffset / drawH) * imgH;
-          const srcH = Math.min(imgH - srcY, (pageContentH / drawH) * imgH);
-          const slice = document.createElement("canvas");
-          slice.width = imgW;
-          slice.height = Math.max(1, Math.floor(srcH));
-          const ctx = slice.getContext("2d");
-          ctx.drawImage(canvas, 0, srcY, imgW, srcH, 0, 0, imgW, srcH);
-          const sliceData = slice.toDataURL("image/png");
-          const sliceH = (slice.height / 96) * scale;
-          pdf.addImage(sliceData, "PNG", margin, margin, drawW, sliceH);
-          yOffset += pageContentH;
-          page++;
-          if (page > 5) break;
-        }
-      }
-      pdf.save("riichi-yaku-cheatsheet.pdf");
-    } catch (err) {
-      console.error(err);
-      alert("PDF export failed. Try Print → Save as PDF instead.\n" + err.message);
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "Download PDF";
-    }
   }
 
   document.addEventListener("DOMContentLoaded", () => {

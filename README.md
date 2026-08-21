@@ -5,7 +5,7 @@ Presentation-oriented HTML guide of Riichi yaku with three tile styles and lands
 ## Open locally
 
 Open `index.html` in a browser (or serve the folder statically).  
-**Download PDF** needs network once for the CDN copies of html2canvas / jsPDF. **Print / Save PDF** works fully offline after tiles are loaded.
+**Print / Save PDF** uses the browser print dialog (Save as PDF).
 
 ## Tile styles
 
