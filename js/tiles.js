@@ -86,7 +86,7 @@ function normalizeId(t) {
     const suit = u.length > 1 ? u[1].toUpperCase() : "";
     return suit ? `0${suit}` : "0";
   }
-  const honors = ["EW", "SW", "WW", "NW", "WD", "GD", "RD", "F", "J", "X", "J1", "J2"];
+  const honors = ["EW", "SW", "WW", "NW", "WD", "GD", "RD", "BD", "PD", "F", "J", "X", "J1", "J2"];
   const up = u.toUpperCase();
   if (honors.includes(up)) return up;
   if (/^F[1-8]$/i.test(u)) return u.toUpperCase();
@@ -152,6 +152,8 @@ function tileMeta(id) {
     WD: "White Dragon",
     GD: "Green Dragon",
     RD: "Red Dragon",
+    BD: "Green Dragon (bam D)",
+    PD: "White Dragon (dot D)",
     F: "Flower",
     F1: "Flower 1",
     F2: "Flower 2",
@@ -162,14 +164,16 @@ function tileMeta(id) {
     J2: "Joker 2",
     X: "Blank",
   };
-  if (["EW", "SW", "WW", "NW", "WD", "GD", "RD"].includes(id)) {
+  if (["EW", "SW", "WW", "NW", "WD", "GD", "RD", "BD", "PD"].includes(id)) {
+    const imageId = id === "BD" ? "GD" : id === "PD" ? "WD" : id;
     return {
       id,
       suit: "honor",
       color: "blue",
-      text: TEXT_GLYPH[id],
+      text: TEXT_GLYPH[imageId] || TEXT_GLYPH[id] || id,
       label: honorNames[id],
       category: "honor",
+      imageId,
     };
   }
   if (/^F[1-8]?$/.test(id) || id === "J" || id === "J1" || id === "J2" || id === "X") {
@@ -192,9 +196,15 @@ function tileMeta(id) {
   };
 }
 
+function resolveImageId(id) {
+  if (/^0[BCP]?$/.test(id)) return "WD";
+  if (id === "BD") return "GD";
+  if (id === "PD") return "WD";
+  return id;
+}
+
 function traditionalSrc(id) {
-  const meta = /^0[BCP]?$/.test(id) ? { imageId: "WD" } : null;
-  const key = meta?.imageId || id;
+  const key = resolveImageId(id);
   const base = TRADITIONAL_FILES[key] || "Back";
   return `assets/traditional/${base}.png`;
 }
@@ -202,7 +212,7 @@ function traditionalSrc(id) {
 /** Custom pack: new IDs first; aka falls back to plain 5 if no *5r file. */
 function customCandidates(id) {
   const names = [];
-  const imageId = /^0[BCP]?$/.test(id) ? "WD" : id;
+  const imageId = resolveImageId(id);
   const primary = CUSTOM_FILES[imageId];
   if (primary) names.push(primary);
 
@@ -215,9 +225,25 @@ function customCandidates(id) {
 }
 
 /**
+ * NMJL letter-style text: dragons as colored D, winds/flowers black.
+ * Riichi text mode is unchanged unless opts.nmjlText is set.
+ */
+function nmjlTextPresentation(id, meta) {
+  if (id === "RD") return { text: "D", color: "red" };
+  if (id === "BD" || id === "GD") return { text: "D", color: "green" };
+  if (id === "PD" || id === "WD") return { text: "D", color: "black" };
+  if (id === "F" || /^F[1-8]$/.test(id)) return { text: "F", color: "black" };
+  if (id === "EW") return { text: "E", color: "black" };
+  if (id === "SW") return { text: "S", color: "black" };
+  if (id === "WW") return { text: "W", color: "black" };
+  if (id === "NW") return { text: "N", color: "black" };
+  return { text: meta.text, color: meta.color };
+}
+
+/**
  * @param {string} notation
  * @param {"traditional"|"custom"|"text"} style
- * @param {{ rankLabels?: "off"|"hover"|"always" }} [opts]
+ * @param {{ rankLabels?: "off"|"hover"|"always", nmjlText?: boolean }} [opts]
  * @returns {HTMLElement}
  */
 function renderHand(notation, style = "traditional", opts = {}) {
@@ -247,20 +273,21 @@ function renderHand(notation, style = "traditional", opts = {}) {
       group.appendChild(span);
       continue;
     }
-    group.appendChild(renderTile(tok.id, style, rankLabels));
+    group.appendChild(renderTile(tok.id, style, rankLabels, opts));
   }
   flush();
   return wrap;
 }
 
-function renderTile(id, style, rankLabels = "hover") {
+function renderTile(id, style, rankLabels = "hover", opts = {}) {
   const meta = tileMeta(id);
 
   if (style === "text") {
+    const present = opts.nmjlText ? nmjlTextPresentation(id, meta) : { text: meta.text, color: meta.color };
     const span = document.createElement("span");
-    span.className = `tile tile-text suit-${meta.color}`;
+    span.className = `tile tile-text suit-${present.color}`;
     span.dataset.id = id;
-    span.textContent = meta.text;
+    span.textContent = present.text;
     span.title = `${meta.label} (${id})`;
     return span;
   }

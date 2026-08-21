@@ -265,6 +265,18 @@ main#print-sheet {
   letter-spacing: 0.02em;
 }
 
+.badge.nmjl-concealed {
+  background: #c6edd7;
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.badge.nmjl-exposed {
+  background: #f3cfcf;
+  color: #c62828;
+  font-weight: 700;
+}
+
 .badge.verify {
   background: #fff3cd;
   color: #7a5b00;

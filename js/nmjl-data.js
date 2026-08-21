@@ -51,23 +51,28 @@ window.NMJL_REGISTRY = {
           hands: [
             {
               id: "2026-a",
-              tiles: "2P 0P 2P 6P | 2B 0B 2B 6B | 2C*3 | 6C*3",
+              tiles: "2B*3 | 0P*3 | 2C*4 | 6C*4",
               value: 25,
-              note: "Soap as 0 · two suits + pungs",
+              note: "Soap as 0.  Any 2 suits",
             },
             {
               id: "2026-b",
-              tiles: "2C 0C 2C 6C | FF | 2026P | 2026B",
-              value: 30,
-              note: "Year in two suits + flowers",
-              verify: true,
+              tiles: "2026B | GD*3 | 3C*4 | RD*3",
+              value: 25,
+              note: "Any 2 Suits w Matching Dragons, Kong 2 or 6",
             },
             {
               id: "2026-c",
-              tiles: "22P | 0000P | 222P | 666P | 26P",
+              tiles: "FFF | 2026B | 2C*3 | 6P*4",
+              value: 30,
+              note: "Any 3 suits",
+            },
+            {
+              id: "2026-d",
+              tiles: "22B | 00P | 222C | 666C | NEWS",
               value: 35,
               concealed: true,
-              note: "One suit · concealed",
+              note: "Any 2 suits",
             },
           ],
         },
@@ -507,7 +512,7 @@ window.NMJL_NOTATION = {
       .split(/\s+/)
       .map((tok) => {
         if (tok === "|") return "|";
-        if (/^NEWS$/i.test(tok)) return "EW SW WW NW";
+        if (/^NEWS$/i.test(tok)) return "NW EW WW SW";
         if (/^D{2,5}$/i.test(tok)) {
           return Array.from({ length: tok.length }, () => "RD").join(" ");
         }

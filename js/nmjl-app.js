@@ -21,6 +21,13 @@
     return NMJL_REGISTRY.cards[currentYear()];
   }
 
+  function tileOpts() {
+    return {
+      rankLabels: settings.rankLabels,
+      nmjlText: true,
+    };
+  }
+
   function render() {
     const card = currentCard();
     const root = $("#nmjl-root");
@@ -81,10 +88,16 @@
 
     if (hand.concealed) {
       const c = document.createElement("span");
-      c.className = "badge closed";
+      c.className = "badge nmjl-concealed";
       c.textContent = "C";
       c.title = "Concealed";
       badges.appendChild(c);
+    } else {
+      const x = document.createElement("span");
+      x.className = "badge nmjl-exposed";
+      x.textContent = "X";
+      x.title = "Exposed (may be open)";
+      badges.appendChild(x);
     }
     if (hand.verify) {
       const v = document.createElement("span");
@@ -108,9 +121,7 @@
     ex.className = "example";
     const expanded = NMJL_NOTATION.expandHand(hand.tiles);
     ex.appendChild(
-      Tiles.renderHand(expanded, settings.tileStyle, {
-        rankLabels: settings.rankLabels,
-      })
+      Tiles.renderHand(expanded, settings.tileStyle, tileOpts())
     );
     card.appendChild(ex);
     return card;
@@ -126,12 +137,12 @@
     el.hidden = false;
     const parts = [];
     if (settings.tileStyle === "text") {
-      parts.push("Text tiles: bam green · crak red · dot black · honors blue · soap 0");
+      parts.push(
+        "Text tiles: bam green · crak red · dot black · dragons D (R/G/B) · winds & flowers black · soap 0"
+      );
     }
     if (settings.showExtraTiles) {
-      const hand = Tiles.renderHand("F F | J J | 0P", settings.tileStyle, {
-        rankLabels: settings.rankLabels,
-      });
+      const hand = Tiles.renderHand("F F | J J | 0P | RD BD PD", settings.tileStyle, tileOpts());
       el.innerHTML = "";
       const label = document.createElement("span");
       label.className = "legend-label";
@@ -161,15 +172,15 @@
       el.className = "aux-panel";
       $("#aux-root").appendChild(el);
     }
-    const opts = { rankLabels: settings.rankLabels };
+    const opts = tileOpts();
     const style = settings.tileStyle;
     el.innerHTML = "<h2>Tile key</h2>";
     const rows = [
       ["Bam", "123456789B"],
       ["Dot", "123456789P"],
       ["Crak", "123456789C"],
-      ["Winds", "EW SW WW NW"],
-      ["Dragons", "WD GD RD"],
+      ["Winds (NEWS)", "NW EW WW SW"],
+      ["Dragons", "RD BD PD"],
       ["Soap / extras", "0P F J"],
     ];
     for (const [label, tiles] of rows) {
