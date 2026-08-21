@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NMJL Hand Builder</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="js/tiles.js" defer></script>
+  <script src="js/settings.js" defer></script>
+  <script src="js/nmjl-hand-builder.js" defer></script>
+</head>
+<body class="nmjl-page nmjl-builder-page" data-tile-style="traditional">
+  <header class="toolbar">
+    <h1>NMJL Hand Builder</h1>
+    <label>
+      Tiles
+      <select id="tile-style" aria-label="Tile style">
+        <option value="traditional">Traditional</option>
+        <option value="custom">Custom</option>
+        <option value="text">Text (NMJL)</option>
+      </select>
+    </label>
+    <label>
+      Arabic numbers
+      <select id="rank-labels">
+        <option value="hover">On hover</option>
+        <option value="always">Always show</option>
+        <option value="off">Off</option>
+      </select>
+    </label>
+    <div class="toolbar-actions">
+      <a href="nmjl.html" class="icon-btn" aria-label="Back to NMJL cheatsheet" title="NMJL cheatsheet">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 7h16"/>
+          <path d="M4 12h16"/>
+          <path d="M4 17h16"/>
+          <circle cx="8" cy="7" r="1.2" fill="currentColor" stroke="none"/>
+          <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>
+          <circle cx="16" cy="17" r="1.2" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <main class="hand-verifier nmjl-builder">
+    <h2>Build a card hand</h2>
+    <p class="hv-note">
+      Click tiles in the Key to add them to the <strong>active</strong> hand (highlighted).
+      Click a hand tile to remove it. Use <strong>Add split (|)</strong> between melds so Generate
+      keeps groups like <code>44C | 66C</code> separate. Use <strong>Add alternate</strong> for another
+      version of the same card (shown with “-or-” on the cheatsheet).
+    </p>
+
+    <div class="hv-palette" id="nb-palette" aria-label="Tile key"></div>
+
+    <div id="nb-racks"></div>
+
+    <div class="hv-toolbar">
+      <button type="button" class="hv-btn" id="nb-add-split">Add split (|)</button>
+      <button type="button" class="hv-btn" id="nb-add-alt">Add alternate</button>
+      <button type="button" class="hv-btn" id="nb-remove-alt" disabled>Remove active alternate</button>
+    </div>
+
+    <div class="nb-fields">
+      <label>
+        id
+        <input type="text" id="nb-id" placeholder="2026-e" autocomplete="off" />
+      </label>
+      <label>
+        value
+        <input type="number" id="nb-value" min="0" step="5" value="25" />
+      </label>
+      <label class="nb-check">
+        <input type="checkbox" id="nb-concealed" />
+        concealed
+      </label>
+      <label class="nb-note-field">
+        note
+        <input type="text" id="nb-note" placeholder="Any 3 suits" autocomplete="off" />
+      </label>
+    </div>
+
+    <div class="hv-toolbar">
+      <button type="button" class="hv-btn primary" id="nb-generate" disabled>Generate &amp; copy</button>
+      <button type="button" class="hv-btn" id="nb-clear">Clear all</button>
+      <span class="hv-win-hint" id="nb-status" aria-live="polite"></span>
+    </div>
+
+    <label class="nb-output-label" for="nb-output">Snippet</label>
+    <textarea id="nb-output" class="nb-output" rows="12" readonly placeholder="Generated hand object appears here…"></textarea>
+  </main>
+</body>
+</html>

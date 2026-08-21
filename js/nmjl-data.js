@@ -13,7 +13,7 @@
 /**
  * @typedef {object} NmjlHand
  * @property {string} id
- * @property {string} tiles - hand notation (see tiles.js); 14 tiles for standard hands
+ * @property {string|string[]} tiles - one hand, or several alternates (same card, shown with “-or-”)
  * @property {number} value - points (e.g. 25, 30, 50)
  * @property {boolean} [concealed] - concealed-only / C on the card
  * @property {string} [note] - short free-text (e.g. "Any 3 suits", "No jokers")
@@ -53,7 +53,7 @@ window.NMJL_REGISTRY = {
               id: "2026-a",
               tiles: "2B*3 | 0P*3 | 2C*4 | 6C*4",
               value: 25,
-              note: "Soap as 0.  Any 2 suits",
+              note: "Soap as 0.  Any 2 Suits",
             },
             {
               id: "2026-b",
@@ -64,15 +64,15 @@ window.NMJL_REGISTRY = {
             {
               id: "2026-c",
               tiles: "FFF | 2026B | 2C*3 | 6P*4",
-              value: 30,
-              note: "Any 3 suits",
+              value: 25,
+              note: "Any 3 Suits",
             },
             {
               id: "2026-d",
               tiles: "22B | 00P | 222C | 666C | NEWS",
-              value: 35,
+              value: 30,
               concealed: true,
-              note: "Any 2 suits",
+              note: "Any 2 Suits",
             },
           ],
         },
@@ -82,28 +82,55 @@ window.NMJL_REGISTRY = {
           hands: [
             {
               id: "2468-a",
-              tiles: "22P | 44P | 66P | 88P | 2468B | FF",
+              tiles: [
+                "222P | 444P | 6666P | 8888P",
+                "222B | 444B | 6666C | 8888C",
+              ],
               value: 25,
-              note: "Even pairs + run + F",
+              note: "Any 1 or 2 Suits",
             },
             {
               id: "2468-b",
-              tiles: "222P | 444P | 666P | 888B | 88C",
+              tiles: "F*2 | 2222B | 4466C | 8888B",
               value: 30,
-              note: "Pungs of 2/4/6 + kong 8s",
+              note: "Any 2 Suits",
             },
             {
               id: "2468-c",
-              tiles: "2468P | 2468B | 222C | 888C",
+              tiles: "EW*2 | 22P | 444P | 666P | 88P | WW*2",
               value: 30,
-              note: "Two runs + matching pungs",
+              note: "Any 1 Suit, East and West Only",
             },
             {
               id: "2468-d",
-              tiles: "22P 44P 66P 88P | 22B 44B | FF",
-              value: 50,
+              tiles: "2222B | BD*3 | 8888C | RD*3",
+              value: 25,
+              note: "Any 2 Suits w Matching Dragons, These Nos. Only",
+            },
+            {
+              id: "2468-e",
+              tiles: "F*3 | 22P | 44P | 666P | 8888P",
+              value: 25,
+              note: "Any 1 suit",
+            },
+            {
+              id: "2468-f",
+              tiles: "2468B | 2222C | RD | 2222P | PD",
+              value: 25,
+              note: "Any 3 Suits, Like Kongs 2, 4, 5, 6, or 8",
+            },
+            {
+              id: "2468-g",
+              tiles: "F*3 | 2468B | F*3 | 2222C",
+              value: 30,
+              note: "Any 2 Suits, Kong 2, 4, 6, 8",
+            },
+            {
+              id: "2468-h",
+              tiles: "F*2 | 246B | 888B | 246C | 888C",
+              value: 30,
               concealed: true,
-              note: "Even pairs · concealed",
+              note: "Any 2 Suits",
             },
           ],
         },
@@ -113,22 +140,21 @@ window.NMJL_REGISTRY = {
           hands: [
             {
               id: "like-a",
-              tiles: "111P | 111B | 111C | 11P | FFF",
-              value: 25,
-              note: "Like number in 3 suits + pair + F",
+              tiles: "1B*4 | F*6 | 1C*4",
+              value: 30,
+              note: "Any 2 Suits",
             },
             {
               id: "like-b",
-              tiles: "1111P | 1111B | 111C | 111C",
-              value: 30,
-              note: "Two kongs + two pungs",
+              tiles: "1B*4 | BD | 1C*3 | RD | 1P*4 | PD",
+              value: 25,
+              note: "Any 2 Suits",
             },
             {
               id: "like-c",
-              tiles: "111P | 111B | 111C | NEWS | F",
-              value: 35,
-              note: "Like pungs + NEWS",
-              verify: true,
+              tiles: "F*2 | 1B*4 | 11C | 1P*4 | BD*2",
+              value: 25,
+              note: "Any 3 Suits w Any Dragon",
             },
           ],
         },
@@ -138,21 +164,21 @@ window.NMJL_REGISTRY = {
           hands: [
             {
               id: "quint-a",
-              tiles: "11111P | 222B | 333B | 444B",
+              tiles: "1B*5 | 1C*4 | 1P*5",
               value: 40,
-              note: "Quint + consecutive pungs",
+              note: "Any 3 Suits, Any Like Nos.",
             },
             {
               id: "quint-b",
-              tiles: "FFFFF | 111P | 222P | 333P",
+              tiles: "F*2 | 1P*5 | 22P | 3P*5",
               value: 45,
-              note: "Flower quint + run pungs",
+              note: "Any 1 Suits Any 3 Consec. Nos.",
             },
             {
               id: "quint-c",
-              tiles: "55555P | 55555B | 55C | FF",
-              value: 50,
-              note: "Two quints + pair + F",
+              tiles: "1B*5 | 4B*5 | RD*4",
+              value: 40,
+              note: "Any 2 Nos. in Any 1 Suit w Opp. Dragon",
             },
           ],
         },
@@ -162,27 +188,67 @@ window.NMJL_REGISTRY = {
           hands: [
             {
               id: "run-a",
-              tiles: "111P | 222P | 333P | 444P | 55P",
+              tiles: [
+                "11P | 2P*3 | 33P | 4P*3 | 5P*4",
+                "55P | 6P*3 | 77P | 8P*3 | 9P*4",
+              ],
               value: 25,
-              note: "One suit run",
+              note: "Any 1 Suit, These Nos. only",
             },
             {
               id: "run-b",
-              tiles: "111P | 222P | 333B | 444B | 55C",
-              value: 30,
-              note: "Two suits + pair",
+              tiles: [
+                "F*3 | 1P*4 | 234P | 5P*4",
+                "F*3 | 1B*4 | 234C | 5B*4",
+              ],
+              value: 25,
+              note: "Any 1 or 2 Suits, Any 5 Consec. Nos.",
             },
             {
               id: "run-c",
-              tiles: "123P | 123P | 123B | 123B | 11C",
-              value: 30,
-              note: "Matching chows",
+              tiles: "11B | 22B | 1C*3 | 2C*3 | 3P*4",
+              value: 25,
+              note: "Any 3 Suits, Any 3 Consec. Nos.",
             },
             {
               id: "run-d",
-              tiles: "1111P | 2222P | 3333B | 44B",
+              tiles: [
+                "1P*3 | 2P*3 | 3P*4 | 4P*4",
+                "1B*3 | 2B*3 | 3C*4 | 4C*4",
+              ],
+              value: 25,
+              note: "Any 1 or 2 Suits, Any 4 Consec. Nos.",
+            },
+            {
+              id: "run-e",
+              tiles: [
+                "F*3 | 11P | 22P | 3P*3 | PD*4",
+                "F*3 | 11B | 22C | 3B*3 | RD*4",
+              ],
+              value: 25,
+              note: "1 or 2 Suits, Any Run, Ds Match Middle No",
+            },
+            {
+              id: "run-f",
+              tiles: "1P*4 | F*6 | 2P*4",
+              value: 30,
+              note: "Any 1 Suit, Any 2 Consec. Nos.",
+            },
+            {
+              id: "run-g",
+              tiles: [
+                "F*2 | 1P*4 | 2P*4 | 3P*4",
+                "F*2 | 1B*4 | 2C*4 | 3P*4",
+              ],
+              value: 25,
+              note: "Any 1 or 3 Suits, Any 3 Consec. Nos.",
+            },
+            {
+              id: "run-h",
+              tiles: "1B | 22B | 3B*3 | 1C | 22C | 3C*3 | 44P",
               value: 35,
-              note: "Kongs in run",
+              concealed: true,
+              note: "Any 3 Suits, Any 4 Consec. Nos.",
             },
           ],
         },

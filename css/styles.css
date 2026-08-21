@@ -299,6 +299,16 @@ main#print-sheet {
   margin: 0;
 }
 
+.nmjl-or {
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: var(--muted);
+  margin: 0.2rem 0 0.15rem;
+  user-select: none;
+}
+
 .nmjl-grid {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
@@ -654,6 +664,110 @@ body[data-tile-style="custom"] .tile-rank {
 .hv-result.is-error {
   background: #fbe9e7;
   border: 1px solid #ffab91;
+}
+
+.nmjl-builder-page .hand-verifier {
+  max-width: none;
+  margin: 0;
+  min-height: calc(100vh - 3.5rem);
+}
+
+.nb-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.55rem 1rem;
+  margin: 0.75rem 0 0.35rem;
+  align-items: end;
+}
+
+.nb-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.nb-fields input[type="text"],
+.nb-fields input[type="number"] {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper);
+}
+
+.nb-fields .nb-check {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+  padding-bottom: 0.35rem;
+}
+
+.nb-fields .nb-note-field {
+  grid-column: 1 / -1;
+}
+
+.nb-output-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0.3rem;
+}
+
+.nb-output {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-text-tile);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fafafa;
+  resize: vertical;
+  min-height: 8rem;
+}
+
+.nb-rack {
+  margin-bottom: 0.35rem;
+  padding: 0.35rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.nb-rack.is-active {
+  border-color: var(--accent);
+  background: #f3f7f5;
+}
+
+.nb-rack .hv-hand {
+  margin-bottom: 0;
+}
+
+.nb-active-mark {
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.nb-break-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.1rem;
+  height: var(--tile-h);
+  padding: 0 0.2rem;
+  font-family: var(--font-text-tile);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--muted);
+  line-height: 1;
+}
+
+.nb-break-btn:hover {
+  color: var(--accent);
 }
 
 /* Print / PDF capture */

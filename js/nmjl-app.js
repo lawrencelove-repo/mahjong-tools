@@ -117,13 +117,22 @@
 
     card.appendChild(head);
 
-    const ex = document.createElement("div");
-    ex.className = "example";
-    const expanded = NMJL_NOTATION.expandHand(hand.tiles);
-    ex.appendChild(
-      Tiles.renderHand(expanded, settings.tileStyle, tileOpts())
-    );
-    card.appendChild(ex);
+    const versions = Array.isArray(hand.tiles) ? hand.tiles : [hand.tiles];
+    versions.forEach((tiles, i) => {
+      if (i > 0) {
+        const or = document.createElement("div");
+        or.className = "nmjl-or";
+        or.textContent = "-or-";
+        card.appendChild(or);
+      }
+      const ex = document.createElement("div");
+      ex.className = "example";
+      const expanded = NMJL_NOTATION.expandHand(tiles);
+      ex.appendChild(
+        Tiles.renderHand(expanded, settings.tileStyle, tileOpts())
+      );
+      card.appendChild(ex);
+    });
     return card;
   }
 
@@ -246,6 +255,20 @@
     });
 
     $("#btn-print").addEventListener("click", () => window.print());
+
+    let builderWin = null;
+    $("#btn-hand-builder").addEventListener("click", () => {
+      const url = new URL("nmjl-hand-builder.html", window.location.href).href;
+      if (builderWin && !builderWin.closed) {
+        builderWin.focus();
+        return;
+      }
+      builderWin = window.open(
+        url,
+        "nmjlHandBuilder",
+        "popup=yes,width=980,height=860,scrollbars=yes,resizable=yes"
+      );
+    });
   }
 
   function fillYearSelect() {

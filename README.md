@@ -54,6 +54,7 @@ Open `nmjl.html` for an unofficial NMJL-style card cheatsheet (2026 default, 202
 - Same tile styles and Print / Save PDF as the Riichi sheet
 - Switch years in the toolbar; add future cards in `js/nmjl-data.js` (`NMJL_REGISTRY`)
 - Hands are **placeholders** (copyright) — correct against your licensed card; lines marked **verify** are intentionally off
+- **Hand builder** (wrench icon): pick 14 tiles and copy a paste-ready object for `js/nmjl-data.js`
 
 ## Hand evaluation
 
