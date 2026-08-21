@@ -19,6 +19,7 @@ const DEFAULT_SETTINGS = {
   nmjlYear: 2026, // American Mahjong card year (nmjl.html)
   hkGroupBy: "faan", // faan | category — Hong Kong page
   hkSeasons: "exclude", // include | exclude | blanks — flowers/seasons display
+  hkLanguage: "en-zh", // en | zh | en-zh — English and/or Chinese (Cantonese names)
   filipinoGroupBy: "points", // points | category — Filipino page
 };
 

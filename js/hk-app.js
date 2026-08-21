@@ -26,12 +26,17 @@
   }
 
   function faanLabel(h) {
-    if (h.faan >= 13 || h.section === "limit") return "Limit";
+    if (h.faanLabel) return h.faanLabel;
     return `${h.faan} faan`;
   }
 
   function displayName(h) {
-    return h.nameZh ? `${h.nameEn} · ${h.nameZh}` : h.nameEn;
+    const lang = settings.hkLanguage || "en-zh";
+    if (lang === "zh") return h.nameZh || h.nameEn;
+    if (lang === "en-zh") {
+      return h.nameZh ? `${h.nameEn} · ${h.nameZh}` : h.nameEn;
+    }
+    return h.nameEn;
   }
 
   function groupKey(h) {
@@ -48,7 +53,17 @@
     if (groupBy() === "category") {
       return ["basic", "suit", "honor", "special", "limit", "bonus"];
     }
-    return ["1-faan", "2-faan", "3-faan", "4-faan", "5-faan", "7-faan", "limit", "bonus"];
+    return [
+      "1-faan",
+      "2-faan",
+      "3-faan",
+      "4-faan",
+      "5-faan",
+      "7-faan",
+      "9-faan",
+      "13-faan",
+      "bonus",
+    ];
   }
 
   function mapSeasonTiles(notation) {
@@ -220,6 +235,13 @@
     $("#hk-seasons").value = seasonsMode();
     $("#hk-seasons").addEventListener("change", (e) => {
       settings.hkSeasons = e.target.value;
+      persist();
+      render();
+    });
+
+    $("#hk-language").value = settings.hkLanguage || "en-zh";
+    $("#hk-language").addEventListener("change", (e) => {
+      settings.hkLanguage = e.target.value;
       persist();
       render();
     });
