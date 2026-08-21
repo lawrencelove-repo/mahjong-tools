@@ -359,13 +359,21 @@
       });
     }
 
-    $("#btn-settings").addEventListener("click", () => {
+    function setSettingsOpen(open) {
       const panel = $("#settings-panel");
-      const opening = panel.hidden;
-      panel.hidden = !opening;
-      if (opening) {
+      const btn = $("#btn-settings");
+      panel.hidden = !open;
+      btn.setAttribute("aria-expanded", String(open));
+      if (open) {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
+    }
+
+    $("#btn-settings").addEventListener("click", () => {
+      setSettingsOpen($("#settings-panel").hidden);
+    });
+    $("#btn-settings-collapse").addEventListener("click", () => {
+      setSettingsOpen(false);
     });
 
     let handEvalWin = null;

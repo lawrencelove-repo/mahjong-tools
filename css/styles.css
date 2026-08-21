@@ -76,6 +76,32 @@ body {
   border-color: var(--accent);
 }
 
+.toolbar-actions {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin-left: auto;
+}
+
+.toolbar .icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  color: var(--ink);
+}
+
+.toolbar .icon-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.toolbar .icon-btn svg {
+  display: block;
+}
+
 .group-radios {
   display: inline-flex;
   gap: 0.6rem;
@@ -83,16 +109,20 @@ body {
 }
 
 #settings-panel {
-  padding: 0.75rem 1rem 1rem;
+  padding: 0.75rem 1rem 0;
   border-bottom: 1px solid var(--line);
   background: #fff;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.5rem 1.25rem;
 }
 
 #settings-panel[hidden] {
   display: none !important;
+}
+
+.settings-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.5rem 1.25rem;
+  padding-bottom: 0.75rem;
 }
 
 #settings-panel label {
@@ -100,6 +130,29 @@ body {
   display: flex;
   gap: 0.4rem;
   align-items: flex-start;
+}
+
+.settings-collapse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 0;
+  padding: 0.35rem 0;
+  border: none;
+  border-top: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.settings-collapse:hover {
+  color: var(--accent);
+  background: var(--badge-bg);
+}
+
+.settings-collapse svg {
+  display: block;
 }
 
 main#print-sheet {
