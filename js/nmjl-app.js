@@ -144,29 +144,33 @@
       return;
     }
     el.hidden = false;
-    const parts = [];
+    el.replaceChildren();
+
     if (settings.tileStyle === "text") {
-      parts.push(
-        "Text tiles: bam green · crak red · dot black · dragons D (R/G/B) · winds & flowers black · soap 0"
-      );
+      const key = document.createElement("div");
+      key.className = "nmjl-text-key";
+      key.innerHTML = [
+        `<span class="nmjl-text-key-item"><span class="tile tile-text suit-green">6</span> bam</span>`,
+        `<span class="nmjl-text-key-item"><span class="tile tile-text suit-red">6</span> crak</span>`,
+        `<span class="nmjl-text-key-item"><span class="tile tile-text suit-black">6</span> dot</span>`,
+        `<span class="nmjl-text-key-item"><span class="tile tile-text suit-red">D</span> <span class="tile tile-text suit-green">D</span> <span class="tile tile-text suit-black">D</span> dragons</span>`,
+        `<span class="nmjl-text-key-item"><span class="tile tile-text suit-black">N</span><span class="tile tile-text suit-black">E</span><span class="tile tile-text suit-black">W</span><span class="tile tile-text suit-black">S</span> winds</span>`,
+        `<span class="nmjl-text-key-item"><span class="tile tile-text suit-black">F</span> flowers</span>`,
+        `<span class="nmjl-text-key-item"><span class="tile tile-text suit-black">0</span> soap</span>`,
+      ].join("");
+      el.appendChild(key);
     }
+
     if (settings.showExtraTiles) {
-      const hand = Tiles.renderHand("F F | J J | 0P | RD BD PD", settings.tileStyle, tileOpts());
-      el.innerHTML = "";
+      const row = document.createElement("div");
+      row.className = "nmjl-extras-row";
       const label = document.createElement("span");
       label.className = "legend-label";
-      label.textContent = "Extras: ";
-      el.appendChild(label);
-      el.appendChild(hand);
-      if (parts.length) {
-        const hint = document.createElement("span");
-        hint.className = "legend-hint";
-        hint.textContent = parts.join(" · ");
-        el.appendChild(hint);
-      }
-      return;
+      label.textContent = "Extras";
+      const hand = Tiles.renderHand("F F | J J | 0P | RD BD PD", settings.tileStyle, tileOpts());
+      row.append(label, hand);
+      el.appendChild(row);
     }
-    el.textContent = parts.join(" · ");
   }
 
   function renderTileKey() {

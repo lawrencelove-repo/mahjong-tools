@@ -42,7 +42,7 @@ window.NMJL_REGISTRY = {
   cards: {
     2026: {
       year: 2026,
-      title: "2026 NMJL Card",
+      title: "2026 NMJL Cheatsheet",
       blurb: "Unofficial placeholders — correct against your licensed 2026 card.",
       categories: [
         {
@@ -258,21 +258,80 @@ window.NMJL_REGISTRY = {
           hands: [
             {
               id: "odd-a",
-              tiles: "11P | 33P | 55P | 77P | 99P | 135B | F",
+              tiles: [
+                "11P | 3P*3 | 55P | 7P*3 | 9P*4",
+                "11B | 3B*3 | 55C | 7C*3 | 9P*4",
+              ],
               value: 25,
-              note: "Odd pairs + run",
+              note: "Any 1 or 3 Suits",
             },
             {
               id: "odd-b",
-              tiles: "111P | 333P | 555P | 777B | 99B",
-              value: 30,
-              note: "Odd pungs",
+              tiles: [
+                "1B*3 | 3B*3 | 3C*4 | 5C*4",
+                "5B*3 | 7B*3 | 7C*4 | 9C*4",
+              ],
+              value: 25,
+              note: "Any 2 Suits",
             },
             {
               id: "odd-c",
-              tiles: "13579P | 13579B | 11C | 99C",
+              tiles: [
+                "NW*2 | 1P*4 | 33P | 5P*4 | SW*2",
+                "NW*2 | 5P*4 | 77P | 9P*4 | SW*2",
+              ],
+              value: 30,
+              note: "Any 1 Suit, North and South Only",
+            },
+            {
+              id: "odd-d",
+              tiles: "11B | 3579B | 1C*4 | 1P*4",
+              value: 25,
+              note: "Any 3 Suits, Pair Any Odd., Kongs Match Pair",
+            },
+            {
+              id: "odd-e",
+              tiles: [
+                "F*3 | 11P | 33P | 5P*3 | PD*4",
+                "F*3 | 55P | 77P | 9P*3 | PD*4",
+              ],
+              value: 25,
+              note: "Any 1 Suite w Matching Dragon",
+            },
+            {
+              id: "odd-f",
+              tiles: [
+                "11B | 33B | 1C*3 | 3C*3 | 5P*4",
+                "55B | 77B | 5C*3 | 7C*3 | 9P*4",
+              ],
+              value: 25,
+              note: "Any 3 Suits",
+            },
+            {
+              id: "odd-g",
+              tiles: [
+                "1P*4 | 33P | 55P | 77P | 9P*4",
+                "1B*4 | 33C | 55C | 77C | 9B*4",
+              ],
+              value: 30,
+              note: "Any 1 or 2 Suits",
+            },
+            {
+              id: "odd-h",
+              tiles: [
+                "F*2 | 11B | 33B | 55B | 1C*3 | 1P*3",
+                "F*2 | 55B | 77B | 99B | 5C*3 | 5P*3",
+              ],
               value: 35,
-              note: "Two odd runs",
+              concealed: true,
+              note: "Any 3 Suits, These Nos. Only",
+            },
+            {
+              id: "odd-i",
+              tiles: "F*2 | 135B | 7B*3 | 9B*3 | RD*3",
+              value: 30,
+              concealed: true,
+              note: "Any 1 Suit w Opp. Dragon",
             },
           ],
         },
@@ -282,28 +341,58 @@ window.NMJL_REGISTRY = {
           hands: [
             {
               id: "wd-a",
-              tiles: "NEWS | FF | RD RD RD | GD GD GD | WD WD",
+              tiles: [
+                "NW*4 | EW*3 | WW*3 | SW*4",
+                "NW*3 | EW*4 | WW*4 | SW*3",
+              ],
               value: 25,
-              note: "NEWS + dragons",
+              note: "Only These Winds",
             },
             {
               id: "wd-b",
-              tiles: "EEEE | SSSS | WW | NN | FF",
-              value: 30,
-              note: "Wind kongs / pairs",
+              tiles: "1234P | BD*3 | RD*3 | PD*4",
+              value: 25,
+              note: "Any 4 Consec. Nos. in Any Suit, And 3 Dragons",
             },
             {
               id: "wd-c",
-              tiles: "RD RD RD RD | GD GD GD GD | WD WD WD WD | FF",
-              value: 40,
-              note: "Dragon kongs + flowers",
+              tiles: "NW*3 | 1B*4 | 1C*4 | SW*3",
+              value: 25,
+              note: "Any Like Odd Nos. in Any 2 Suits",
             },
             {
               id: "wd-d",
-              tiles: "NEWS | NEWS | DD | DD | DD",
-              value: 50,
+              tiles: "EW*3 | 2B*4 | 2C*4 | WW*3",
+              value: 25,
+              note: "Any Like Even Nos. in Any 2 Suits",
+            },
+            {
+              id: "wd-e",
+              tiles: "F*3 | NW*4 | F*3 | PD*4",
+              value: 25,
+              note: "Any Wind, Any Dragon",
+            },
+            {
+              id: "wd-f",
+              tiles: "1P | NW | 2P | EW*2 | 3P | WW*3 | 4P | SW*4",
+              value: 25,
+              note: "Any 1 Suit, These Nos. Only",
+            },
+            {
+              id: "wd-g",
+              tiles: [
+                "F*2 | NW*4 | SW*4 | BD*2 | RD*2",
+                "F*2 | EW*4 | WW*4 | BD*2 | RD*2",
+              ],
+              value: 25,
+              note: "Any 2 Dragons",
+            },
+            {
+              id: "wd-h",
+              tiles: "NW*2 | EW*3 | 2026P | WW*3 | SW*2",
+              value: 30,
               concealed: true,
-              note: "Placeholder winds/dragons · concealed",
+              note: "2026 Any 1 Suit",
             },
           ],
         },
@@ -313,21 +402,46 @@ window.NMJL_REGISTRY = {
           hands: [
             {
               id: "369-a",
-              tiles: "333P | 666P | 999P | 33B | 66B | F",
+              tiles: [
+                "3B*3 | 6B*3 | 6C*4 | 9C*4",
+                "3B*3 | 6B*3 | 6C*4 | 9P*4",
+              ],
               value: 25,
-              note: "3/6/9 pungs + pairs",
+              note: "Any 2 or 3 Suits",
             },
             {
               id: "369-b",
-              tiles: "369P | 369B | 369C | 333P | FF",
-              value: 30,
-              note: "369 in three suits",
+              tiles: "33B | 66B | 3C*3 | 6C*3 | 9P*4",
+              value: 25,
+              note: "Any 3 Suits",
             },
             {
               id: "369-c",
-              tiles: "3333P | 6666P | 9999B | 99C",
-              value: 35,
-              note: "Kongs of 3/6/9",
+              tiles: [
+                "F*3 | 33P | 6P*3 | 99P | PD*4",
+                "F*3 | 33B | 6B*3 | 99B | RD*4",
+              ],
+              value: 25,
+              note: "1 Suit w Matching or Opp. Dragon",
+            },
+            {
+              id: "369-d",
+              tiles: "33B | 66B | 6C*3 | 9C*3 | NEWS",
+              value: 30,
+              note: "Any 2 Suits",
+            },
+            {
+              id: "369-e",
+              tiles: "F*2 | 33B | 6B | 9B | 3C*4 | 3P*4",
+              value: 25,
+              note: "Any 3 Suits, Pair 3, , or 9, Kongs Match Pair",
+            },
+            {
+              id: "369-f",
+              tiles: "F*2 | 3B*3 | 6B*3 | 9B*3 | 369C",
+              value: 30,
+              concealed: true,
+              note: "Any 2 Suits",
             },
           ],
         },
@@ -337,24 +451,45 @@ window.NMJL_REGISTRY = {
           hands: [
             {
               id: "sp-a",
-              tiles: "11P 22P 33P 44P 55P 66P 77P",
+              tiles: "NW*2 | EW*2 | WW*2 | SW*2 | 1B | BD | 1C | RD | 1P | PD",
               value: 50,
-              concealed: true,
-              note: "No jokers · concealed",
+              concealed: true, 
+              note: "Any 3 Suits, Any Like Nos. w Matching Dragon",
             },
             {
               id: "sp-b",
-              tiles: "FF | 2026P | NEWS | DD | DD",
+              tiles: "2B | 4B | 66B | 88B | 2C | 4C | 66C | 88C | 88P",
               value: 50,
               concealed: true,
-              note: "Year + NEWS + dragons · no jokers",
+              note: "Any 3 Suits, These Nos. Only",
             },
             {
               id: "sp-c",
-              tiles: "2468P | 2468B | 2468C | FF",
+              tiles: "F*2 | 33B | 6B | 9B | 3C | 66C | 9C | 369P | 9P",
+              value: 50,
+              concealed: true,
+              note: "Any 3 Suits",
+            },
+            {
+              id: "sp-d",
+              tiles: "11P | 22P | 33P | 44P | 55P | 66P | 77P",
+              value: 50,
+              concealed: true,
+              note: "Any 1 Suit, Any 7 Consec. Nos.",
+            },
+            {
+              id: "sp-e",
+              tiles: "11B | 357B | 99B | 11C | 357C | 99C",
+              value: 50,
+              concealed: true,
+              note: "Any 2 Suits",
+            },
+            {
+              id: "sp-f",
+              tiles: "F*2 | 2026B | 2026C | 2026P",
               value: 75,
               concealed: true,
-              note: "Three even runs · concealed",
+              note: "Any 3 Suits",
             },
           ],
         },
@@ -363,7 +498,7 @@ window.NMJL_REGISTRY = {
 
     2025: {
       year: 2025,
-      title: "2025 NMJL Card",
+      title: "2025 NMJL Cheatsheet",
       blurb: "Unofficial placeholders — correct against your licensed 2025 card.",
       categories: [
         {
