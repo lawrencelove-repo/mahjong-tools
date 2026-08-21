@@ -1,6 +1,6 @@
 /**
- * Hand Verification — closed 14-tile picker + full score via riichi-score.
- * Loaded as ES module; exposes window.HandVerifier.
+ * Hand Evaluation — closed 14-tile picker + full score via riichi-score.
+ * Loaded as ES module; exposes window.HandEvaluator (and HandVerifier alias).
  */
 import {
   calculate,
@@ -238,10 +238,12 @@ function mount(container, getSettings) {
   };
 
   container.innerHTML = `
-    <h2>Hand Verification</h2>
+    <h2>Build Your Hand</h2>
     <p class="hv-note">Build a closed 14-tile hand (v1). Click palette to add, click a hand tile to remove.
       Click <strong>Set win tile</strong> then a hand tile to mark the winning tile. Uses
       <a href="https://github.com/cwebley/kotenho" target="_blank" rel="noopener">riichi-score</a> (Tenhou-style).</p>
+
+    <div class="hv-palette" id="hv-palette"></div>
 
     <div class="hv-rack-label">Your hand <span class="hv-count">0 / 14</span></div>
     <div class="hv-hand" id="hv-hand"></div>
@@ -288,7 +290,6 @@ function mount(container, getSettings) {
       <label><input type="checkbox" id="hv-houtei" /> Houtei</label>
     </div>
 
-    <div class="hv-palette" id="hv-palette"></div>
     <div class="hv-result" id="hv-result" hidden></div>
   `;
 
@@ -501,12 +502,14 @@ function mount(container, getSettings) {
   };
 }
 
-window.HandVerifier = {
+window.HandEvaluator = {
   mount,
   toScoreTile,
   fromScoreTile,
   evaluate,
   YAKU_EN,
 };
+window.HandVerifier = window.HandEvaluator; // back-compat alias
 
+window.dispatchEvent(new Event("hand-evaluator-ready"));
 window.dispatchEvent(new Event("hand-verifier-ready"));

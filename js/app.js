@@ -100,7 +100,6 @@
     renderTileKey();
     renderScoringRef();
     renderLegend();
-    renderHandVerifier();
     document.body.dataset.tileStyle = settings.tileStyle;
     document.body.dataset.allowPage2 =
       settings.allowPage2 || settings.showScoringRef ? "true" : "false";
@@ -269,38 +268,6 @@
     `;
   }
 
-  function renderHandVerifier() {
-    const root = $("#hand-verifier-root");
-    if (!root) return;
-    if (!settings.showHandVerifier) {
-      root.hidden = true;
-      return;
-    }
-    root.hidden = false;
-    if (!window.HandVerifier) {
-      if (!root.dataset.waiting) {
-        root.dataset.waiting = "1";
-        root.innerHTML = `<h2>Hand Verification</h2><p class="hv-note">Loading scoring engine…</p>`;
-        window.addEventListener(
-          "hand-verifier-ready",
-          () => {
-            delete root.dataset.waiting;
-            renderHandVerifier();
-          },
-          { once: true }
-        );
-      }
-      return;
-    }
-    if (!root.dataset.mounted) {
-      root.replaceChildren();
-      root._hvApi = window.HandVerifier.mount(root, () => settings);
-      root.dataset.mounted = "1";
-    } else {
-      root._hvApi?.remountTiles?.();
-    }
-  }
-
   function renderLegend() {
     const el = $("#tile-legend");
     if (!settings.showExtraTiles && settings.tileStyle !== "text") {
@@ -376,7 +343,6 @@
       ["showScoringRef", "#opt-scoring"],
       ["allowPage2", "#opt-page2"],
       ["showTileKey", "#opt-tile-key"],
-      ["showHandVerifier", "#opt-hand-verifier"],
     ];
     for (const [key, sel] of toggles) {
       const el = $(sel);
@@ -400,6 +366,20 @@
       if (opening) {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
+    });
+
+    let handEvalWin = null;
+    $("#btn-hand-eval").addEventListener("click", () => {
+      const url = new URL("hand-evaluation.html", window.location.href).href;
+      if (handEvalWin && !handEvalWin.closed) {
+        handEvalWin.focus();
+        return;
+      }
+      handEvalWin = window.open(
+        url,
+        "riichiHandEvaluation",
+        "popup=yes,width=980,height=820,scrollbars=yes,resizable=yes"
+      );
     });
 
     $("#btn-print").addEventListener("click", () => window.print());

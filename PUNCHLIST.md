@@ -259,12 +259,13 @@ riichi-yaku-cheatsheet/
 
 ---
 
-## 10. Hand verification (Phase 2 — in progress)
+## 10. Hand evaluation
 
-- [x] Settings toggle: Hand verification (scorer)
+- [x] Toolbar button opens non-modal popup (`hand-evaluation.html`)
+- [x] Renamed to **Hand Evaluation**
 - [x] 14-tile picker UI (palette + rack, win tile, dora/ura indicators)
 - [x] Full score via `riichi-score` (yaku, fu, dora, payments) — **closed hands v1**
-- [ ] Open melds (chi/pon/kan) in verifier
+- [ ] Open melds (chi/pon/kan) in evaluator
 - [ ] Tenhou / Chiihou flags in UI
 - [ ] Deeper result formatting / link matched yaku to cheatsheet entries
 

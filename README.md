@@ -47,8 +47,9 @@ Drop PNGs into `assets/custom/` using these filenames:
 
 Internal hand notation is unchanged (`6B`, `EW`, `RD`, …). Missing custom files fall back to traditional.
 
-## Hand verification
+## Hand evaluation
 
-Enable **Settings → Hand verification (scorer)**. Build a closed 14-tile hand, set win conditions, and evaluate.
+Use the **Hand Evaluation** toolbar button to open a non-modal popup window.
+Build a closed 14-tile hand, set win conditions, and evaluate.
 
 Uses [`riichi-score`](https://www.npmjs.com/package/riichi-score) (CDN ESM) for yaku, fu, dora/ura/aka, and payments. Open melds are not in v1 yet.

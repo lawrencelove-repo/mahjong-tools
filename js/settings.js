@@ -16,7 +16,6 @@ const DEFAULT_SETTINGS = {
   allowPage2: false, // when false, denser 1-page print; overflow still may spill if content huge — print CSS prefers 1 page unless this or scoring ref is on
   rankLabels: "hover", // off | hover | always — Arabic/honor glyphs on image tiles
   showTileKey: false, // full tileset key / legend section
-  showHandVerifier: false, // full hand verification / scorer (closed 14)
 };
 
 function loadSettings() {

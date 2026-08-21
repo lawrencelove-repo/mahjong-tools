@@ -9,7 +9,6 @@
   <script src="js/settings.js" defer></script>
   <script src="js/yaku-data.js" defer></script>
   <script src="js/app.js" defer></script>
-  <script type="module" src="js/hand-verifier.js"></script>
 </head>
 <body>
   <header class="toolbar no-print">
@@ -30,6 +29,7 @@
     </div>
 
     <button type="button" id="btn-settings">Settings</button>
+    <button type="button" id="btn-hand-eval">Hand Evaluation</button>
     <button type="button" id="btn-print">Print / Save PDF</button>
   </header>
 
@@ -49,7 +49,6 @@
     <label><input type="checkbox" id="opt-scoring" /> Scoring quick reference (page 2)</label>
     <label><input type="checkbox" id="opt-page2" /> Allow page 2 when content overflows</label>
     <label><input type="checkbox" id="opt-tile-key" /> Show tile Key (full tileset)</label>
-    <label><input type="checkbox" id="opt-hand-verifier" /> Hand verification (scorer)</label>
     <label>
       Arabic numbers (top-right)
       <select id="rank-labels">
@@ -59,8 +58,6 @@
       </select>
     </label>
   </div>
-
-  <section id="hand-verifier-root" class="aux-panel hand-verifier no-print" hidden></section>
 
   <main id="print-sheet">
     <div class="sheet-header">

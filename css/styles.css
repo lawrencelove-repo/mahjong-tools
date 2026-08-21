@@ -377,13 +377,20 @@ body[data-tile-style="custom"] .tile-rank {
   color: var(--muted);
 }
 
-/* Hand verification */
+.hand-eval-page {
+  background: var(--bg);
+}
+
 .hand-verifier {
-  max-width: 1200px;
-  margin: 0 auto 1.5rem;
   padding: 1rem 1.25rem;
   background: var(--paper);
-  border-bottom: 1px solid var(--line);
+}
+
+.hand-eval-page .hand-verifier {
+  max-width: none;
+  margin: 0;
+  border-bottom: none;
+  min-height: calc(100vh - 3.5rem);
 }
 
 .hand-verifier h2 {
@@ -506,9 +513,9 @@ body[data-tile-style="custom"] .tile-rank {
 }
 
 .hv-palette {
-  margin-top: 0.5rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--line);
+  margin: 0 0 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--line);
 }
 
 .hv-result {
