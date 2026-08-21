@@ -1,0 +1,484 @@
+/**
+ * Main UI: filters, grouping, render, print + PDF download
+ */
+
+(function () {
+  let settings = AppSettings.loadSettings();
+
+  const $ = (sel, el = document) => el.querySelector(sel);
+  const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
+
+  function hanLabel(y) {
+    const c = y.hanClosed;
+    const o = y.hanOpen;
+    if (c === "yakuman") {
+      const dbl =
+        settings.showDoubleYakumanNotes && y.tags?.includes("double-yakuman")
+          ? " (often double)"
+          : "";
+      return `Yakuman${dbl}`;
+    }
+    if (c === "mangan") return "Mangan";
+    if (o == null || o === c) return `${c} han`;
+    return `${c} han (open ${o})`;
+  }
+
+  function displayName(y) {
+    if (settings.language === "jp") return y.nameJp || y.nameEn;
+    if (settings.language === "en-jp") {
+      return y.nameJp ? `${y.nameEn} · ${y.nameJp}` : y.nameEn;
+    }
+    return y.nameEn;
+  }
+
+  function filteredYaku() {
+    return YAKU_DATA.filter((y) => {
+      if (y.tags?.includes("optional") && !settings.showOptional) return false;
+      if (y.tags?.includes("double-yakuman") && y.tags?.includes("optional") && !settings.showOptional)
+        return false;
+      // Double-yakuman *notes* on core entries are handled in hanLabel; optional double variants need showOptional
+      return true;
+    });
+  }
+
+  function groupKey(y) {
+    return settings.groupBy === "category" ? y.category : y.section;
+  }
+
+  function groupTitle(key) {
+    const meta =
+      settings.groupBy === "category" ? CATEGORY_META[key] : SECTION_META[key];
+    if (!meta) return key;
+    if (settings.language === "jp") return meta.titleJp || meta.titleEn;
+    if (settings.language === "en-jp") return `${meta.titleEn} · ${meta.titleJp}`;
+    return meta.titleEn;
+  }
+
+  function sectionOrder() {
+    if (settings.groupBy === "category") {
+      return ["sequence", "triplet", "flush", "terminals", "lucky", "special", "yakuman"];
+    }
+    return ["1-han", "2-han", "3-han", "6-han", "yakuman", "optional"];
+  }
+
+  function render() {
+    const root = $("#yaku-root");
+    root.innerHTML = "";
+    const list = filteredYaku();
+    const order = sectionOrder();
+    const buckets = new Map(order.map((k) => [k, []]));
+
+    for (const y of list) {
+      const k = groupKey(y);
+      if (!buckets.has(k)) buckets.set(k, []);
+      buckets.get(k).push(y);
+    }
+
+    for (const key of [...buckets.keys()]) {
+      const items = buckets.get(key);
+      if (!items.length) continue;
+
+      const section = document.createElement("section");
+      section.className = "yaku-section";
+      section.dataset.group = key;
+
+      const h = document.createElement("h2");
+      h.textContent = groupTitle(key);
+      section.appendChild(h);
+
+      const grid = document.createElement("div");
+      grid.className = "yaku-grid";
+
+      for (const y of items) {
+        grid.appendChild(renderYakuCard(y));
+      }
+      section.appendChild(grid);
+      root.appendChild(section);
+    }
+
+    renderDoraPanel();
+    renderTileKey();
+    renderScoringRef();
+    renderLegend();
+    renderHandVerifier();
+    document.body.dataset.tileStyle = settings.tileStyle;
+    document.body.dataset.allowPage2 =
+      settings.allowPage2 || settings.showScoringRef ? "true" : "false";
+    document.body.dataset.rankLabels = settings.rankLabels;
+    $("#tile-style").value = settings.tileStyle;
+  }
+
+  function renderYakuCard(y) {
+    const card = document.createElement("article");
+    card.className = "yaku-card";
+    card.dataset.id = y.id;
+
+    const head = document.createElement("div");
+    head.className = "yaku-head";
+
+    const name = document.createElement("h3");
+    name.className = "yaku-name";
+    name.textContent = displayName(y);
+
+    const badges = document.createElement("div");
+    badges.className = "yaku-badges";
+    const han = document.createElement("span");
+    han.className = "badge han";
+    han.textContent = hanLabel(y);
+    badges.appendChild(han);
+    if (y.closedOnly) {
+      const c = document.createElement("span");
+      c.className = "badge closed";
+      c.textContent = "Closed";
+      badges.appendChild(c);
+    }
+
+    head.append(name, badges);
+    card.appendChild(head);
+
+    const desc = document.createElement("p");
+    desc.className = "yaku-desc";
+    desc.textContent = y.description;
+    card.appendChild(desc);
+
+    if (y.examples?.length) {
+      for (const ex of y.examples) {
+        const block = document.createElement("div");
+        block.className = "example";
+        if (ex.label) {
+          const lab = document.createElement("span");
+          lab.className = "example-label";
+          lab.textContent = ex.label;
+          block.appendChild(lab);
+        }
+        block.appendChild(
+          Tiles.renderHand(ex.tiles, settings.tileStyle, {
+            rankLabels: settings.rankLabels,
+          })
+        );
+        card.appendChild(block);
+      }
+    }
+
+    return card;
+  }
+
+  function renderDoraPanel() {
+    let el = $("#dora-panel");
+    if (!settings.showDoraPanel) {
+      el?.remove();
+      return;
+    }
+    if (!el) {
+      el = document.createElement("section");
+      el.id = "dora-panel";
+      el.className = "aux-panel";
+      $("#aux-root").appendChild(el);
+    }
+    el.innerHTML = `
+      <h2>Dora</h2>
+      <p>Dora indicators add han but are not yaku. Ura-dora apply after riichi. Aka-dora are red fives (typically one per suit).</p>
+      <div class="hand-demo"></div>
+    `;
+    const demo = el.querySelector(".hand-demo");
+    demo.appendChild(
+      Tiles.renderHand("5Pr 5Br 5Cr", settings.tileStyle, {
+        rankLabels: settings.rankLabels,
+      })
+    );
+  }
+
+  function renderTileKey() {
+    let el = $("#tile-key");
+    if (!settings.showTileKey) {
+      el?.remove();
+      return;
+    }
+    if (!el) {
+      el = document.createElement("section");
+      el.id = "tile-key";
+      el.className = "aux-panel tile-key";
+      $("#aux-root").appendChild(el);
+    }
+
+    const opts = { rankLabels: settings.rankLabels };
+    const style = settings.tileStyle;
+    const styleName =
+      style === "text" ? "Text (NMJL)" : style === "custom" ? "Custom" : "Traditional";
+
+    const rows = [
+      { label: "Bam (souzu)", tiles: "1B 2B 3B 4B 5B 6B 7B 8B 9B" },
+      { label: "Crak (manzu)", tiles: "1C 2C 3C 4C 5C 6C 7C 8C 9C" },
+      { label: "Dot (pinzu)", tiles: "1P 2P 3P 4P 5P 6P 7P 8P 9P" },
+      { label: "Winds", tiles: "EW SW WW NW" },
+      { label: "Dragons", tiles: "WD GD RD" },
+    ];
+    if (settings.showDoraPanel) {
+      rows.push({ label: "Aka (red fives)", tiles: "5Br 5Cr 5Pr" });
+    }
+    rows.push({ label: "Extras", tiles: "F1 F2 F3 F4 | J1 J2" });
+    el.replaceChildren();
+    const h = document.createElement("h2");
+    h.textContent = `Tile Key · ${styleName}`;
+    el.appendChild(h);
+
+    const note = document.createElement("p");
+    note.className = "tile-key-note";
+    note.textContent =
+      style === "text"
+        ? "Colored digits/letters: green = bam, red = crak, black = dot, blue = honors."
+        : "All tiles in the current tileset.";
+    el.appendChild(note);
+
+    for (const row of rows) {
+      const line = document.createElement("div");
+      line.className = "tile-key-row";
+      const lab = document.createElement("span");
+      lab.className = "tile-key-label";
+      lab.textContent = row.label;
+      line.append(lab, Tiles.renderHand(row.tiles, style, opts));
+      el.appendChild(line);
+    }
+  }
+
+  function renderScoringRef() {
+    let el = $("#scoring-ref");
+    if (!settings.showScoringRef) {
+      el?.remove();
+      return;
+    }
+    if (!el) {
+      el = document.createElement("section");
+      el.id = "scoring-ref";
+      el.className = "aux-panel scoring-ref print-page-break";
+      $("#aux-root").appendChild(el);
+    }
+    const rows = SCORING_REF.limits
+      .map(
+        (r) =>
+          `<tr><td>${r.name}</td><td>${r.han}</td><td>${r.dealerRon}</td><td>${r.nonDealerRon}</td><td>${r.dealerTsumo}</td></tr>`
+      )
+      .join("");
+    el.innerHTML = `
+      <h2>${SCORING_REF.title}</h2>
+      <table class="score-table">
+        <thead><tr><th>Limit</th><th>Requirement</th><th>Dealer ron</th><th>Non-dealer ron</th><th>Dealer tsumo</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <ul class="score-notes">${SCORING_REF.notes.map((n) => `<li>${n}</li>`).join("")}</ul>
+    `;
+  }
+
+  function renderHandVerifier() {
+    const root = $("#hand-verifier-root");
+    if (!root) return;
+    if (!settings.showHandVerifier) {
+      root.hidden = true;
+      return;
+    }
+    root.hidden = false;
+    if (!window.HandVerifier) {
+      if (!root.dataset.waiting) {
+        root.dataset.waiting = "1";
+        root.innerHTML = `<h2>Hand Verification</h2><p class="hv-note">Loading scoring engine…</p>`;
+        window.addEventListener(
+          "hand-verifier-ready",
+          () => {
+            delete root.dataset.waiting;
+            renderHandVerifier();
+          },
+          { once: true }
+        );
+      }
+      return;
+    }
+    if (!root.dataset.mounted) {
+      root.replaceChildren();
+      root._hvApi = window.HandVerifier.mount(root, () => settings);
+      root.dataset.mounted = "1";
+    } else {
+      root._hvApi?.remountTiles?.();
+    }
+  }
+
+  function renderLegend() {
+    const el = $("#tile-legend");
+    if (!settings.showExtraTiles && settings.tileStyle !== "text") {
+      el.hidden = true;
+      return;
+    }
+    el.hidden = false;
+    const parts = [];
+    if (settings.tileStyle === "text") {
+      parts.push(
+        `<span class="tile tile-text suit-green">6</span> bam`,
+        `<span class="tile tile-text suit-red">6</span> crak`,
+        `<span class="tile tile-text suit-black">6</span> dot`,
+        `<span class="tile tile-text suit-blue">E</span> honors`
+      );
+    }
+    if (settings.showExtraTiles) {
+      const hand = Tiles.renderHand("F1 F2 F3 F4 | J1 J2", settings.tileStyle, {
+        rankLabels: settings.rankLabels,
+      });
+      el.replaceChildren();
+      const label = document.createElement("span");
+      label.textContent = "Extras: ";
+      el.append(label, hand);
+      if (settings.tileStyle === "text") {
+        const colors = document.createElement("span");
+        colors.className = "legend-colors";
+        colors.innerHTML = " · " + parts.join(" · ");
+        el.appendChild(colors);
+      }
+      return;
+    }
+    el.innerHTML = parts.join(" · ");
+  }
+
+  function bindControls() {
+    $("#tile-style").addEventListener("change", (e) => {
+      settings.tileStyle = e.target.value;
+      persist();
+      render();
+    });
+
+    $$("input[name=groupBy]").forEach((r) => {
+      r.checked = r.value === settings.groupBy;
+      r.addEventListener("change", () => {
+        if (r.checked) {
+          settings.groupBy = r.value;
+          persist();
+          render();
+        }
+      });
+    });
+
+    $("#language").value = settings.language;
+    $("#language").addEventListener("change", (e) => {
+      settings.language = e.target.value;
+      persist();
+      render();
+    });
+
+    $("#rank-labels").value = settings.rankLabels || "hover";
+    $("#rank-labels").addEventListener("change", (e) => {
+      settings.rankLabels = e.target.value;
+      persist();
+      render();
+    });
+
+    const toggles = [
+      ["showOptional", "#opt-optional"],
+      ["showDoubleYakumanNotes", "#opt-double"],
+      ["showDoraPanel", "#opt-dora"],
+      ["showExtraTiles", "#opt-extras"],
+      ["showScoringRef", "#opt-scoring"],
+      ["allowPage2", "#opt-page2"],
+      ["showTileKey", "#opt-tile-key"],
+      ["showHandVerifier", "#opt-hand-verifier"],
+    ];
+    for (const [key, sel] of toggles) {
+      const el = $(sel);
+      el.checked = !!settings[key];
+      el.addEventListener("change", () => {
+        settings[key] = el.checked;
+        // Scoring ref implies page 2 content
+        if (key === "showScoringRef" && el.checked) {
+          settings.allowPage2 = true;
+          $("#opt-page2").checked = true;
+        }
+        persist();
+        render();
+      });
+    }
+
+    $("#btn-settings").addEventListener("click", () => {
+      const panel = $("#settings-panel");
+      const opening = panel.hidden;
+      panel.hidden = !opening;
+      if (opening) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    });
+
+    $("#btn-print").addEventListener("click", () => window.print());
+    $("#btn-pdf").addEventListener("click", downloadPdf);
+  }
+
+  function persist() {
+    AppSettings.saveSettings(settings);
+  }
+
+  async function downloadPdf() {
+    const btn = $("#btn-pdf");
+    btn.disabled = true;
+    btn.textContent = "Preparing…";
+    try {
+      const sheet = $("#print-sheet");
+      const canvas = await html2canvas(sheet, {
+        scale: 2,
+        backgroundColor: "#ffffff",
+        useCORS: true,
+        logging: false,
+      });
+      const img = canvas.toDataURL("image/png");
+      // Landscape letter: 11 x 8.5 in
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: "landscape", unit: "in", format: "letter" });
+      const pageW = 11;
+      const pageH = 8.5;
+      const margin = 0.25;
+      const usableW = pageW - margin * 2;
+      const usableH = pageH - margin * 2;
+
+      const imgW = canvas.width;
+      const imgH = canvas.height;
+      const ratio = Math.min(usableW / (imgW / 96), usableH / (imgH / 96));
+      // html2canvas pixels ≈ CSS px; treat 96dpi
+      let drawW = (imgW / 96) * ratio;
+      let drawH = (imgH / 96) * ratio;
+
+      // If allow page 2 / scoring, may need multi-page via height split
+      if (!settings.allowPage2 && !settings.showScoringRef) {
+        pdf.addImage(img, "PNG", margin, margin, drawW, Math.min(drawH, usableH));
+      } else {
+        // Scale to width; paginate vertically
+        const scale = usableW / (imgW / 96);
+        drawW = usableW;
+        drawH = (imgH / 96) * scale;
+        const pageContentH = usableH;
+        let yOffset = 0;
+        let page = 0;
+        while (yOffset < drawH - 0.01) {
+          if (page > 0) pdf.addPage();
+          const srcY = (yOffset / drawH) * imgH;
+          const srcH = Math.min(imgH - srcY, (pageContentH / drawH) * imgH);
+          const slice = document.createElement("canvas");
+          slice.width = imgW;
+          slice.height = Math.max(1, Math.floor(srcH));
+          const ctx = slice.getContext("2d");
+          ctx.drawImage(canvas, 0, srcY, imgW, srcH, 0, 0, imgW, srcH);
+          const sliceData = slice.toDataURL("image/png");
+          const sliceH = (slice.height / 96) * scale;
+          pdf.addImage(sliceData, "PNG", margin, margin, drawW, sliceH);
+          yOffset += pageContentH;
+          page++;
+          if (page > 5) break;
+        }
+      }
+      pdf.save("riichi-yaku-cheatsheet.pdf");
+    } catch (err) {
+      console.error(err);
+      alert("PDF export failed. Try Print → Save as PDF instead.\n" + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Download PDF";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    bindControls();
+    render();
+  });
+})();

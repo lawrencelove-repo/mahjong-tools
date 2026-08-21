@@ -1,0 +1,16 @@
+﻿# OS junk
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*~
+
+# Dependencies / build
+node_modules/
+dist/
+.cache/
