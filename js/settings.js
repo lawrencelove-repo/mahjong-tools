@@ -16,6 +16,7 @@ const DEFAULT_SETTINGS = {
   allowPage2: false, // when false, denser 1-page print; overflow still may spill if content huge — print CSS prefers 1 page unless this or scoring ref is on
   rankLabels: "hover", // off | hover | always — Arabic/honor glyphs on image tiles
   showTileKey: false, // full tileset key / legend section
+  nmjlYear: 2026, // American Mahjong card year (nmjl.html)
 };
 
 function loadSettings() {

@@ -91,11 +91,18 @@ body {
   height: 2rem;
   padding: 0;
   color: var(--ink);
+  text-decoration: none;
 }
 
 .toolbar .icon-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+.toolbar a.icon-btn {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper);
 }
 
 .toolbar .icon-btn svg {
@@ -249,6 +256,53 @@ main#print-sheet {
 .badge.closed {
   background: #f3e8e8;
   color: #8a3030;
+}
+
+.badge.nmjl-value {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.badge.verify {
+  background: #fff3cd;
+  color: #7a5b00;
+}
+
+.nmjl-disclaimer {
+  margin: 0 0 0.85rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.nmjl-hand .yaku-head {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+}
+
+.nmjl-hand .yaku-desc {
+  margin: 0;
+}
+
+.nmjl-grid {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.legend-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-right: 0.35rem;
+}
+
+.legend-hint {
+  display: block;
+  width: 100%;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.35rem;
 }
 
 .yaku-desc {
@@ -614,6 +668,10 @@ body[data-tile-style="custom"] .tile-rank {
   .yaku-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 0.35rem 0.6rem;
+  }
+
+  .nmjl-page .nmjl-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .yaku-section {

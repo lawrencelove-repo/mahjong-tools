@@ -47,6 +47,14 @@ Drop PNGs into `assets/custom/` using these filenames:
 
 Internal hand notation is unchanged (`6B`, `EW`, `RD`, …). Missing custom files fall back to traditional.
 
+## American Mahjong (NMJL)
+
+Open `nmjl.html` for an unofficial NMJL-style card cheatsheet (2026 default, 2025 available).
+
+- Same tile styles and Print / Save PDF as the Riichi sheet
+- Switch years in the toolbar; add future cards in `js/nmjl-data.js` (`NMJL_REGISTRY`)
+- Hands are **placeholders** (copyright) — correct against your licensed card; lines marked **verify** are intentionally off
+
 ## Hand evaluation
 
 Use the **Hand Evaluation** toolbar button to open a non-modal popup window.

@@ -81,6 +81,11 @@ function normalizeId(t) {
   const u = t.trim();
   const m = u.match(/^([1-9])([BCP])(r)?$/i);
   if (m) return `${m[1]}${m[2].toUpperCase()}${m[3] ? "r" : ""}`;
+  // NMJL soap (white dragon as 0), optionally suit-tinted for card color: 0 / 0P / 0B / 0C
+  if (/^0[BCP]?$/i.test(u)) {
+    const suit = u.length > 1 ? u[1].toUpperCase() : "";
+    return suit ? `0${suit}` : "0";
+  }
   const honors = ["EW", "SW", "WW", "NW", "WD", "GD", "RD", "F", "J", "X", "J1", "J2"];
   const up = u.toUpperCase();
   if (honors.includes(up)) return up;
@@ -103,6 +108,26 @@ function parseHand(notation) {
 }
 
 function tileMeta(id) {
+  // Soap: white dragon shown as 0; optional suit letter tints NMJL text color
+  if (/^0[BCP]?$/.test(id)) {
+    const suitLetter = id[1];
+    const suit = suitLetter ? SUIT_LETTER[suitLetter] : "honor";
+    const color = suitLetter ? SUIT_COLOR[suit] : "blue";
+    return {
+      id,
+      suit,
+      rank: "0",
+      aka: false,
+      color,
+      text: "0",
+      label: suitLetter
+        ? `Soap (0) · ${{ bam: "Bam", crak: "Crak", dot: "Dot" }[suit]} tint`
+        : "Soap (White Dragon as 0)",
+      category: "honor",
+      soap: true,
+      imageId: "WD",
+    };
+  }
   if (/^[1-9][BCP]r?$/.test(id)) {
     const suit = SUIT_LETTER[id[1]];
     const rank = id[0];
@@ -168,14 +193,17 @@ function tileMeta(id) {
 }
 
 function traditionalSrc(id) {
-  const base = TRADITIONAL_FILES[id] || "Back";
+  const meta = /^0[BCP]?$/.test(id) ? { imageId: "WD" } : null;
+  const key = meta?.imageId || id;
+  const base = TRADITIONAL_FILES[key] || "Back";
   return `assets/traditional/${base}.png`;
 }
 
 /** Custom pack: new IDs first; aka falls back to plain 5 if no *5r file. */
 function customCandidates(id) {
   const names = [];
-  const primary = CUSTOM_FILES[id];
+  const imageId = /^0[BCP]?$/.test(id) ? "WD" : id;
+  const primary = CUSTOM_FILES[imageId];
   if (primary) names.push(primary);
 
   // Aka without a dedicated red file → plain suit 5
