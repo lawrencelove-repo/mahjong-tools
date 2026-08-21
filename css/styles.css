@@ -1,4 +1,102 @@
-/* Riichi Yaku Cheatsheet */
+.landing-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(44, 95, 74, 0.12), transparent),
+    var(--bg);
+}
+
+.landing {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 4rem;
+}
+
+.landing-hero {
+  margin-bottom: 2rem;
+}
+
+.landing-kicker {
+  margin: 0 0 0.35rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.landing-hero h1 {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.landing-lead {
+  margin: 0;
+  max-width: 36rem;
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.landing-nav {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.landing-card {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.landing-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.landing-card-icon {
+  flex-shrink: 0;
+  color: var(--accent);
+  margin-top: 0.1rem;
+}
+
+.landing-card-title {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 0.2rem;
+}
+
+.landing-card-desc {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.landing-foot {
+  margin: 2rem 0 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+@media (min-width: 640px) {
+  .landing-nav {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Shared cheatsheet theme */
 
 :root {
   --ink: #1a1a1a;

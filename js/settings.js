@@ -17,6 +17,9 @@ const DEFAULT_SETTINGS = {
   rankLabels: "hover", // off | hover | always — Arabic/honor glyphs on image tiles
   showTileKey: false, // full tileset key / legend section
   nmjlYear: 2026, // American Mahjong card year (nmjl.html)
+  hkGroupBy: "faan", // faan | category — Hong Kong page
+  hkSeasons: "exclude", // include | exclude | blanks — flowers/seasons display
+  filipinoGroupBy: "points", // points | category — Filipino page
 };
 
 function loadSettings() {

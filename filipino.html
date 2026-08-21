@@ -3,21 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>American Mahjong · NMJL Cheatsheet</title>
+  <title>Filipino Mahjong · Cheatsheet</title>
   <link rel="stylesheet" href="css/styles.css" />
   <script src="js/tiles.js" defer></script>
   <script src="js/settings.js" defer></script>
-  <script src="js/nmjl-data.js" defer></script>
-  <script src="js/nmjl-app.js" defer></script>
+  <script src="js/filipino-data.js" defer></script>
+  <script src="js/filipino-app.js" defer></script>
 </head>
-<body class="nmjl-page">
+<body class="filipino-page">
   <header class="toolbar no-print">
-    <h1>American Mahjong</h1>
-
-    <label>
-      Card year
-      <select id="nmjl-year" aria-label="NMJL card year"></select>
-    </label>
+    <h1>Filipino</h1>
 
     <label>
       Tiles
@@ -28,6 +23,11 @@
       </select>
     </label>
 
+    <div class="group-radios" role="radiogroup" aria-label="Group by">
+      <label><input type="radio" name="groupBy" value="points" checked /> By points</label>
+      <label><input type="radio" name="groupBy" value="category" /> By type</label>
+    </div>
+
     <div class="toolbar-actions">
       <a href="index.html" class="icon-btn" aria-label="Home" title="Home">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -35,19 +35,6 @@
           <path d="M5 10v10h14V10"/>
         </svg>
       </a>
-      <a href="riichi.html" class="icon-btn" aria-label="Riichi yaku cheatsheet" title="Riichi yaku">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="3" y="3" width="7" height="7" rx="1"/>
-          <rect x="14" y="3" width="7" height="7" rx="1"/>
-          <rect x="3" y="14" width="7" height="7" rx="1"/>
-          <rect x="14" y="14" width="7" height="7" rx="1"/>
-        </svg>
-      </a>
-      <button type="button" id="btn-hand-builder" class="icon-btn" aria-label="Hand builder" title="Hand builder">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-        </svg>
-      </button>
       <button type="button" id="btn-settings" class="icon-btn" aria-label="Settings" title="Settings" aria-expanded="false" aria-controls="settings-panel">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="12" cy="12" r="3"/>
@@ -66,9 +53,16 @@
 
   <div id="settings-panel" class="no-print" hidden>
     <div class="settings-options">
-      <label><input type="checkbox" id="opt-extras" /> Extra tiles legend (flower, joker, soap)</label>
+      <label>
+        Seasons / flowers
+        <select id="hk-seasons">
+          <option value="exclude">Exclude seasons &amp; flowers</option>
+          <option value="include">Include seasons</option>
+          <option value="blanks">Use blanks as seasons</option>
+        </select>
+      </label>
+      <label><input type="checkbox" id="opt-extras" /> Extra tiles legend</label>
       <label><input type="checkbox" id="opt-page2" /> Allow page 2 when content overflows</label>
-      <label><input type="checkbox" id="opt-tile-key" /> Show tile Key (full tileset)</label>
       <label>
         Arabic numbers (top-right)
         <select id="rank-labels">
@@ -87,10 +81,9 @@
 
   <main id="print-sheet">
     <div class="sheet-header">
-      <h1 id="sheet-title">American Mahjong</h1>
-      <span class="subtitle" id="sheet-subtitle">Cheat sheet · US Letter landscape</span>
+      <h1>Filipino Mahjong</h1>
+      <span class="subtitle">Cheat sheet · 17-tile hands · US Letter landscape</span>
     </div>
-
     <div class="nmjl-callout no-print">
       <svg class="nmjl-callout-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <circle cx="12" cy="12" r="10"/>
@@ -98,23 +91,17 @@
         <path d="M12 8h.01"/>
       </svg>
       <div class="nmjl-callout-body">
-        <p class="nmjl-callout-title">Unofficial study aid</p>
+        <p class="nmjl-callout-title">17-tile hands</p>
         <p class="nmjl-callout-text">
-          Not affiliated with or endorsed by the National Mah Jongg League.
-          Patterns here are stand-ins — lines marked
-          <span class="badge verify">verify</span>
-          need a check against your licensed card.
+          Typical Filipino table: five melds + pair. Winds/dragons are often bonus “flowers.” Confirm joker and scoring house rules.
         </p>
       </div>
     </div>
-
     <div id="tile-legend" hidden></div>
-    <div id="nmjl-root"></div>
-    <div id="aux-root"></div>
-
+    <div id="filipino-root"></div>
     <p class="credit">
       Traditional tile art: FluffyStuff/riichi-mahjong-tiles (CC0).
-      Card layout inspired by NMJL category structure. Not a substitute for a licensed NMJL card.
+      Patterns compiled from common public Filipino mahjong references. Confirm joker and flower house rules.
     </p>
   </main>
 </body>

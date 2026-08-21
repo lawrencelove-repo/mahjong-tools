@@ -1,10 +1,18 @@
-# Riichi Mahjong Yaku Cheatsheet
+# Mahjong Cheatsheets
 
-Presentation-oriented HTML guide of Riichi yaku with three tile styles and landscape Letter PDF export.
+Presentation-oriented HTML guides for several mahjong rulesets, with shared tile styles and landscape Letter PDF export.
 
 ## Open locally
 
-Open `index.html` in a browser (or serve the folder statically).  
+Open `index.html` for the landing page, then pick a ruleset — or open any sheet directly:
+
+| Page | Ruleset |
+| --- | --- |
+| `riichi.html` | Japanese Riichi yaku |
+| `nmjl.html` | American NMJL-style card |
+| `hk.html` | Hong Kong / Cantonese faan |
+| `filipino.html` | Filipino (17-tile) scoring |
+
 **Print / Save PDF** uses the browser print dialog (Save as PDF).
 
 ## Tile styles
@@ -23,6 +31,7 @@ EW SW WW NW      winds
 WD GD RD         white / green / red dragons
 5Pr 5Br 5Cr      red fives (aka)
 F J X            flower / joker / blank
+F1–F4 / F5–F8    flowers / seasons (HK & Filipino)
 |                meld separator
 123P             sugar for 1P 2P 3P
 1P*3             sugar for 1P 1P 1P
@@ -56,9 +65,17 @@ Open `nmjl.html` for an unofficial NMJL-style card cheatsheet (2026 default, 202
 - Hands are **placeholders** (copyright) — correct against your licensed card; lines marked **verify** are intentionally off
 - **Hand builder** (wrench icon): pick 14 tiles and copy a paste-ready object for `js/nmjl-data.js`
 
+## Hong Kong
+
+Open `hk.html`. Group by faan or type. Settings → **Seasons / flowers**: include, exclude (default), or render seasons as blanks.
+
+## Filipino
+
+Open `filipino.html`. Group by points or type. Same seasons/flowers setting as Hong Kong. Examples use 17-tile (five meld + pair) hands.
+
 ## Hand evaluation
 
-Use the **Hand Evaluation** toolbar button to open a non-modal popup window.
+Use the **Hand Evaluation** toolbar button on the Riichi sheet to open a non-modal popup window.
 Build a closed 14-tile hand, set win conditions, and evaluate.
 
 Uses [`riichi-score`](https://www.npmjs.com/package/riichi-score) (CDN ESM) for yaku, fu, dora/ura/aka, and payments. Open melds are not in v1 yet.

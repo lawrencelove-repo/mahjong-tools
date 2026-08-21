@@ -3,110 +3,101 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Riichi Mahjong Yaku Cheatsheet</title>
+  <title>Mahjong Cheatsheets</title>
   <link rel="stylesheet" href="css/styles.css" />
-  <script src="js/tiles.js" defer></script>
-  <script src="js/settings.js" defer></script>
-  <script src="js/yaku-data.js" defer></script>
-  <script src="js/app.js" defer></script>
 </head>
-<body>
-  <header class="toolbar no-print">
-    <h1>Riichi Yaku</h1>
+<body class="landing-page">
+  <main class="landing">
+    <header class="landing-hero">
+      <p class="landing-kicker">Tile cheatsheets</p>
+      <h1>Mahjong</h1>
+      <p class="landing-lead">
+        Printable study sheets for four common rulesets — same tile styles, shared settings, US Letter landscape PDF.
+      </p>
+    </header>
 
-    <label>
-      Tiles
-      <select id="tile-style" aria-label="Tile style">
-        <option value="traditional">Traditional</option>
-        <option value="custom">Custom</option>
-        <option value="text">Text (NMJL)</option>
-      </select>
-    </label>
-
-    <div class="group-radios" role="radiogroup" aria-label="Group by">
-      <label><input type="radio" name="groupBy" value="han" checked /> By han</label>
-      <label><input type="radio" name="groupBy" value="category" /> By category</label>
-    </div>
-
-    <div class="toolbar-actions">
-      <a href="nmjl.html" class="icon-btn" aria-label="American Mahjong (NMJL)" title="American Mahjong (NMJL)">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M4 7h16"/>
-          <path d="M4 12h16"/>
-          <path d="M4 17h16"/>
-          <circle cx="8" cy="7" r="1.2" fill="currentColor" stroke="none"/>
-          <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>
-          <circle cx="16" cy="17" r="1.2" fill="currentColor" stroke="none"/>
-        </svg>
+    <nav class="landing-nav" aria-label="Rulesets">
+      <a class="landing-card" href="riichi.html">
+        <span class="landing-card-icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </span>
+        <span class="landing-card-body">
+          <span class="landing-card-title">Riichi</span>
+          <span class="landing-card-desc">Japanese yaku by han or category, with hand evaluation.</span>
+        </span>
       </a>
-      <button type="button" id="btn-settings" class="icon-btn" aria-label="Settings" title="Settings" aria-expanded="false" aria-controls="settings-panel">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-        </svg>
-      </button>
-      <button type="button" id="btn-hand-eval" class="icon-btn" aria-label="Hand Evaluation" title="Hand Evaluation">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M9 11l3 3L22 4"/>
-          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-        </svg>
-      </button>
-      <button type="button" id="btn-print" class="icon-btn" aria-label="Print / Save PDF" title="Print / Save PDF">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="6 9 6 2 18 2 18 9"/>
-          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-          <rect x="6" y="14" width="12" height="8"/>
-        </svg>
-      </button>
-    </div>
-  </header>
 
-  <div id="settings-panel" class="no-print" hidden>
-    <div class="settings-options">
-      <label>
-        Language
-        <select id="language">
-          <option value="en">English</option>
-          <option value="en-jp">English + Japanese</option>
-          <option value="jp">Japanese</option>
-        </select>
-      </label>
-      <label><input type="checkbox" id="opt-optional" /> Show optional / local yaku</label>
-      <label><input type="checkbox" id="opt-double" /> Double-yakuman notes</label>
-      <label><input type="checkbox" id="opt-dora" /> Dora / aka panel</label>
-      <label><input type="checkbox" id="opt-extras" /> Extra tiles legend (flower, joker, blank, aka)</label>
-      <label><input type="checkbox" id="opt-scoring" /> Scoring quick reference (page 2)</label>
-      <label><input type="checkbox" id="opt-page2" /> Allow page 2 when content overflows</label>
-      <label><input type="checkbox" id="opt-tile-key" /> Show tile Key (full tileset)</label>
-      <label>
-        Arabic numbers (top-right)
-        <select id="rank-labels">
-          <option value="hover">On hover</option>
-          <option value="always">Always show</option>
-          <option value="off">Off</option>
-        </select>
-      </label>
-    </div>
-    <button type="button" id="btn-settings-collapse" class="settings-collapse" aria-label="Close settings" title="Close settings">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <polyline points="18 15 12 9 6 15"/>
-      </svg>
-    </button>
-  </div>
+      <a class="landing-card" href="nmjl.html">
+        <span class="landing-card-icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 7h16"/>
+            <path d="M4 12h16"/>
+            <path d="M4 17h16"/>
+            <circle cx="8" cy="7" r="1.2" fill="currentColor" stroke="none"/>
+            <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/>
+            <circle cx="16" cy="17" r="1.2" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <span class="landing-card-body">
+          <span class="landing-card-title">American (NMJL)</span>
+          <span class="landing-card-desc">Card-year hands with builder — 2025 / 2026 ready.</span>
+        </span>
+      </a>
 
-  <main id="print-sheet">
-    <div class="sheet-header">
-      <h1>Riichi Mahjong · Yaku</h1>
-      <span class="subtitle">Cheat sheet · US Letter landscape</span>
-    </div>
+      <a class="landing-card" href="hk.html">
+        <span class="landing-card-icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v18"/>
+            <path d="M5 8h14"/>
+            <path d="M7 8c0 4 2.5 7 5 9"/>
+            <path d="M17 8c0 4-2.5 7-5 9"/>
+          </svg>
+        </span>
+        <span class="landing-card-body">
+          <span class="landing-card-title">Hong Kong</span>
+          <span class="landing-card-desc">Cantonese faan patterns — group by faan or type.</span>
+        </span>
+      </a>
 
-    <div id="tile-legend" hidden></div>
-    <div id="yaku-root"></div>
-    <div id="aux-root"></div>
+      <a class="landing-card" href="filipino.html">
+        <span class="landing-card-icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
+            <!-- Philippine sun: disk + 8 major rays + 8 minor rays -->
+            <g fill="currentColor">
+              <circle cx="12" cy="12" r="3.35"/>
+              <path d="M12 1.4l1.15 5.1h-2.3z"/>
+              <path d="M12 1.4l1.15 5.1h-2.3z" transform="rotate(45 12 12)"/>
+              <path d="M12 1.4l1.15 5.1h-2.3z" transform="rotate(90 12 12)"/>
+              <path d="M12 1.4l1.15 5.1h-2.3z" transform="rotate(135 12 12)"/>
+              <path d="M12 1.4l1.15 5.1h-2.3z" transform="rotate(180 12 12)"/>
+              <path d="M12 1.4l1.15 5.1h-2.3z" transform="rotate(225 12 12)"/>
+              <path d="M12 1.4l1.15 5.1h-2.3z" transform="rotate(270 12 12)"/>
+              <path d="M12 1.4l1.15 5.1h-2.3z" transform="rotate(315 12 12)"/>
+              <path d="M12 5.15l0.55 2.05h-1.1z" transform="rotate(22.5 12 12)"/>
+              <path d="M12 5.15l0.55 2.05h-1.1z" transform="rotate(67.5 12 12)"/>
+              <path d="M12 5.15l0.55 2.05h-1.1z" transform="rotate(112.5 12 12)"/>
+              <path d="M12 5.15l0.55 2.05h-1.1z" transform="rotate(157.5 12 12)"/>
+              <path d="M12 5.15l0.55 2.05h-1.1z" transform="rotate(202.5 12 12)"/>
+              <path d="M12 5.15l0.55 2.05h-1.1z" transform="rotate(247.5 12 12)"/>
+              <path d="M12 5.15l0.55 2.05h-1.1z" transform="rotate(292.5 12 12)"/>
+              <path d="M12 5.15l0.55 2.05h-1.1z" transform="rotate(337.5 12 12)"/>
+            </g>
+          </svg>
+        </span>
+        <span class="landing-card-body">
+          <span class="landing-card-title">Filipino</span>
+          <span class="landing-card-desc">Seventeen-tile hands and common point bonuses.</span>
+        </span>
+      </a>
+    </nav>
 
-    <p class="credit">
-      Traditional tile art: FluffyStuff/riichi-mahjong-tiles (CC0).
-      Yaku list compiled from common public Riichi references. Not a substitute for your club’s rulesheet.
+    <p class="landing-foot">
+      Traditional tile art: FluffyStuff/riichi-mahjong-tiles (CC0). Study aids only — not official rulebooks.
     </p>
   </main>
 </body>
