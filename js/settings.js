@@ -1,12 +1,14 @@
 /**
  * App settings — persisted in a cookie (with localStorage migration).
- * tileStyle also has a dedicated cookie so all pages share one tileset choice.
+ * tileStyle and rankLabels also have dedicated cookies shared across all pages.
  */
 
 const SETTINGS_KEY = "riichi-cheatsheet-settings";
 const TILE_STYLE_COOKIE = "riichi-cheatsheet-tile-style";
+const RANK_LABELS_COOKIE = "riichi-cheatsheet-rank-labels";
 const SETTINGS_COOKIE_MAX_AGE = 60 * 60 * 24 * 400; // ~13 months
 const VALID_TILE_STYLES = ["traditional", "custom", "text"];
+const VALID_RANK_LABELS = ["off", "hover", "always"];
 
 const DEFAULT_SETTINGS = {
   tileStyle: "traditional", // traditional | custom | text
@@ -52,6 +54,10 @@ function normalizeTileStyle(value) {
   return VALID_TILE_STYLES.includes(value) ? value : DEFAULT_SETTINGS.tileStyle;
 }
 
+function normalizeRankLabels(value) {
+  return VALID_RANK_LABELS.includes(value) ? value : DEFAULT_SETTINGS.rankLabels;
+}
+
 function readStorageSettings() {
   try {
     return parseSettingsJson(localStorage.getItem(SETTINGS_KEY));
@@ -66,31 +72,37 @@ function pickNewerSettings(a, b) {
   return (Number(b.updatedAt) || 0) >= (Number(a.updatedAt) || 0) ? b : a;
 }
 
+function applyDedicatedCookies(settings) {
+  let next = {
+    ...settings,
+    tileStyle: normalizeTileStyle(settings.tileStyle),
+    rankLabels: normalizeRankLabels(settings.rankLabels),
+  };
+  const tileCookie = readCookie(TILE_STYLE_COOKIE);
+  if (tileCookie) next.tileStyle = normalizeTileStyle(tileCookie);
+  const rankCookie = readCookie(RANK_LABELS_COOKIE);
+  if (rankCookie) next.rankLabels = normalizeRankLabels(rankCookie);
+  return next;
+}
+
 function loadSettings() {
   const fromCookie = parseSettingsJson(readCookie(SETTINGS_KEY));
   const fromStorage = readStorageSettings();
-  let settings = pickNewerSettings(fromCookie, fromStorage) || { ...DEFAULT_SETTINGS };
-
-  // Dedicated tile-style cookie wins (shared across every page on this site).
-  const tileCookie = readCookie(TILE_STYLE_COOKIE);
-  if (tileCookie) {
-    settings = { ...settings, tileStyle: normalizeTileStyle(tileCookie) };
-  } else {
-    settings = { ...settings, tileStyle: normalizeTileStyle(settings.tileStyle) };
-  }
-
-  return settings;
+  const settings = pickNewerSettings(fromCookie, fromStorage) || { ...DEFAULT_SETTINGS };
+  return applyDedicatedCookies(settings);
 }
 
 function saveSettings(settings) {
   const next = {
     ...settings,
     tileStyle: normalizeTileStyle(settings.tileStyle),
+    rankLabels: normalizeRankLabels(settings.rankLabels),
     updatedAt: Date.now(),
   };
   const payload = JSON.stringify(next);
   writeCookie(SETTINGS_KEY, payload);
   writeCookie(TILE_STYLE_COOKIE, next.tileStyle);
+  writeCookie(RANK_LABELS_COOKIE, next.rankLabels);
   try {
     localStorage.setItem(SETTINGS_KEY, payload);
   } catch {
@@ -112,27 +124,43 @@ function applyTileStyle(select = document.getElementById("tile-style"), settings
 }
 
 /**
- * Wire a tileset <select> to the shared cookie/localStorage value.
- * @param {HTMLSelectElement|null} select
- * @param {(style: string, settings: object) => void} [onChange]
- * @returns {() => void} dispose
+ * Apply persisted Arabic-numbers mode to <select id="rank-labels"> and body dataset.
+ * @param {HTMLSelectElement|null} [select]
+ * @param {typeof DEFAULT_SETTINGS} [settings]
  */
-function bindTileStyleSelect(select, onChange) {
+function applyRankLabels(select = document.getElementById("rank-labels"), settings = loadSettings()) {
+  const mode = normalizeRankLabels(settings.rankLabels);
+  if (document.body) document.body.dataset.rankLabels = mode;
+  if (select && select.value !== mode) select.value = mode;
+  return mode;
+}
+
+/**
+ * Shared binder for global selects persisted via dedicated cookies.
+ * @param {HTMLSelectElement|null} select
+ * @param {{
+ *   readValue: (settings: object) => string,
+ *   writeValue: (settings: object, value: string) => object,
+ *   apply: (select: HTMLSelectElement, settings: object) => string,
+ *   onChange?: (value: string, settings: object) => void,
+ * }} opts
+ */
+function bindGlobalSelect(select, opts) {
   if (!select) return () => {};
 
   const syncFromStore = () => {
     const settings = loadSettings();
-    applyTileStyle(select, settings);
+    opts.apply(select, settings);
     return settings;
   };
 
   syncFromStore();
 
   const onSelect = () => {
-    const settings = { ...loadSettings(), tileStyle: normalizeTileStyle(select.value) };
+    const settings = opts.writeValue(loadSettings(), select.value);
     const saved = saveSettings(settings);
-    applyTileStyle(select, saved);
-    onChange?.(saved.tileStyle, saved);
+    const value = opts.apply(select, saved);
+    opts.onChange?.(value, saved);
   };
   select.addEventListener("change", onSelect);
 
@@ -140,14 +168,16 @@ function bindTileStyleSelect(select, onChange) {
     if (e.key && e.key !== SETTINGS_KEY) return;
     const prev = select.value;
     const settings = syncFromStore();
-    if (settings.tileStyle !== prev) onChange?.(settings.tileStyle, settings);
+    const next = opts.readValue(settings);
+    if (next !== prev) opts.onChange?.(next, settings);
   };
   window.addEventListener("storage", onStorage);
 
   const onPageShow = () => {
     const prev = select.value;
     const settings = syncFromStore();
-    if (settings.tileStyle !== prev) onChange?.(settings.tileStyle, settings);
+    const next = opts.readValue(settings);
+    if (next !== prev) opts.onChange?.(next, settings);
   };
   window.addEventListener("pageshow", onPageShow);
 
@@ -156,6 +186,36 @@ function bindTileStyleSelect(select, onChange) {
     window.removeEventListener("storage", onStorage);
     window.removeEventListener("pageshow", onPageShow);
   };
+}
+
+/**
+ * Wire a tileset <select> to the shared cookie/localStorage value.
+ * @param {HTMLSelectElement|null} select
+ * @param {(style: string, settings: object) => void} [onChange]
+ * @returns {() => void} dispose
+ */
+function bindTileStyleSelect(select, onChange) {
+  return bindGlobalSelect(select, {
+    readValue: (s) => normalizeTileStyle(s.tileStyle),
+    writeValue: (s, value) => ({ ...s, tileStyle: normalizeTileStyle(value) }),
+    apply: applyTileStyle,
+    onChange,
+  });
+}
+
+/**
+ * Wire Arabic-numbers <select> to the shared cookie/localStorage value.
+ * @param {HTMLSelectElement|null} select
+ * @param {(mode: string, settings: object) => void} [onChange]
+ * @returns {() => void} dispose
+ */
+function bindRankLabelsSelect(select, onChange) {
+  return bindGlobalSelect(select, {
+    readValue: (s) => normalizeRankLabels(s.rankLabels),
+    writeValue: (s, value) => ({ ...s, rankLabels: normalizeRankLabels(value) }),
+    apply: applyRankLabels,
+    onChange,
+  });
 }
 
 function escapeHtml(s) {
@@ -357,11 +417,15 @@ function renderQuickStart(style, settings) {
 window.AppSettings = {
   DEFAULT_SETTINGS,
   VALID_TILE_STYLES,
+  VALID_RANK_LABELS,
   loadSettings,
   saveSettings,
   normalizeTileStyle,
+  normalizeRankLabels,
   applyTileStyle,
+  applyRankLabels,
   bindTileStyleSelect,
+  bindRankLabelsSelect,
   getQuickStartHtml,
   renderQuickStart,
 };

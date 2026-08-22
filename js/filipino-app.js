@@ -217,10 +217,9 @@
       render();
     });
 
-    $("#rank-labels").value = settings.rankLabels || "hover";
-    $("#rank-labels").addEventListener("change", (e) => {
-      settings.rankLabels = e.target.value;
-      persist();
+    AppSettings.bindRankLabelsSelect($("#rank-labels"), (mode, saved) => {
+      Object.assign(settings, saved);
+      settings.rankLabels = mode;
       render();
     });
 

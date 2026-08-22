@@ -435,12 +435,9 @@
       remountTiles();
     });
 
-    $("#rank-labels").value = settings.rankLabels || "hover";
-    document.body.dataset.rankLabels = settings.rankLabels || "hover";
-
-    $("#rank-labels").addEventListener("change", (e) => {
-      settings.rankLabels = e.target.value;
-      Object.assign(settings, AppSettings.saveSettings(settings));
+    AppSettings.bindRankLabelsSelect($("#rank-labels"), (mode, saved) => {
+      Object.assign(settings, saved);
+      settings.rankLabels = mode;
       remountTiles();
     });
 

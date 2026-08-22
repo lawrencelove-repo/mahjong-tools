@@ -33,9 +33,9 @@
       api?.remountTiles?.();
     });
 
-    $("#rank-labels").addEventListener("change", (e) => {
-      settings.rankLabels = e.target.value;
-      Object.assign(settings, AppSettings.saveSettings(settings));
+    AppSettings.bindRankLabelsSelect($("#rank-labels"), (mode, saved) => {
+      Object.assign(settings, saved);
+      settings.rankLabels = mode;
       api?.remountTiles?.();
     });
 
