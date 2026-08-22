@@ -26,21 +26,20 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    syncChrome();
-
-    $("#tile-style").addEventListener("change", (e) => {
-      settings.tileStyle = e.target.value;
-      AppSettings.saveSettings(settings);
-      document.body.dataset.tileStyle = settings.tileStyle;
+    AppSettings.bindTileStyleSelect($("#tile-style"), (style, saved) => {
+      Object.assign(settings, saved);
+      settings.tileStyle = style;
+      document.body.dataset.tileStyle = style;
       api?.remountTiles?.();
     });
 
     $("#rank-labels").addEventListener("change", (e) => {
       settings.rankLabels = e.target.value;
-      AppSettings.saveSettings(settings);
+      Object.assign(settings, AppSettings.saveSettings(settings));
       api?.remountTiles?.();
     });
 
+    syncChrome();
     mountWhenReady();
   });
 })();

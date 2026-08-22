@@ -1,9 +1,12 @@
 /**
  * App settings — persisted in a cookie (with localStorage migration).
+ * tileStyle also has a dedicated cookie so all pages share one tileset choice.
  */
 
 const SETTINGS_KEY = "riichi-cheatsheet-settings";
+const TILE_STYLE_COOKIE = "riichi-cheatsheet-tile-style";
 const SETTINGS_COOKIE_MAX_AGE = 60 * 60 * 24 * 400; // ~13 months
+const VALID_TILE_STYLES = ["traditional", "custom", "text"];
 
 const DEFAULT_SETTINGS = {
   tileStyle: "traditional", // traditional | custom | text
@@ -22,6 +25,7 @@ const DEFAULT_SETTINGS = {
   hkSeasons: "exclude", // include | exclude | blanks — flowers/seasons display
   hkLanguage: "en-zh", // en | zh | en-zh — English and/or Chinese (Cantonese names)
   filipinoGroupBy: "points", // points | category — Filipino page
+  updatedAt: 0,
 };
 
 function readCookie(name) {
@@ -37,37 +41,121 @@ function writeCookie(name, value, maxAge = SETTINGS_COOKIE_MAX_AGE) {
 function parseSettingsJson(raw) {
   if (!raw) return null;
   try {
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    const parsed = JSON.parse(raw);
+    return { ...DEFAULT_SETTINGS, ...parsed };
   } catch {
     return null;
   }
 }
 
+function normalizeTileStyle(value) {
+  return VALID_TILE_STYLES.includes(value) ? value : DEFAULT_SETTINGS.tileStyle;
+}
+
+function readStorageSettings() {
+  try {
+    return parseSettingsJson(localStorage.getItem(SETTINGS_KEY));
+  } catch {
+    return null;
+  }
+}
+
+function pickNewerSettings(a, b) {
+  if (!a) return b;
+  if (!b) return a;
+  return (Number(b.updatedAt) || 0) >= (Number(a.updatedAt) || 0) ? b : a;
+}
+
 function loadSettings() {
   const fromCookie = parseSettingsJson(readCookie(SETTINGS_KEY));
-  if (fromCookie) return fromCookie;
+  const fromStorage = readStorageSettings();
+  let settings = pickNewerSettings(fromCookie, fromStorage) || { ...DEFAULT_SETTINGS };
 
-  try {
-    const fromStorage = parseSettingsJson(localStorage.getItem(SETTINGS_KEY));
-    if (fromStorage) {
-      saveSettings(fromStorage);
-      return fromStorage;
-    }
-  } catch {
-    /* ignore */
+  // Dedicated tile-style cookie wins (shared across every page on this site).
+  const tileCookie = readCookie(TILE_STYLE_COOKIE);
+  if (tileCookie) {
+    settings = { ...settings, tileStyle: normalizeTileStyle(tileCookie) };
+  } else {
+    settings = { ...settings, tileStyle: normalizeTileStyle(settings.tileStyle) };
   }
 
-  return { ...DEFAULT_SETTINGS };
+  return settings;
 }
 
 function saveSettings(settings) {
-  const payload = JSON.stringify(settings);
+  const next = {
+    ...settings,
+    tileStyle: normalizeTileStyle(settings.tileStyle),
+    updatedAt: Date.now(),
+  };
+  const payload = JSON.stringify(next);
   writeCookie(SETTINGS_KEY, payload);
+  writeCookie(TILE_STYLE_COOKIE, next.tileStyle);
   try {
     localStorage.setItem(SETTINGS_KEY, payload);
   } catch {
     /* ignore quota / private mode */
   }
+  return next;
+}
+
+/**
+ * Apply persisted tileset to <select id="tile-style"> and body[data-tile-style].
+ * @param {HTMLSelectElement|null} [select]
+ * @param {typeof DEFAULT_SETTINGS} [settings]
+ */
+function applyTileStyle(select = document.getElementById("tile-style"), settings = loadSettings()) {
+  const style = normalizeTileStyle(settings.tileStyle);
+  if (document.body) document.body.dataset.tileStyle = style;
+  if (select && select.value !== style) select.value = style;
+  return style;
+}
+
+/**
+ * Wire a tileset <select> to the shared cookie/localStorage value.
+ * @param {HTMLSelectElement|null} select
+ * @param {(style: string, settings: object) => void} [onChange]
+ * @returns {() => void} dispose
+ */
+function bindTileStyleSelect(select, onChange) {
+  if (!select) return () => {};
+
+  const syncFromStore = () => {
+    const settings = loadSettings();
+    applyTileStyle(select, settings);
+    return settings;
+  };
+
+  syncFromStore();
+
+  const onSelect = () => {
+    const settings = { ...loadSettings(), tileStyle: normalizeTileStyle(select.value) };
+    const saved = saveSettings(settings);
+    applyTileStyle(select, saved);
+    onChange?.(saved.tileStyle, saved);
+  };
+  select.addEventListener("change", onSelect);
+
+  const onStorage = (e) => {
+    if (e.key && e.key !== SETTINGS_KEY) return;
+    const prev = select.value;
+    const settings = syncFromStore();
+    if (settings.tileStyle !== prev) onChange?.(settings.tileStyle, settings);
+  };
+  window.addEventListener("storage", onStorage);
+
+  const onPageShow = () => {
+    const prev = select.value;
+    const settings = syncFromStore();
+    if (settings.tileStyle !== prev) onChange?.(settings.tileStyle, settings);
+  };
+  window.addEventListener("pageshow", onPageShow);
+
+  return () => {
+    select.removeEventListener("change", onSelect);
+    window.removeEventListener("storage", onStorage);
+    window.removeEventListener("pageshow", onPageShow);
+  };
 }
 
 function escapeHtml(s) {
@@ -268,8 +356,12 @@ function renderQuickStart(style, settings) {
 
 window.AppSettings = {
   DEFAULT_SETTINGS,
+  VALID_TILE_STYLES,
   loadSettings,
   saveSettings,
+  normalizeTileStyle,
+  applyTileStyle,
+  bindTileStyleSelect,
   getQuickStartHtml,
   renderQuickStart,
 };

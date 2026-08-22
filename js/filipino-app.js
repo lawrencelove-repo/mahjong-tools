@@ -193,9 +193,9 @@
   }
 
   function bindControls() {
-    $("#tile-style").addEventListener("change", (e) => {
-      settings.tileStyle = e.target.value;
-      persist();
+    AppSettings.bindTileStyleSelect($("#tile-style"), (style, saved) => {
+      Object.assign(settings, saved);
+      settings.tileStyle = style;
       render();
     });
 
@@ -246,7 +246,7 @@
   }
 
   function persist() {
-    AppSettings.saveSettings(settings);
+    Object.assign(settings, AppSettings.saveSettings(settings));
   }
 
   bindControls();

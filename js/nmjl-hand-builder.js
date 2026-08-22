@@ -429,21 +429,24 @@
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    syncChrome();
-    renderPalette();
-    renderRacks();
-
-    $("#tile-style").addEventListener("change", (e) => {
-      settings.tileStyle = e.target.value;
-      AppSettings.saveSettings(settings);
+    AppSettings.bindTileStyleSelect($("#tile-style"), (style, saved) => {
+      Object.assign(settings, saved);
+      settings.tileStyle = style;
       remountTiles();
     });
+
+    $("#rank-labels").value = settings.rankLabels || "hover";
+    document.body.dataset.rankLabels = settings.rankLabels || "hover";
 
     $("#rank-labels").addEventListener("change", (e) => {
       settings.rankLabels = e.target.value;
-      AppSettings.saveSettings(settings);
+      Object.assign(settings, AppSettings.saveSettings(settings));
       remountTiles();
     });
+
+    syncChrome();
+    renderPalette();
+    renderRacks();
 
     $("#nb-add-split").addEventListener("click", addSplit);
     $("#nb-add-alt").addEventListener("click", addAlternate);

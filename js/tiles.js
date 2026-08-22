@@ -15,7 +15,7 @@ const TRADITIONAL_FILES = {
   "1P": "Pin1", "2P": "Pin2", "3P": "Pin3", "4P": "Pin4", "5P": "Pin5",
   "6P": "Pin6", "7P": "Pin7", "8P": "Pin8", "9P": "Pin9", "5Pr": "Pin5-Dora",
   EW: "Ton", SW: "Nan", WW: "Shaa", NW: "Pei",
-  WD: "Haku", GD: "Hatsu", RD: "Chun",
+  WD: "Soap", GD: "Hatsu", RD: "Chun", // Soap.png for white dragon / NMJL soap (0)
   // Flowers / seasons: samoheen/mahjong-tiles (CC0). Jokers: generated faces.
   F: "Flower1", F1: "Flower1", F2: "Flower2", F3: "Flower3", F4: "Flower4",
   F5: "Season1", F6: "Season2", F7: "Season3", F8: "Season4",
