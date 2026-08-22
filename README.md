@@ -79,3 +79,7 @@ Use the **Hand Evaluation** toolbar button on the Riichi sheet to open a non-mod
 Build a closed 14-tile hand, set win conditions, and evaluate.
 
 Uses [`riichi-score`](https://www.npmjs.com/package/riichi-score) (CDN ESM) for yaku, fu, dora/ura/aka, and payments. Open melds are not in v1 yet.
+
+## Test application
+
+Use this link to test: https://lawrencelove-repo.github.io/mahjong-tools/
