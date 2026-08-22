@@ -85,6 +85,7 @@
   function render() {
     const root = $("#hk-root");
     root.innerHTML = "";
+    AppSettings.renderQuickStart("hk", settings);
     const list = visibleHands();
     const order = sectionOrder();
     const buckets = new Map(order.map((k) => [k, []]));

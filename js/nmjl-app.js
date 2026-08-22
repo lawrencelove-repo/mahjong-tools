@@ -32,6 +32,7 @@
     const card = currentCard();
     const root = $("#nmjl-root");
     root.innerHTML = "";
+    AppSettings.renderQuickStart("nmjl", settings);
 
     const yearSel = $("#nmjl-year");
     if (yearSel) yearSel.value = String(card.year);

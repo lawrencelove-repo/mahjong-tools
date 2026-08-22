@@ -81,6 +81,10 @@
         </select>
       </label>
     </div>
+    <section class="quick-start" aria-labelledby="quick-start-title">
+      <h2 id="quick-start-title">Quick start</h2>
+      <div id="quick-start-body"></div>
+    </section>
     <button type="button" id="btn-settings-collapse" class="settings-collapse" aria-label="Close settings" title="Close settings">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <polyline points="18 15 12 9 6 15"/>
@@ -109,8 +113,65 @@
     <div id="tile-legend" hidden></div>
     <div id="hk-root"></div>
     <div id="aux-root"></div>
+    <section class="aux-panel payout-notes" aria-labelledby="hk-payout-title">
+      <h2 id="hk-payout-title">Payouts</h2>
+      <p>
+        Sum every applicable faan on the winning hand, then read the row below.
+        Base score is <strong>2<sup>faan</sup></strong> points: on a discard win the discarder pays
+        <strong>2×</strong> base and the other two pay <strong>1×</strong> each; on a self-draw each of the three pays
+        <strong>2×</strong> base. Tables often require a <strong>3-faan minimum</strong> to go out.
+      </p>
+      <div class="payout-table-wrap">
+        <table class="score-table payout-table">
+          <thead>
+            <tr>
+              <th rowspan="2">Faan</th>
+              <th rowspan="2">Base</th>
+              <th colspan="2">Discard win (each loser)</th>
+              <th rowspan="2">Self-draw<br /><span class="th-sub">each loser</span></th>
+              <th colspan="2">Total to winner</th>
+            </tr>
+            <tr>
+              <th>Discarder</th>
+              <th>Others</th>
+              <th>Discard</th>
+              <th>Self-draw</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>2</td><td>4</td><td>2</td><td>4</td><td>8</td><td>12</td></tr>
+            <tr><td>2</td><td>4</td><td>8</td><td>4</td><td>8</td><td>16</td><td>24</td></tr>
+            <tr><td>3</td><td>8</td><td>16</td><td>8</td><td>16</td><td>32</td><td>48</td></tr>
+            <tr><td>4</td><td>16</td><td>32</td><td>16</td><td>32</td><td>64</td><td>96</td></tr>
+            <tr><td>5</td><td>32</td><td>64</td><td>32</td><td>64</td><td>128</td><td>192</td></tr>
+            <tr><td>6</td><td>64</td><td>128</td><td>64</td><td>128</td><td>256</td><td>384</td></tr>
+            <tr><td>7</td><td>128</td><td>256</td><td>128</td><td>256</td><td>512</td><td>768</td></tr>
+            <tr><td>8</td><td>256</td><td>512</td><td>256</td><td>512</td><td>1,024</td><td>1,536</td></tr>
+            <tr><td>9</td><td>512</td><td>1,024</td><td>512</td><td>1,024</td><td>2,048</td><td>3,072</td></tr>
+            <tr><td>10</td><td>1,024</td><td>2,048</td><td>1,024</td><td>2,048</td><td>4,096</td><td>6,144</td></tr>
+            <tr><td>11</td><td>2,048</td><td>4,096</td><td>2,048</td><td>4,096</td><td>8,192</td><td>12,288</td></tr>
+            <tr><td>12</td><td>4,096</td><td>8,192</td><td>4,096</td><td>8,192</td><td>16,384</td><td>24,576</td></tr>
+            <tr><td>13</td><td>8,192</td><td>16,384</td><td>8,192</td><td>16,384</td><td>32,768</td><td>49,152</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="score-notes">
+        <li>
+          Example: <strong>5 faan</strong> → discarder <strong>64</strong>, other losers <strong>32</strong> each;
+          self-draw → <strong>64</strong> from each of the three.
+        </li>
+        <li>
+          Some clubs use a grouped <em>fan-laak</em> table instead (e.g. 4–6 faan share one payout, 10+ capped).
+          Confirm if your table doubles every faan or steps by laak.
+        </li>
+        <li>
+          Dealer doubling (winner or loser) and the cash value of one point are house rules.
+        </li>
+      </ul>
+    </section>
     <p class="credit">
-      Traditional tile art: FluffyStuff/riichi-mahjong-tiles (CC0).
+      Traditional tile art: FluffyStuff/riichi-mahjong-tiles (CC0);
+      flowers/seasons: samoheen/mahjong-tiles (CC0); jokers: project art.
       Scoring compiled from common public HK references. Not a substitute for your club’s rulesheet.
     </p>
   </main>

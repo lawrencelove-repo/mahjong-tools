@@ -6,7 +6,7 @@
 const SUIT_LETTER = { B: "bam", C: "crak", P: "dot" };
 const SUIT_COLOR = { bam: "green", crak: "red", dot: "black", honor: "blue", other: "blue" };
 
-/** Our ID → FluffyStuff Regular PNG basename (Export/) */
+/** Our ID → FluffyStuff Regular PNG basename (Export/), plus flower/season/joker extras */
 const TRADITIONAL_FILES = {
   "1B": "Sou1", "2B": "Sou2", "3B": "Sou3", "4B": "Sou4", "5B": "Sou5",
   "6B": "Sou6", "7B": "Sou7", "8B": "Sou8", "9B": "Sou9", "5Br": "Sou5-Dora",
@@ -16,9 +16,10 @@ const TRADITIONAL_FILES = {
   "6P": "Pin6", "7P": "Pin7", "8P": "Pin8", "9P": "Pin9", "5Pr": "Pin5-Dora",
   EW: "Ton", SW: "Nan", WW: "Shaa", NW: "Pei",
   WD: "Haku", GD: "Hatsu", RD: "Chun",
-  F: "Flower", F1: "Flower", F2: "Flower", F3: "Flower", F4: "Flower",
-  F5: "Flower", F6: "Flower", F7: "Flower", F8: "Flower",
-  J: "Back", J1: "Back", J2: "Back", X: "Back",
+  // Flowers / seasons: samoheen/mahjong-tiles (CC0). Jokers: generated faces.
+  F: "Flower1", F1: "Flower1", F2: "Flower2", F3: "Flower3", F4: "Flower4",
+  F5: "Season1", F6: "Season2", F7: "Season3", F8: "Season4",
+  J: "Joker", J1: "Joker", J2: "Joker2", X: "Back",
 };
 
 /**

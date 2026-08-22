@@ -100,6 +100,7 @@
     renderTileKey();
     renderScoringRef();
     renderLegend();
+    AppSettings.renderQuickStart("riichi", settings);
     document.body.dataset.tileStyle = settings.tileStyle;
     document.body.dataset.allowPage2 =
       settings.allowPage2 || settings.showScoringRef ? "true" : "false";
@@ -215,7 +216,6 @@
     if (settings.showDoraPanel) {
       rows.push({ label: "Aka (red fives)", tiles: "5Br 5Cr 5Pr" });
     }
-    rows.push({ label: "Extras", tiles: "F1 F2 F3 F4 | J1 J2" });
     el.replaceChildren();
     const h = document.createElement("h2");
     h.textContent = `Tile Key · ${styleName}`;

@@ -19,7 +19,7 @@ Open `index.html` for the landing page, then pick a ruleset — or open any shee
 
 | Style | Behavior |
 | --- | --- |
-| Traditional | PNGs from `assets/traditional/` (FluffyStuff, CC0) |
+| Traditional | PNGs from `assets/traditional/` (FluffyStuff suits/honors + samoheen flowers/seasons, CC0; project jokers) |
 | Custom | PNGs from `assets/custom/{id}.png` (falls back to traditional) |
 | Text (NMJL) | Colored digits/letters: bam green, crak red, dot black, honors blue |
 

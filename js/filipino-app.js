@@ -67,6 +67,7 @@
   function render() {
     const root = $("#filipino-root");
     root.innerHTML = "";
+    AppSettings.renderQuickStart("filipino", settings);
     const list = visibleHands();
     const order = sectionOrder();
     const buckets = new Map(order.map((k) => [k, []]));
