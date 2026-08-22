@@ -334,6 +334,7 @@ function bindUiScaleControl(root, onChange) {
 
 /**
  * Insert +/- scale control into a toolbar host if missing.
+ * Landing / pages without a ruleset toolbar only apply the cookie scale (no controls).
  * @param {Element|null} [host]
  */
 function mountUiScaleControl(host) {
@@ -341,7 +342,7 @@ function mountUiScaleControl(host) {
     host ||
     document.querySelector(".toolbar-actions") ||
     document.querySelector("header.toolbar");
-  if (!parent) {
+  if (!parent || document.body?.classList.contains("landing-page")) {
     applyUiScale(loadSettings());
     return null;
   }
