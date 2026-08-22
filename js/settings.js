@@ -1,14 +1,16 @@
 /**
  * App settings — persisted in a cookie (with localStorage migration).
- * tileStyle and rankLabels also have dedicated cookies shared across all pages.
+ * tileStyle, rankLabels, and uiScale also have dedicated cookies shared across all pages.
  */
 
 const SETTINGS_KEY = "riichi-cheatsheet-settings";
 const TILE_STYLE_COOKIE = "riichi-cheatsheet-tile-style";
 const RANK_LABELS_COOKIE = "riichi-cheatsheet-rank-labels";
+const UI_SCALE_COOKIE = "riichi-cheatsheet-ui-scale";
 const SETTINGS_COOKIE_MAX_AGE = 60 * 60 * 24 * 400; // ~13 months
 const VALID_TILE_STYLES = ["traditional", "custom", "text"];
 const VALID_RANK_LABELS = ["off", "hover", "always"];
+const UI_SCALE_STEPS = [100, 125, 150, 200];
 
 const DEFAULT_SETTINGS = {
   tileStyle: "traditional", // traditional | custom | text
@@ -21,6 +23,7 @@ const DEFAULT_SETTINGS = {
   showScoringRef: false, // page-2 style scoring quick ref
   allowPage2: false, // when false, denser 1-page print; overflow still may spill if content huge — print CSS prefers 1 page unless this or scoring ref is on
   rankLabels: "hover", // off | hover | always — Arabic/honor glyphs on image tiles
+  uiScale: 100, // 100 | 125 | 150 | 200 — fonts, columns, tiles
   showTileKey: false, // full tileset key / legend section
   nmjlYear: 2026, // American Mahjong card year (nmjl.html)
   hkGroupBy: "faan", // faan | category — Hong Kong page
@@ -58,6 +61,29 @@ function normalizeRankLabels(value) {
   return VALID_RANK_LABELS.includes(value) ? value : DEFAULT_SETTINGS.rankLabels;
 }
 
+function normalizeUiScale(value) {
+  const n = Number(value);
+  if (UI_SCALE_STEPS.includes(n)) return n;
+  // Snap nearest valid step if an older/odd value appears.
+  let best = UI_SCALE_STEPS[0];
+  let bestDist = Infinity;
+  for (const step of UI_SCALE_STEPS) {
+    const d = Math.abs(step - n);
+    if (d < bestDist) {
+      best = step;
+      bestDist = d;
+    }
+  }
+  return best;
+}
+
+function stepUiScale(current, delta) {
+  const cur = normalizeUiScale(current);
+  const idx = UI_SCALE_STEPS.indexOf(cur);
+  const next = UI_SCALE_STEPS[Math.max(0, Math.min(UI_SCALE_STEPS.length - 1, idx + delta))];
+  return next;
+}
+
 function readStorageSettings() {
   try {
     return parseSettingsJson(localStorage.getItem(SETTINGS_KEY));
@@ -77,11 +103,14 @@ function applyDedicatedCookies(settings) {
     ...settings,
     tileStyle: normalizeTileStyle(settings.tileStyle),
     rankLabels: normalizeRankLabels(settings.rankLabels),
+    uiScale: normalizeUiScale(settings.uiScale),
   };
   const tileCookie = readCookie(TILE_STYLE_COOKIE);
   if (tileCookie) next.tileStyle = normalizeTileStyle(tileCookie);
   const rankCookie = readCookie(RANK_LABELS_COOKIE);
   if (rankCookie) next.rankLabels = normalizeRankLabels(rankCookie);
+  const scaleCookie = readCookie(UI_SCALE_COOKIE);
+  if (scaleCookie) next.uiScale = normalizeUiScale(scaleCookie);
   return next;
 }
 
@@ -97,12 +126,14 @@ function saveSettings(settings) {
     ...settings,
     tileStyle: normalizeTileStyle(settings.tileStyle),
     rankLabels: normalizeRankLabels(settings.rankLabels),
+    uiScale: normalizeUiScale(settings.uiScale),
     updatedAt: Date.now(),
   };
   const payload = JSON.stringify(next);
   writeCookie(SETTINGS_KEY, payload);
   writeCookie(TILE_STYLE_COOKIE, next.tileStyle);
   writeCookie(RANK_LABELS_COOKIE, next.rankLabels);
+  writeCookie(UI_SCALE_COOKIE, String(next.uiScale));
   try {
     localStorage.setItem(SETTINGS_KEY, payload);
   } catch {
@@ -216,6 +247,130 @@ function bindRankLabelsSelect(select, onChange) {
     apply: applyRankLabels,
     onChange,
   });
+}
+
+/**
+ * Apply display scale (fonts / columns / tiles) from settings.
+ * @param {typeof DEFAULT_SETTINGS} [settings]
+ * @param {ParentNode|null} [controlRoot]
+ */
+function applyUiScale(settings = loadSettings(), controlRoot = document) {
+  const pct = normalizeUiScale(settings.uiScale);
+  const root = document.documentElement;
+  root.style.setProperty("--ui-scale", String(pct / 100));
+  root.dataset.uiScale = String(pct);
+  if (document.body) document.body.dataset.uiScale = String(pct);
+
+  const label = controlRoot?.querySelector?.("#ui-scale-label") || document.getElementById("ui-scale-label");
+  if (label) label.textContent = `${pct}%`;
+
+  const down = controlRoot?.querySelector?.("#btn-scale-down") || document.getElementById("btn-scale-down");
+  const up = controlRoot?.querySelector?.("#btn-scale-up") || document.getElementById("btn-scale-up");
+  if (down) down.disabled = pct <= UI_SCALE_STEPS[0];
+  if (up) up.disabled = pct >= UI_SCALE_STEPS[UI_SCALE_STEPS.length - 1];
+  return pct;
+}
+
+function setUiScale(percent, onChange) {
+  const settings = saveSettings({ ...loadSettings(), uiScale: normalizeUiScale(percent) });
+  applyUiScale(settings);
+  onChange?.(settings.uiScale, settings);
+  return settings.uiScale;
+}
+
+/**
+ * Wire +/- display-size control (steps 100 / 125 / 150 / 200).
+ * @param {ParentNode} root
+ * @param {(pct: number, settings: object) => void} [onChange]
+ */
+function bindUiScaleControl(root, onChange) {
+  if (!root) return () => {};
+
+  const syncFromStore = () => {
+    const settings = loadSettings();
+    applyUiScale(settings, root);
+    return settings;
+  };
+
+  syncFromStore();
+
+  const down = root.querySelector("#btn-scale-down");
+  const up = root.querySelector("#btn-scale-up");
+
+  const onDown = () => {
+    const cur = normalizeUiScale(loadSettings().uiScale);
+    setUiScale(stepUiScale(cur, -1), onChange);
+  };
+  const onUp = () => {
+    const cur = normalizeUiScale(loadSettings().uiScale);
+    setUiScale(stepUiScale(cur, 1), onChange);
+  };
+
+  down?.addEventListener("click", onDown);
+  up?.addEventListener("click", onUp);
+
+  const onStorage = (e) => {
+    if (e.key && e.key !== SETTINGS_KEY) return;
+    const prev = root.querySelector("#ui-scale-label")?.textContent;
+    const settings = syncFromStore();
+    if (`${settings.uiScale}%` !== prev) onChange?.(settings.uiScale, settings);
+  };
+  window.addEventListener("storage", onStorage);
+
+  const onPageShow = () => {
+    const prev = root.querySelector("#ui-scale-label")?.textContent;
+    const settings = syncFromStore();
+    if (`${settings.uiScale}%` !== prev) onChange?.(settings.uiScale, settings);
+  };
+  window.addEventListener("pageshow", onPageShow);
+
+  return () => {
+    down?.removeEventListener("click", onDown);
+    up?.removeEventListener("click", onUp);
+    window.removeEventListener("storage", onStorage);
+    window.removeEventListener("pageshow", onPageShow);
+  };
+}
+
+/**
+ * Insert +/- scale control into a toolbar host if missing.
+ * @param {Element|null} [host]
+ */
+function mountUiScaleControl(host) {
+  const parent =
+    host ||
+    document.querySelector(".toolbar-actions") ||
+    document.querySelector("header.toolbar");
+  if (!parent) {
+    applyUiScale(loadSettings());
+    return null;
+  }
+  let el = parent.querySelector(".ui-scale-control");
+  if (!el) {
+    el = document.createElement("div");
+    el.className = "ui-scale-control no-print";
+    el.setAttribute("role", "group");
+    el.setAttribute("aria-label", "Display size");
+    el.innerHTML = `
+      <button type="button" id="btn-scale-down" class="icon-btn" aria-label="Decrease display size" title="Smaller">−</button>
+      <span id="ui-scale-label" class="ui-scale-label" aria-live="polite">100%</span>
+      <button type="button" id="btn-scale-up" class="icon-btn" aria-label="Increase display size" title="Larger">+</button>
+    `;
+    parent.insertBefore(el, parent.firstChild);
+  }
+  bindUiScaleControl(el);
+  return el;
+}
+
+function initUiScaleUi() {
+  applyUiScale(loadSettings());
+  mountUiScaleControl();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initUiScaleUi);
+} else {
+  initUiScaleUi();
 }
 
 function escapeHtml(s) {
@@ -418,14 +573,21 @@ window.AppSettings = {
   DEFAULT_SETTINGS,
   VALID_TILE_STYLES,
   VALID_RANK_LABELS,
+  UI_SCALE_STEPS,
   loadSettings,
   saveSettings,
   normalizeTileStyle,
   normalizeRankLabels,
+  normalizeUiScale,
+  stepUiScale,
   applyTileStyle,
   applyRankLabels,
+  applyUiScale,
+  setUiScale,
   bindTileStyleSelect,
   bindRankLabelsSelect,
+  bindUiScaleControl,
+  mountUiScaleControl,
   getQuickStartHtml,
   renderQuickStart,
 };

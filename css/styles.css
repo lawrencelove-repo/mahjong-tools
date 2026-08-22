@@ -106,7 +106,12 @@
   --paper: #ffffff;
   --accent: #2c5f4a;
   --badge-bg: #eef2ef;
-  --tile-h: 36px;
+  --ui-scale: 1;
+  --tile-h-base: 36px;
+  --tile-h: calc(var(--tile-h-base) * var(--ui-scale));
+  --yaku-col-min: calc(280px * var(--ui-scale));
+  --nmjl-col-min: calc(300px * var(--ui-scale));
+  --hv-col-min: calc(140px * var(--ui-scale));
   --font-ui: "Segoe UI", system-ui, sans-serif;
   --font-display: "Georgia", "Times New Roman", serif;
   --font-text-tile: "Consolas", "Segoe UI", monospace;
@@ -117,7 +122,7 @@
 }
 
 html {
-  font-size: 14px;
+  font-size: calc(14px * var(--ui-scale));
 }
 
 body {
@@ -179,6 +184,32 @@ body {
   gap: 0.4rem;
   align-items: center;
   margin-left: auto;
+}
+
+.ui-scale-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  margin-right: 0.35rem;
+  padding: 0.1rem 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+}
+
+.ui-scale-label {
+  min-width: 3.1rem;
+  text-align: center;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+  color: var(--muted);
+  user-select: none;
+}
+
+.ui-scale-control .icon-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 
 .toolbar .icon-btn {
@@ -370,7 +401,7 @@ main#print-sheet {
 
 .yaku-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(var(--yaku-col-min), 1fr));
   gap: 0.65rem 1rem;
 }
 
@@ -493,7 +524,7 @@ main#print-sheet {
 }
 
 .nmjl-grid {
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(var(--nmjl-col-min), 1fr));
 }
 
 .nmjl-text-key {
@@ -930,7 +961,7 @@ body[data-tile-style="custom"] .tile-rank {
 
 .nb-fields {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(var(--hv-col-min), 1fr));
   gap: 0.55rem 1rem;
   margin: 0.75rem 0 0.35rem;
   align-items: end;
@@ -1065,8 +1096,13 @@ body[data-tile-style="custom"] .tile-rank {
     break-inside: avoid;
   }
 
+  html {
+    --ui-scale: 1 !important;
+    font-size: 14px;
+  }
+
   :root {
-    --tile-h: 22px;
+    --tile-h-base: 22px;
   }
 
   .yaku-desc {
@@ -1100,6 +1136,6 @@ body[data-tile-style="custom"] .tile-rank {
     grid-template-columns: 1fr;
   }
   :root {
-    --tile-h: 32px;
+    --tile-h-base: 32px;
   }
 }
