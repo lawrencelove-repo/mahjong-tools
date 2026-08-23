@@ -110,7 +110,7 @@ window.FILIPINO_DATA = [
     category: "suit",
     tags: ["core"],
     description: "Seven pairs plus one pung (common Filipino special hand).",
-    examples: [{ tiles: "11P 22P 33B 44B 55C 66C 77P | 888B" }],
+    examples: [{ tiles: "11P | 22P | 33B | 44B | 55C | 66C | 77P | 888B" }],
   },
   {
     id: "difficult-wait",
