@@ -315,7 +315,7 @@ window.HK_DATA = [
     category: "limit",
     tags: ["core"],
     description: "One of each terminal and honor, plus a duplicate of any of them.",
-    examples: [{ tiles: "1P 9P 1B 9B 1C 9C EW SW WW NW WD GD RD RD" }],
+    examples: [{ tiles: "1P 9P | 1B 9B | 1C 9C | EW SW WW NW | WD GD RD RD" }],
   },
   {
     id: "nine-gates",
@@ -326,7 +326,7 @@ window.HK_DATA = [
     category: "limit",
     tags: ["core"],
     description: "1112345678999 of one suit plus any extra tile of that suit.",
-    examples: [{ tiles: "111P 2345678P 999P | 5P" }],
+    examples: [{ tiles: "111P | 2345678P | 999P | 5P" }],
   },
   {
     id: "all-kongs",
