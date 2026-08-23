@@ -315,7 +315,7 @@ window.HK_DATA = [
     category: "limit",
     tags: ["core"],
     description: "One of each terminal and honor, plus a duplicate of any of them.",
-    examples: [{ tiles: "1P 9P | 1B 9B | 1C 9C | EW SW WW NW | WD GD RD RD" }],
+    examples: [{ tiles: "1P 9P | 1B 9B | 1C 9C | EW SW WW NW | WD GD RD | RD" }],
   },
   {
     id: "nine-gates",
