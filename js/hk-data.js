@@ -216,7 +216,7 @@ window.HK_DATA = [
     category: "special",
     tags: ["core"],
     description: "Seven pairs (house-dependent; not universal in classic HK lists).",
-    examples: [{ tiles: "11P 22P 33B 44B 55C 66C EW EW" }],
+    examples: [{ tiles: "11P | 22P | 33B | 44B | 55C | 66C | EW EW" }],
   },
   {
     id: "small-winds",
