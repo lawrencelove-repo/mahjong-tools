@@ -1,4 +1,4 @@
-"""Fetch CC0 flower/season tiles and generate joker faces for traditional set."""
+"""Fetch CC0 flower/season tiles and generate joker faces for style-1."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 TMP = ROOT / "assets" / "_tmp-tiles"
-DEST = ROOT / "assets" / "traditional"
+DEST = ROOT / "assets" / "style-1"
 BASE = "https://raw.githubusercontent.com/samoheen/mahjong-tiles/master/hongkong/png"
 TARGET = (600, 800)
 

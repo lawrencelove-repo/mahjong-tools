@@ -304,7 +304,7 @@ function mount(container, getSettings) {
     const s = getSettings();
     return {
       rankLabels: s.rankLabels || "hover",
-      style: s.tileStyle || "traditional",
+      style: s.tileStyle || "style-1",
     };
   }
 

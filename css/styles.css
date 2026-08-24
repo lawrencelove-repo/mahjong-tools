@@ -1084,8 +1084,8 @@ main#print-sheet {
   box-shadow: 0 0 0 1px var(--shadow);
 }
 
-/* Custom faces: numbers sit better on the left */
-body[data-tile-style="custom"] .tile-rank {
+/* Some packs (e.g. style-2) look better with ranks on the left */
+body[data-rank-side="left"] .tile-rank {
   left: 1px;
   right: auto;
 }

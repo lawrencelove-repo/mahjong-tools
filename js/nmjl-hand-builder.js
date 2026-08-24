@@ -201,7 +201,7 @@
     btn.appendChild(
       Tiles.renderTile(
         id,
-        settings.tileStyle || "traditional",
+        settings.tileStyle || "style-1",
         settings.rankLabels || "hover",
         tileOpts()
       )

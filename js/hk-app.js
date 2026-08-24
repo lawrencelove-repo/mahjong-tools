@@ -224,7 +224,9 @@
     const opts = { rankLabels: settings.rankLabels };
     const style = settings.tileStyle;
     const styleName =
-      style === "text" ? "Text (NMJL)" : style === "custom" ? "Custom" : "Traditional";
+      typeof Tiles !== "undefined" && Tiles.labelForStyle
+        ? Tiles.labelForStyle(style)
+        : style;
     const mode = seasonsMode();
 
     const rows = [

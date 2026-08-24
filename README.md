@@ -17,11 +17,37 @@ Open `index.html` for the landing page, then pick a ruleset — or open any shee
 
 ## Tile styles
 
-| Style | Behavior |
+Tilesets are registered in `js/tiles.js` (`TILESETS`). Folder ids are `style-1`, `style-2`, …; **dropdown labels** are separate (`label` on each entry). Prefer changing labels there rather than renaming folders.
+
+| Id | Default label | Assets |
+| --- | --- | --- |
+| `style-1` | Traditional | `assets/style-1/` — FluffyStuff suits/honors (CC0) + samoheen flowers/seasons; project jokers. See that folder’s `README.md`. |
+| `style-2` | Custom | `assets/style-2/` — compact pack (falls back to style-1). |
+| `style-3` | Hong Kong | `assets/style-3/` — [samoheen/mahjong-tiles](https://github.com/samoheen/mahjong-tiles) (public domain). |
+| `style-4` | Tempai Set 2 | `assets/style-4/` — sliced from [tempai-dev/riichi-mahjong-tiles-svg](https://github.com/tempai-dev/riichi-mahjong-tiles-svg) tileset2 (MIT OR CC-PDDC). |
+| `style-5` | Tempai Set 1 | `assets/style-5/` — same repo, tileset1. |
+| `text` | Text (NMJL) | Colored digits/letters (no image folder). |
+
+Legacy cookie values `traditional` / `custom` migrate to `style-1` / `style-2`.
+
+To add another set: create `assets/style-6/`, drop PNGs (FluffyStuff basenames or map in `files`), add a `README.md` with the source, and append an entry to `TILESETS`. Re-run `python scripts/import-tilesets.py` only if you need to re-fetch the bundled open-source packs.
+
+## style-2 filenames
+
+Drop PNGs into `assets/style-2/` using:
+
+| Tiles | Filenames |
 | --- | --- |
-| Traditional | PNGs from `assets/traditional/` (FluffyStuff suits/honors + samoheen flowers/seasons, CC0; project jokers) |
-| Custom | PNGs from `assets/custom/{id}.png` (falls back to traditional) |
-| Text (NMJL) | Colored digits/letters: bam green, crak red, dot black, honors blue |
+| Bam | `B1.png` … `B9.png` |
+| Crak | `C1.png` … `C9.png` |
+| Dot | `P1.png` … `P9.png` |
+| Winds | `WE.png` (East), `WS.png` (South), `WW.png` (West), `WN.png` (North) |
+| Dragons | `DG.png` (green), `DR.png` (red), `DW.png` (white) |
+| Flowers | `F1.png` … `F4.png` |
+| Jokers | `J1.png`, `J2.png` |
+| Aka (optional) | `B5r.png`, `C5r.png`, `P5r.png` — else falls back to `B5` / `C5` / `P5` |
+
+Internal hand notation is unchanged (`6B`, `EW`, `RD`, …). Missing style-2 files fall back to style-1.
 
 ## Notation
 
@@ -38,23 +64,6 @@ F1–F4 / F5–F8    flowers / seasons (HK & Filipino)
 ```
 
 Text mode shows **digits only** for suited tiles (color = suit).
-
-## Custom tiles
-
-Drop PNGs into `assets/custom/` using these filenames:
-
-| Tiles | Filenames |
-| --- | --- |
-| Bam | `B1.png` … `B9.png` |
-| Crak | `C1.png` … `C9.png` |
-| Dot | `P1.png` … `P9.png` |
-| Winds | `WE.png` (East), `WS.png` (South), `WW.png` (West), `WN.png` (North) |
-| Dragons | `DG.png` (green), `DR.png` (red), `DW.png` (white) |
-| Flowers | `F1.png` … `F4.png` |
-| Jokers | `J1.png`, `J2.png` |
-| Aka (optional) | `B5r.png`, `C5r.png`, `P5r.png` — else falls back to `B5` / `C5` / `P5` |
-
-Internal hand notation is unchanged (`6B`, `EW`, `RD`, …). Missing custom files fall back to traditional.
 
 ## American Mahjong (NMJL)
 

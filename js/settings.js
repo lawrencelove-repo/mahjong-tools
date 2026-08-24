@@ -9,12 +9,11 @@ const RANK_LABELS_COOKIE = "riichi-cheatsheet-rank-labels";
 const UI_SCALE_COOKIE = "riichi-cheatsheet-ui-scale";
 const DARK_MODE_COOKIE = "riichi-cheatsheet-dark-mode";
 const SETTINGS_COOKIE_MAX_AGE = 60 * 60 * 24 * 400; // ~13 months
-const VALID_TILE_STYLES = ["traditional", "custom", "text"];
 const VALID_RANK_LABELS = ["off", "hover", "always"];
 const UI_SCALE_STEPS = [100, 125, 150, 200];
 
 const DEFAULT_SETTINGS = {
-  tileStyle: "traditional", // traditional | custom | text
+  tileStyle: "style-1", // style-N | text (legacy: traditional → style-1, custom → style-2)
   groupBy: "han", // han | category
   language: "en", // en | en-jp | jp
   showOptional: false,
@@ -55,8 +54,46 @@ function parseSettingsJson(raw) {
   }
 }
 
+function validTileStyles() {
+  if (typeof window !== "undefined" && window.Tiles?.listTilesets) {
+    return window.Tiles.listTilesets().map((t) => t.id);
+  }
+  return ["style-1", "style-2", "style-3", "style-4", "style-5", "text"];
+}
+
 function normalizeTileStyle(value) {
-  return VALID_TILE_STYLES.includes(value) ? value : DEFAULT_SETTINGS.tileStyle;
+  const aliased =
+    typeof window !== "undefined" && window.Tiles?.normalizeStyleId
+      ? window.Tiles.normalizeStyleId(value)
+      : value === "traditional"
+        ? "style-1"
+        : value === "custom"
+          ? "style-2"
+          : value;
+  return validTileStyles().includes(aliased) ? aliased : DEFAULT_SETTINGS.tileStyle;
+}
+
+/**
+ * Fill <select id="tile-style"> from Tiles.TILESETS (labels editable there).
+ * @param {HTMLSelectElement|null} select
+ */
+function fillTileStyleSelect(select = document.getElementById("tile-style")) {
+  if (!select) return;
+  const sets =
+    typeof window !== "undefined" && window.Tiles?.listTilesets
+      ? window.Tiles.listTilesets()
+      : validTileStyles().map((id) => ({ id, label: id }));
+  const prev = select.value;
+  select.replaceChildren();
+  for (const set of sets) {
+    const opt = document.createElement("option");
+    opt.value = set.id;
+    opt.textContent = set.label;
+    select.appendChild(opt);
+  }
+  if (prev && [...select.options].some((o) => o.value === prev)) {
+    select.value = prev;
+  }
 }
 
 function normalizeRankLabels(value) {
@@ -164,8 +201,17 @@ function saveSettings(settings) {
  * @param {typeof DEFAULT_SETTINGS} [settings]
  */
 function applyTileStyle(select = document.getElementById("tile-style"), settings = loadSettings()) {
+  fillTileStyleSelect(select);
   const style = normalizeTileStyle(settings.tileStyle);
-  if (document.body) document.body.dataset.tileStyle = style;
+  if (document.body) {
+    document.body.dataset.tileStyle = style;
+    const tileset =
+      typeof window !== "undefined" && window.Tiles?.getTileset
+        ? window.Tiles.getTileset(style)
+        : null;
+    if (tileset?.rankSide) document.body.dataset.rankSide = tileset.rankSide;
+    else delete document.body.dataset.rankSide;
+  }
   if (select && select.value !== style) select.value = style;
   return style;
 }
@@ -656,7 +702,9 @@ function renderQuickStart(style, settings) {
 
 window.AppSettings = {
   DEFAULT_SETTINGS,
-  VALID_TILE_STYLES,
+  get VALID_TILE_STYLES() {
+    return validTileStyles();
+  },
   VALID_RANK_LABELS,
   UI_SCALE_STEPS,
   loadSettings,
@@ -666,6 +714,7 @@ window.AppSettings = {
   normalizeUiScale,
   normalizeDarkMode,
   stepUiScale,
+  fillTileStyleSelect,
   applyTileStyle,
   applyRankLabels,
   applyUiScale,

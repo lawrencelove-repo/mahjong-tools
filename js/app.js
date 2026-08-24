@@ -204,7 +204,9 @@
     const opts = { rankLabels: settings.rankLabels };
     const style = settings.tileStyle;
     const styleName =
-      style === "text" ? "Text (NMJL)" : style === "custom" ? "Custom" : "Traditional";
+      typeof Tiles !== "undefined" && Tiles.labelForStyle
+        ? Tiles.labelForStyle(style)
+        : style;
 
     const rows = [
       { label: "Bam (souzu)", tiles: "1B 2B 3B 4B 5B 6B 7B 8B 9B" },
