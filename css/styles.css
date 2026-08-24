@@ -1424,6 +1424,13 @@ html[data-theme="dark"] .suit-blue { color: #64b5f6; }
   scroll-margin-top: 4.5rem;
 }
 
+.rules-doc h3 {
+  margin: 1.1rem 0 0.45rem;
+  font-size: 1.05em;
+  font-weight: 650;
+  color: var(--ink);
+}
+
 .rules-doc ul,
 .rules-doc ol {
   margin: 0.4rem 0 0.6rem;
