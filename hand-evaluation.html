@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Hand Evaluation · Riichi</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var m = document.cookie.match(/(?:^|; )riichi-cheatsheet-dark-mode=([^;]*)/);
+        if (m && decodeURIComponent(m[1]) === "1") document.documentElement.dataset.theme = "dark";
+      } catch (e) {}
+    })();
+  </script>
   <script src="js/tiles.js" defer></script>
   <script src="js/settings.js" defer></script>
   <script type="module" src="js/hand-verifier.js"></script>

@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Riichi Mahjong Yaku Cheatsheet</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var m = document.cookie.match(/(?:^|; )riichi-cheatsheet-dark-mode=([^;]*)/);
+        if (m && decodeURIComponent(m[1]) === "1") document.documentElement.dataset.theme = "dark";
+      } catch (e) {}
+    })();
+  </script>
   <script src="js/tiles.js" defer></script>
   <script src="js/settings.js" defer></script>
   <script src="js/site-nav.js" defer></script>
@@ -70,6 +78,7 @@
         <span class="settings-scale-title">Display size</span>
         <span id="ui-scale-host"></span>
       </div>
+      <label><input type="checkbox" id="opt-dark-mode" /> Dark mode</label>
       <label>
         Tiles
         <select id="tile-style" aria-label="Tile style">

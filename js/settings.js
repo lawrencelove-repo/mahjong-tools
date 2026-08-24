@@ -1,12 +1,13 @@
 /**
  * App settings — persisted in a cookie (with localStorage migration).
- * tileStyle, rankLabels, and uiScale also have dedicated cookies shared across all pages.
+ * tileStyle, rankLabels, uiScale, and darkMode also have dedicated cookies shared across all pages.
  */
 
 const SETTINGS_KEY = "riichi-cheatsheet-settings";
 const TILE_STYLE_COOKIE = "riichi-cheatsheet-tile-style";
 const RANK_LABELS_COOKIE = "riichi-cheatsheet-rank-labels";
 const UI_SCALE_COOKIE = "riichi-cheatsheet-ui-scale";
+const DARK_MODE_COOKIE = "riichi-cheatsheet-dark-mode";
 const SETTINGS_COOKIE_MAX_AGE = 60 * 60 * 24 * 400; // ~13 months
 const VALID_TILE_STYLES = ["traditional", "custom", "text"];
 const VALID_RANK_LABELS = ["off", "hover", "always"];
@@ -24,6 +25,7 @@ const DEFAULT_SETTINGS = {
   allowPage2: false, // when false, denser 1-page print; overflow still may spill if content huge — print CSS prefers 1 page unless this or scoring ref is on
   rankLabels: "hover", // off | hover | always — Arabic/honor glyphs on image tiles
   uiScale: 100, // 100 | 125 | 150 | 200 — fonts, columns, tiles
+  darkMode: false, // global theme; dedicated cookie
   showTileKey: false, // full tileset key / legend section
   nmjlYear: 2026, // American Mahjong card year (nmjl.html)
   hkGroupBy: "faan", // faan | category — Hong Kong page
@@ -77,6 +79,13 @@ function normalizeUiScale(value) {
   return best;
 }
 
+function normalizeDarkMode(value) {
+  if (value === true || value === 1 || value === "1" || value === "true" || value === "dark") {
+    return true;
+  }
+  return false;
+}
+
 function stepUiScale(current, delta) {
   const cur = normalizeUiScale(current);
   const idx = UI_SCALE_STEPS.indexOf(cur);
@@ -104,6 +113,7 @@ function applyDedicatedCookies(settings) {
     tileStyle: normalizeTileStyle(settings.tileStyle),
     rankLabels: normalizeRankLabels(settings.rankLabels),
     uiScale: normalizeUiScale(settings.uiScale),
+    darkMode: normalizeDarkMode(settings.darkMode),
   };
   const tileCookie = readCookie(TILE_STYLE_COOKIE);
   if (tileCookie) next.tileStyle = normalizeTileStyle(tileCookie);
@@ -111,6 +121,10 @@ function applyDedicatedCookies(settings) {
   if (rankCookie) next.rankLabels = normalizeRankLabels(rankCookie);
   const scaleCookie = readCookie(UI_SCALE_COOKIE);
   if (scaleCookie) next.uiScale = normalizeUiScale(scaleCookie);
+  const darkCookie = readCookie(DARK_MODE_COOKIE);
+  if (darkCookie !== null && darkCookie !== "") {
+    next.darkMode = normalizeDarkMode(darkCookie);
+  }
   return next;
 }
 
@@ -127,6 +141,7 @@ function saveSettings(settings) {
     tileStyle: normalizeTileStyle(settings.tileStyle),
     rankLabels: normalizeRankLabels(settings.rankLabels),
     uiScale: normalizeUiScale(settings.uiScale),
+    darkMode: normalizeDarkMode(settings.darkMode),
     updatedAt: Date.now(),
   };
   const payload = JSON.stringify(next);
@@ -134,6 +149,7 @@ function saveSettings(settings) {
   writeCookie(TILE_STYLE_COOKIE, next.tileStyle);
   writeCookie(RANK_LABELS_COOKIE, next.rankLabels);
   writeCookie(UI_SCALE_COOKIE, String(next.uiScale));
+  writeCookie(DARK_MODE_COOKIE, next.darkMode ? "1" : "0");
   try {
     localStorage.setItem(SETTINGS_KEY, payload);
   } catch {
@@ -374,10 +390,72 @@ function initUiScaleUi() {
   mountUiScaleControl();
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initUiScaleUi);
-} else {
+/**
+ * Apply light/dark theme from settings (html[data-theme]).
+ * @param {typeof DEFAULT_SETTINGS} [settings]
+ * @param {HTMLInputElement|null} [checkbox]
+ */
+function applyDarkMode(settings = loadSettings(), checkbox = document.getElementById("opt-dark-mode")) {
+  const on = normalizeDarkMode(settings.darkMode);
+  const theme = on ? "dark" : "light";
+  document.documentElement.dataset.theme = theme;
+  if (document.body) document.body.dataset.theme = theme;
+  if (checkbox) checkbox.checked = on;
+  return on;
+}
+
+/**
+ * Wire Settings → Dark mode checkbox to the dedicated cookie.
+ * @param {HTMLInputElement|null} [checkbox]
+ * @param {(on: boolean, settings: object) => void} [onChange]
+ */
+function bindDarkModeCheckbox(checkbox = document.getElementById("opt-dark-mode"), onChange) {
+  applyDarkMode(loadSettings(), checkbox || null);
+  if (!checkbox) return () => {};
+
+  const onToggle = () => {
+    const settings = saveSettings({ ...loadSettings(), darkMode: checkbox.checked });
+    applyDarkMode(settings, checkbox);
+    onChange?.(checkbox.checked, settings);
+  };
+  checkbox.addEventListener("change", onToggle);
+
+  const onStorage = (e) => {
+    if (e.key && e.key !== SETTINGS_KEY) return;
+    const prev = checkbox.checked;
+    const settings = loadSettings();
+    applyDarkMode(settings, checkbox);
+    if (checkbox.checked !== prev) onChange?.(checkbox.checked, settings);
+  };
+  window.addEventListener("storage", onStorage);
+
+  return () => {
+    checkbox.removeEventListener("change", onToggle);
+    window.removeEventListener("storage", onStorage);
+  };
+}
+
+function initThemeUi() {
+  applyDarkMode(loadSettings());
+  bindDarkModeCheckbox();
+}
+
+function initDisplayPrefsUi() {
   initUiScaleUi();
+  initThemeUi();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initDisplayPrefsUi);
+} else {
+  initDisplayPrefsUi();
+}
+
+// Apply theme as soon as this deferred script runs (DOM already parsed).
+try {
+  applyDarkMode(loadSettings(), null);
+} catch {
+  /* ignore */
 }
 
 function escapeHtml(s) {
@@ -586,14 +664,17 @@ window.AppSettings = {
   normalizeTileStyle,
   normalizeRankLabels,
   normalizeUiScale,
+  normalizeDarkMode,
   stepUiScale,
   applyTileStyle,
   applyRankLabels,
   applyUiScale,
+  applyDarkMode,
   setUiScale,
   bindTileStyleSelect,
   bindRankLabelsSelect,
   bindUiScaleControl,
+  bindDarkModeCheckbox,
   mountUiScaleControl,
   getQuickStartHtml,
   renderQuickStart,
