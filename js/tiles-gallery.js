@@ -108,7 +108,6 @@
     if (set.excludeTiles?.length) {
       const note = document.createElement("p");
       note.className = "tiles-gallery-exclude-note";
-      note.textContent = `Excluded from gallery / keys: ${set.excludeTiles.join(", ")}`;
       head.appendChild(note);
     }
 

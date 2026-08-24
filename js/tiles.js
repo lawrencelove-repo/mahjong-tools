@@ -82,7 +82,7 @@ const TILESETS = /** @type {TilesetDef[]} */ ([
     rankSide: "right",
     creditName: "FluffyStuff",
     creditUrl: "https://github.com/FluffyStuff/riichi-mahjong-tiles",
-    excludeTiles: [],
+    excludeTiles: ["X"],
   },
   {
     id: "style-2",
@@ -121,7 +121,7 @@ const TILESETS = /** @type {TilesetDef[]} */ ([
     rankSide: "right",
     creditName: "tempai-dev",
     creditUrl: "https://github.com/tempai-dev/riichi-mahjong-tiles-svg",
-    excludeTiles: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "J1", "J2"],
+    excludeTiles: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "J1", "J2", "X"],
   },
   {
     id: "style-4",
