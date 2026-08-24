@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hand Evaluation · Filipino</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var m = document.cookie.match(/(?:^|; )riichi-cheatsheet-dark-mode=([^;]*)/);
+        if (m && decodeURIComponent(m[1]) === "1") document.documentElement.dataset.theme = "dark";
+      } catch (e) {}
+    })();
+  </script>
+  <script src="js/tiles.js" defer></script>
+  <script src="js/settings.js" defer></script>
+  <script src="js/filipino-score.js" defer></script>
+  <script src="js/filipino-hand-evaluator.js" defer></script>
+  <script defer src="js/filipino-evaluation-app.js"></script>
+</head>
+<body class="hand-eval-page" data-tile-style="style-1">
+  <header class="toolbar">
+    <h1>Filipino Hand Evaluation</h1>
+    <label>
+      Tiles
+      <select id="tile-style" aria-label="Tile style"></select>
+    </label>
+    <label>
+      Arabic numbers
+      <select id="rank-labels">
+        <option value="hover">On hover</option>
+        <option value="always">Always show</option>
+        <option value="off">Off</option>
+      </select>
+    </label>
+  </header>
+  <main id="hand-eval-root" class="hand-verifier"></main>
+</body>
+</html>

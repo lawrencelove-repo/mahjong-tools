@@ -243,6 +243,21 @@
     const closeSettings = () => setSettingsOpen(false);
     $("#btn-settings-collapse").addEventListener("click", closeSettings);
     $("#btn-settings-close")?.addEventListener("click", closeSettings);
+
+    let handEvalWin = null;
+    $("#btn-hand-eval")?.addEventListener("click", () => {
+      const url = new URL("filipino-evaluation.html", window.location.href).href;
+      if (handEvalWin && !handEvalWin.closed) {
+        handEvalWin.focus();
+        return;
+      }
+      handEvalWin = window.open(
+        url,
+        "filipinoHandEvaluation",
+        "popup=yes,width=980,height=820,scrollbars=yes,resizable=yes"
+      );
+    });
+
     $("#btn-print").addEventListener("click", () => window.print());
   }
 
