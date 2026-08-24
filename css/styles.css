@@ -335,8 +335,10 @@ body {
 @media (max-width: 900px) and (orientation: portrait) and (hover: none),
   (max-width: 480px) and (orientation: portrait) {
   .toolbar {
-    flex-direction: column;
-    align-items: stretch;
+    position: sticky;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
     gap: 0;
     padding: 0.4rem 0.65rem;
   }
@@ -366,18 +368,25 @@ body {
     flex-shrink: 0;
   }
 
+  /* Overlay panel under the header — does not push page content */
   .site-menu {
     display: none;
+    position: absolute;
+    top: calc(100% + 1px);
+    right: 0.4rem;
+    left: auto;
+    z-index: 30;
     flex-direction: column;
     align-items: stretch;
-    align-self: flex-end;
     gap: 0.1rem;
     width: max-content;
-    max-width: 100%;
-    margin-left: auto;
-    margin-top: 0.35rem;
-    padding: 0.35rem 0.15rem 0.2rem;
-    border-top: none;
+    max-width: calc(100vw - 0.8rem);
+    margin: 0;
+    padding: 0.4rem 0.35rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--paper, #fff);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   }
 
   .toolbar.is-menu-open .site-menu:not([hidden]) {
