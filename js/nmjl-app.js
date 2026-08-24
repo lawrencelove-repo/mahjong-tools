@@ -289,6 +289,20 @@
         "popup=yes,width=980,height=860,scrollbars=yes,resizable=yes"
       );
     });
+
+    let tileScanWin = null;
+    $("#btn-tile-scan")?.addEventListener("click", () => {
+      const url = new URL("tile-scan.html", window.location.href).href;
+      if (tileScanWin && !tileScanWin.closed) {
+        tileScanWin.focus();
+        return;
+      }
+      tileScanWin = window.open(
+        url,
+        "nmjlTileScan",
+        "popup=yes,width=980,height=860,scrollbars=yes,resizable=yes"
+      );
+    });
   }
 
   function fillYearSelect() {

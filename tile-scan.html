@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tile Scan · browser CV spike</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var m = document.cookie.match(/(?:^|; )riichi-cheatsheet-dark-mode=([^;]*)/);
+        if (m && decodeURIComponent(m[1]) === "1") document.documentElement.dataset.theme = "dark";
+      } catch (e) {}
+    })();
+  </script>
+  <script src="js/tiles.js" defer></script>
+  <script src="js/tile-scan-cv.js" defer></script>
+  <script src="js/tile-scan-app.js" defer></script>
+</head>
+<body class="hand-eval-page tile-scan-page" data-tile-style="style-2">
+  <header class="toolbar">
+    <h1>Tile Scan</h1>
+    <a class="toolbar-link" href="nmjl-evaluation.html">NMJL Evaluate</a>
+    <a class="toolbar-link" href="nmjl.html">American card</a>
+  </header>
+  <main id="tile-scan-root" class="hand-verifier"></main>
+</body>
+</html>
