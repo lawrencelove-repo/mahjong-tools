@@ -147,12 +147,77 @@ body {
   backdrop-filter: blur(6px);
 }
 
+.toolbar-main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 0.75rem;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.toolbar .site-menu-rulesets {
+  display: none !important;
+}
+
+/*
+ * Desktop site-menu is an inline trailing cluster (action icons).
+ * Ruleset links stay hidden until the compact portrait breakpoint.
+ * Display size (+/−) lives in Settings (#ui-scale-host).
+ */
+.site-menu {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.site-menu-action-label {
+  display: none;
+}
+
+.site-menu-link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 6px;
+  color: inherit;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.site-menu-link:hover {
+  background: var(--badge-bg);
+  color: var(--accent);
+}
+
+.site-menu-link.is-current {
+  background: var(--badge-bg);
+  color: var(--accent);
+}
+
+.site-menu-link-icon {
+  display: inline-flex;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.site-menu-link-icon svg {
+  display: block;
+}
+
 .toolbar h1 {
   font-family: var(--font-display);
   font-size: 1.15rem;
   font-weight: 600;
   margin: 0 1rem 0 0;
   color: var(--accent);
+  white-space: nowrap;
 }
 
 .toolbar label {
@@ -183,14 +248,14 @@ body {
   display: inline-flex;
   gap: 0.4rem;
   align-items: center;
-  margin-left: auto;
+  margin-left: 0;
 }
 
 .ui-scale-control {
   display: inline-flex;
   align-items: center;
   gap: 0.15rem;
-  margin-right: 0.35rem;
+  margin-right: 0;
   padding: 0.1rem 0.2rem;
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -205,6 +270,28 @@ body {
   font-weight: 650;
   color: var(--muted);
   user-select: none;
+}
+
+.ui-scale-control .icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.ui-scale-control .icon-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .ui-scale-control .icon-btn:disabled {
@@ -223,6 +310,12 @@ body {
   text-decoration: none;
 }
 
+/* Hidden by default (after .icon-btn). Compact portrait MQ re-enables it. */
+.toolbar .toolbar-burger {
+  display: none !important;
+  margin-left: auto;
+}
+
 .toolbar .icon-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
@@ -236,6 +329,116 @@ body {
 
 .toolbar .icon-btn svg {
   display: block;
+}
+
+/* Compact header: mobile portrait only (not laptop landscape / half-screen) */
+@media (max-width: 900px) and (orientation: portrait) and (hover: none),
+  (max-width: 480px) and (orientation: portrait) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 0.4rem 0.65rem;
+  }
+
+  .toolbar-main {
+    flex-wrap: nowrap;
+    gap: 0.45rem 0.6rem;
+    width: 100%;
+  }
+
+  .toolbar h1 {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .toolbar-main .group-radios {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-left: 0;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .toolbar .toolbar-burger {
+    display: inline-flex !important;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .site-menu {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    align-self: flex-end;
+    gap: 0.1rem;
+    width: max-content;
+    max-width: 100%;
+    margin-left: auto;
+    margin-top: 0.35rem;
+    padding: 0.35rem 0.15rem 0.2rem;
+    border-top: none;
+  }
+
+  .toolbar.is-menu-open .site-menu:not([hidden]) {
+    display: flex;
+  }
+
+  .site-menu[hidden] {
+    display: none !important;
+  }
+
+  .toolbar-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin-left: 0;
+    width: 100%;
+    gap: 0.05rem;
+  }
+
+  .toolbar-actions .icon-btn,
+  .toolbar-actions a.icon-btn {
+    width: auto;
+    height: auto;
+    min-height: 2rem;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.4rem 0.45rem;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: inherit;
+  }
+
+  .toolbar-actions .icon-btn:hover,
+  .toolbar-actions a.icon-btn:hover {
+    background: var(--badge-bg);
+    color: var(--accent);
+    border-color: transparent;
+  }
+
+  .site-menu-action-label {
+    display: inline;
+    white-space: nowrap;
+  }
+
+  .toolbar .site-menu-rulesets {
+    display: flex !important;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.05rem;
+    margin-top: 0.35rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .site-menu-link {
+    padding: 0.4rem 0.45rem;
+    font-size: 0.9rem;
+  }
 }
 
 .group-radios {
@@ -264,8 +467,30 @@ body {
 #settings-panel label {
   font-size: 0.85rem;
   display: flex;
-  gap: 0.4rem;
+  flex-direction: column;
+  gap: 0.35rem;
   align-items: flex-start;
+}
+
+#settings-panel label:has(> input[type="checkbox"]) {
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.settings-scale {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+}
+
+.settings-scale-title {
+  line-height: 1.3;
+}
+
+#ui-scale-host {
+  display: inline-flex;
 }
 
 .quick-start {

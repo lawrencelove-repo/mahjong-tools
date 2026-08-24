@@ -333,20 +333,24 @@ function bindUiScaleControl(root, onChange) {
 }
 
 /**
- * Insert +/- scale control into a toolbar host if missing.
- * Landing / pages without a ruleset toolbar only apply the cookie scale (no controls).
+ * Insert +/- scale control into Settings (#ui-scale-host) if missing.
+ * Landing / pages without a settings host only apply the cookie scale (no controls).
  * @param {Element|null} [host]
  */
 function mountUiScaleControl(host) {
-  const parent =
-    host ||
-    document.querySelector(".toolbar-actions") ||
-    document.querySelector("header.toolbar");
-  if (!parent || document.body?.classList.contains("landing-page")) {
+  if (document.body?.classList.contains("landing-page")) {
     applyUiScale(loadSettings());
     return null;
   }
-  let el = parent.querySelector(".ui-scale-control");
+  const parent =
+    host ||
+    document.getElementById("ui-scale-host") ||
+    document.querySelector("#settings-panel .settings-options");
+  if (!parent) {
+    applyUiScale(loadSettings());
+    return null;
+  }
+  let el = parent.querySelector(".ui-scale-control") || document.querySelector(".ui-scale-control");
   if (!el) {
     el = document.createElement("div");
     el.className = "ui-scale-control no-print";
@@ -357,7 +361,9 @@ function mountUiScaleControl(host) {
       <span id="ui-scale-label" class="ui-scale-label" aria-live="polite">100%</span>
       <button type="button" id="btn-scale-up" class="icon-btn" aria-label="Increase display size" title="Larger">+</button>
     `;
-    parent.insertBefore(el, parent.firstChild);
+  }
+  if (el.parentElement !== parent) {
+    parent.appendChild(el);
   }
   bindUiScaleControl(el);
   return el;
