@@ -1,0 +1,75 @@
+{
+  "source": "maison-lude-hand-sample.png",
+  "crops": [
+    {
+      "file": "00_1P.png",
+      "id": "1P",
+      "index": 0
+    },
+    {
+      "file": "01_1P.png",
+      "id": "1P",
+      "index": 1
+    },
+    {
+      "file": "02_8P.png",
+      "id": "8P",
+      "index": 2
+    },
+    {
+      "file": "03_4P.png",
+      "id": "4P",
+      "index": 3
+    },
+    {
+      "file": "04_5P.png",
+      "id": "5P",
+      "index": 4
+    },
+    {
+      "file": "05_2B.png",
+      "id": "2B",
+      "index": 5
+    },
+    {
+      "file": "06_7B.png",
+      "id": "7B",
+      "index": 6
+    },
+    {
+      "file": "07_9B.png",
+      "id": "9B",
+      "index": 7
+    },
+    {
+      "file": "08_1C.png",
+      "id": "1C",
+      "index": 8
+    },
+    {
+      "file": "09_1C.png",
+      "id": "1C",
+      "index": 9
+    },
+    {
+      "file": "10_3C.png",
+      "id": "3C",
+      "index": 10
+    },
+    {
+      "file": "11_5C.png",
+      "id": "5C",
+      "index": 11
+    },
+    {
+      "file": "12_8C.png",
+      "id": "8C",
+      "index": 12
+    },
+    {
+      "file": "13_8C.png",
+      "id": "8C",
+      "index": 13
+    }
+  ]
+}

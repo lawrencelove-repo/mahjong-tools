@@ -639,9 +639,51 @@
     return tileGridPromise;
   }
 
-  function classifyCrop(imageData, digits, tileGrids) {
+  async function classifyCrop(imageData, digits, tileGrids, opts = {}) {
+    const useOcr = opts.useOcr !== false && window.TileScanOcr?.recognizeDigit;
+    const useTileCnn = opts.useTileCnn !== false && window.TileScanTileModel?.predict;
+
+    /** @type {any} */
+    let tilePred = null;
+    if (useTileCnn) {
+      try {
+        await window.TileScanTileModel.ensureModel();
+        if (window.TileScanTileModel.getModel()) {
+          tilePred = await window.TileScanTileModel.predict(imageData);
+        }
+      } catch (e) {
+        console.warn("[tile-scan] tile CNN failed", e);
+      }
+    }
+
+    // Primary path: full-tile CNN (detector crop → class id).
+    if (tilePred?.id && tilePred.confidence >= 40 && tilePred.margin >= 0.08) {
+      return {
+        id: tilePred.id,
+        rank: tilePred.id[0],
+        suitHint: tilePred.id[1],
+        score: tilePred.confidence / 100,
+        margin: tilePred.margin,
+        top: tilePred.top,
+        ocr: null,
+        tileCnn: tilePred,
+        method: "tile-cnn",
+      };
+    }
+
     const suitHint =
       detectSuitFromIcon(imageData) || detectSuitFromNumeral(imageData);
+
+    /** @type {{digit: string|null, confidence: number, raw: string}|null} */
+    let ocr = null;
+    if (useOcr) {
+      try {
+        ocr = await window.TileScanOcr.recognizeDigit(imageData);
+      } catch (e) {
+        console.warn("[tile-scan] OCR failed", e);
+      }
+    }
+
     const grid = colorGrid(imageData);
     /** @type {{id:string, score:number}[]} */
     const ranked = [];
@@ -656,7 +698,6 @@
     }
     ranked.sort((a, b) => b.score - a.score);
 
-    // Digit vote as a soft prior when margin is weak.
     const fp = digitFingerprintFromImageData(imageData);
     /** @type {Map<string, number>} */
     const digitScores = new Map();
@@ -666,27 +707,76 @@
     for (const c of ranked) {
       const d = c.id[0];
       c.score += (digitScores.get(d) || 0) * 0.15;
+      if (ocr?.digit && c.id[0] === ocr.digit) c.score += 0.35;
+      if (tilePred?.id && c.id === tilePred.id) c.score += 0.4;
     }
     ranked.sort((a, b) => b.score - a.score);
+
+    // Soft CNN: boost or pick when close.
+    if (tilePred?.id && tilePred.confidence >= 25) {
+      const agree = ranked.find((c) => c.id === tilePred.id);
+      if (agree || tilePred.confidence >= 55) {
+        return {
+          id: tilePred.id,
+          rank: tilePred.id[0],
+          suitHint: tilePred.id[1] || suitHint,
+          score: tilePred.confidence / 100,
+          margin: tilePred.margin,
+          top: tilePred.top || ranked.slice(0, 5),
+          ocr,
+          tileCnn: tilePred,
+          method: "tile-cnn",
+        };
+      }
+    }
+
+    let id = ranked[0]?.id || "?";
+    let rank = ranked[0]?.id?.[0] || "?";
+    if (ocr?.digit && suitHint) {
+      id = `${ocr.digit}${suitHint}`;
+      rank = ocr.digit;
+    } else if (ocr?.digit) {
+      const sameRank = ranked.find((c) => c.id[0] === ocr.digit);
+      if (sameRank) {
+        id = sameRank.id;
+        rank = ocr.digit;
+      } else {
+        rank = ocr.digit;
+        id = `${ocr.digit}?`;
+      }
+    }
 
     const best = ranked[0];
     const second = ranked[1];
     return {
-      id: best?.id || "?",
-      rank: best?.id?.[0] || "?",
-      suitHint: suitHint || best?.id?.[1] || null,
-      score: best?.score ?? 0,
+      id: id.includes("?") && id.length === 2 ? "?" : id,
+      rank,
+      suitHint: suitHint || (id.length === 2 ? id[1] : null),
+      score: ocr?.digit
+        ? Math.max(best?.score ?? 0, ocr.confidence / 100)
+        : best?.score ?? 0,
       margin: (best?.score ?? 0) - (second?.score ?? 0),
       top: ranked.slice(0, 5),
+      ocr,
+      tileCnn: tilePred,
+      method: ocr?.digit ? "ocr+grid" : "grid",
     };
   }
 
   /**
    * @param {HTMLImageElement|ImageBitmap} source
-   * @param {{expectedCount?: number}} [opts]
+   * @param {{expectedCount?: number, useOcr?: boolean}} [opts]
    */
   async function analyzePhoto(source, opts = {}) {
     const expectedCount = opts.expectedCount ?? 14;
+    const useOcr = opts.useOcr !== false;
+    const useTileCnn = opts.useTileCnn !== false;
+    if (useTileCnn && window.TileScanTileModel?.ensureModel) {
+      await window.TileScanTileModel.ensureModel();
+    }
+    if (useOcr && window.TileScanOcr?.warmUp) {
+      await window.TileScanOcr.warmUp();
+    }
     const [digits, tileGrids] = await Promise.all([
       ensureDigitTemplates(),
       ensureTileGrids(),
@@ -712,17 +802,23 @@
       boxes = sortReadingOrder(keep);
     }
 
-    const tiles = boxes.map((box, index) => {
+    /** @type {any[]} */
+    const tiles = [];
+    for (let index = 0; index < boxes.length; index++) {
+      const box = boxes[index];
       const face = extractFaceCrop(imageData, box);
       const crop = cropRect(ctx, face);
-      const match = classifyCrop(crop, digits, tileGrids);
+      const match = await classifyCrop(crop, digits, tileGrids, {
+        useOcr,
+        useTileCnn,
+      });
       const thumb = document.createElement("canvas");
       thumb.width = 48;
       thumb.height = 64;
       thumb
         .getContext("2d")
         .drawImage(canvas, box.x, box.y, box.w, box.h, 0, 0, 48, 64);
-      return {
+      tiles.push({
         index,
         id: match.id,
         score: match.score,
@@ -730,6 +826,22 @@
         suitHint: match.suitHint,
         rank: match.rank,
         top: match.top,
+        method: match.method,
+        ocr: match.ocr
+          ? {
+              digit: match.ocr.digit,
+              confidence: match.ocr.confidence,
+              raw: match.ocr.raw,
+              method: match.ocr.method || "template",
+            }
+          : null,
+        tileCnn: match.tileCnn
+          ? {
+              id: match.tileCnn.id,
+              confidence: match.tileCnn.confidence,
+              margin: match.tileCnn.margin,
+            }
+          : null,
         box: {
           x: box.x / scale,
           y: box.y / scale,
@@ -738,8 +850,8 @@
         },
         processBox: box,
         thumbDataUrl: thumb.toDataURL("image/jpeg", 0.7),
-      };
-    });
+      });
+    }
 
     return {
       processSize: { width, height, scale },
@@ -748,8 +860,63 @@
       debug: {
         maskDensity: mask.reduce((a, b) => a + b, 0) / Math.max(1, mask.length),
         groupCount: rawBoxes.length,
+        ocr: useOcr && !!window.TileScanOcr,
+        tileCnn: useTileCnn && !!window.TileScanTileModel?.getModel?.(),
       },
     };
+  }
+
+  /**
+   * Detector only: return ordered face crops (for labeling / fine-tune).
+   * @param {HTMLImageElement|ImageBitmap} source
+   * @param {{expectedCount?: number}} [opts]
+   */
+  async function extractCrops(source, opts = {}) {
+    const expectedCount = opts.expectedCount ?? 14;
+    const { canvas, ctx, scale, width, height } = drawToProcessCanvas(source);
+    const imageData = ctx.getImageData(0, 0, width, height);
+    let mask = buildFaceMask(imageData);
+    mask = morphClose(mask, width, height);
+    const rawBoxes = connectedComponents(mask, width, height);
+    let boxes = [];
+    for (const b of rawBoxes) boxes.push(...maybeSplitBox(imageData, b));
+    boxes = sortReadingOrder(boxes);
+    if (boxes.length > expectedCount) {
+      const keep = boxes
+        .slice()
+        .sort((a, b) => b.area - a.area)
+        .slice(0, expectedCount);
+      boxes = sortReadingOrder(keep);
+    }
+
+    return boxes.map((box, index) => {
+      const face = extractFaceCrop(imageData, box);
+      const crop = cropRect(ctx, face);
+      const thumb = document.createElement("canvas");
+      thumb.width = 48;
+      thumb.height = 64;
+      thumb
+        .getContext("2d")
+        .drawImage(canvas, box.x, box.y, box.w, box.h, 0, 0, 48, 64);
+      const exportCanvas = document.createElement("canvas");
+      exportCanvas.width = crop.width;
+      exportCanvas.height = crop.height;
+      exportCanvas.getContext("2d").putImageData(crop, 0, 0);
+      return {
+        index,
+        box: {
+          x: box.x / scale,
+          y: box.y / scale,
+          w: box.w / scale,
+          h: box.h / scale,
+        },
+        width: crop.width,
+        height: crop.height,
+        imageData: crop,
+        thumbDataUrl: thumb.toDataURL("image/jpeg", 0.75),
+        pngDataUrl: exportCanvas.toDataURL("image/png"),
+      };
+    });
   }
 
   const SAMPLE_EXPECTED = [
@@ -771,6 +938,7 @@
 
   window.TileScanCv = {
     analyzePhoto,
+    extractCrops,
     ensureTemplates: async () => {
       await Promise.all([ensureDigitTemplates(), ensureTileGrids()]);
     },

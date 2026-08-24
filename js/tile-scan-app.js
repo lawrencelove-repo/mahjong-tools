@@ -17,8 +17,8 @@
       <h2>Tile Scan <span class="hv-note">(browser CV spike · Maison Lude / Lemons)</span></h2>
       <p class="hv-note">
         Upload a photo or try the sample. Runs entirely in your browser (github.io friendly).
-        Detection finds tile boxes; labels are a best-effort draft — edit any wrong IDs, then copy.
-        Tuned for Maison Lude / Lemons (style-2) on a dark background.
+        Classical detector finds boxes; a TF.js full-tile CNN classifies each Lemons crop
+        (assets/models/lemon-tile). Edit wrong IDs, then copy.
       </p>
       <div class="hv-toolbar ts-toolbar">
         <label class="hv-btn primary ts-file-label">
@@ -47,7 +47,9 @@
     $("#ts-analyze").addEventListener("click", () => analyze());
     $("#ts-copy").addEventListener("click", copyHand);
 
-    // Warm templates in background
+    // Warm tile CNN + digit templates in background
+    window.TileScanTileModel?.ensureModel?.().catch(() => {});
+    window.TileScanOcr?.warmUp?.().catch(() => {});
     window.TileScanCv?.ensureTemplates?.().catch(() => {});
   }
 
@@ -159,7 +161,18 @@
       meta.className = "ts-meta";
       const t = lastResult?.tiles?.[i];
       meta.textContent = t
-        ? `conf ${t.score.toFixed(2)}${t.suitHint ? ` · hint ${t.suitHint}` : ""}`
+        ? [
+            t.tileCnn?.id != null
+              ? `cnn ${t.tileCnn.id} (${Math.round(t.tileCnn.confidence)}%)`
+              : null,
+            t.ocr?.digit != null
+              ? `${t.ocr.method || "ocr"} ${t.ocr.digit} (${Math.round(t.ocr.confidence)}%)`
+              : null,
+            t.method && t.method !== "tile-cnn" ? t.method : null,
+            `conf ${t.score.toFixed(2)}`,
+          ]
+            .filter(Boolean)
+            .join(" · ")
         : "";
       row.append(thumb, sel, meta);
       host.appendChild(row);
@@ -259,7 +272,7 @@
   async function analyze(opts = {}) {
     if (!sourceImage || !window.TileScanCv) return;
     $("#ts-analyze").disabled = true;
-    setStatus("Analyzing… (loading templates on first run)");
+    setStatus("Analyzing… (first run loads OCR + templates)");
     const t0 = performance.now();
     try {
       await window.TileScanCv.ensureTemplates();
