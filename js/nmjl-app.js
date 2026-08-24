@@ -275,6 +275,20 @@
         "popup=yes,width=980,height=860,scrollbars=yes,resizable=yes"
       );
     });
+
+    let handEvalWin = null;
+    $("#btn-hand-eval")?.addEventListener("click", () => {
+      const url = new URL("nmjl-evaluation.html", window.location.href).href;
+      if (handEvalWin && !handEvalWin.closed) {
+        handEvalWin.focus();
+        return;
+      }
+      handEvalWin = window.open(
+        url,
+        "nmjlHandEvaluation",
+        "popup=yes,width=980,height=860,scrollbars=yes,resizable=yes"
+      );
+    });
   }
 
   function fillYearSelect() {

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hand Evaluation · American (NMJL 2026)</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var m = document.cookie.match(/(?:^|; )riichi-cheatsheet-dark-mode=([^;]*)/);
+        if (m && decodeURIComponent(m[1]) === "1") document.documentElement.dataset.theme = "dark";
+      } catch (e) {}
+    })();
+  </script>
+  <script src="js/tiles.js" defer></script>
+  <script src="js/settings.js" defer></script>
+  <script src="js/nmjl-data.js" defer></script>
+  <script src="js/nmjl-score.js" defer></script>
+  <script src="js/nmjl-hand-evaluator.js" defer></script>
+  <script defer src="js/nmjl-evaluation-app.js"></script>
+</head>
+<body class="hand-eval-page nmjl-page" data-tile-style="style-1">
+  <header class="toolbar">
+    <h1>NMJL Hand Evaluation · 2026</h1>
+    <label>
+      Tiles
+      <select id="tile-style" aria-label="Tile style"></select>
+    </label>
+    <label>
+      Arabic numbers
+      <select id="rank-labels">
+        <option value="hover">On hover</option>
+        <option value="always">Always show</option>
+        <option value="off">Off</option>
+      </select>
+    </label>
+  </header>
+  <main id="hand-eval-root" class="hand-verifier"></main>
+</body>
+</html>
