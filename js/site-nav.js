@@ -216,6 +216,55 @@
       setTimeout(syncMenuVisibility, 50);
     });
     syncMenuVisibility();
+    initBackToTop();
+  }
+
+  function initBackToTop() {
+    if (document.getElementById("btn-back-to-top")) return;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "btn-back-to-top";
+    btn.className = "back-to-top no-print";
+    btn.setAttribute("aria-label", "Back to top");
+    btn.setAttribute("aria-hidden", "true");
+    btn.tabIndex = -1;
+    btn.title = "Back to top";
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 19V5"/>
+        <path d="M5 12l7-7 7 7"/>
+      </svg>
+      <span>TOP</span>
+    `;
+    document.body.appendChild(btn);
+
+    const SHOW_AFTER = 320;
+    let ticking = false;
+
+    const sync = () => {
+      const show = window.scrollY > SHOW_AFTER;
+      btn.classList.toggle("is-visible", show);
+      btn.setAttribute("aria-hidden", show ? "false" : "true");
+      btn.tabIndex = show ? 0 : -1;
+      ticking = false;
+    };
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(sync);
+      },
+      { passive: true }
+    );
+
+    btn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    sync();
   }
 
   if (document.readyState === "loading") {
