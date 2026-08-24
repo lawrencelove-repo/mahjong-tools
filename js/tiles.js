@@ -56,10 +56,18 @@ const STYLE2_FILES = {
  *   fallback?: string | null,
  *   rankSide?: "left" | "right",
  *   akaPlain?: Record<string, string>,
+ *   creditName?: string,
+ *   creditUrl?: string | null,
+ *   excludeTiles?: string[],
  * }} TilesetDef
  */
 
-/** Registry: add style-6+ here; folders live at assets/{id}/. */
+/**
+ * Registry: add style-6+ here; folders live at assets/{id}/.
+ *
+ * excludeTiles — tile ids omitted from tiles.html and Tile Key panels.
+ * Edit the arrays directly (e.g. "X", "F5", "J1", "5Br"). Empty/omitted = show all.
+ */
 const TILESETS = /** @type {TilesetDef[]} */ ([
   {
     id: "style-1",
@@ -69,6 +77,9 @@ const TILESETS = /** @type {TilesetDef[]} */ ([
     files: STYLE1_FILES,
     fallback: null,
     rankSide: "right",
+    creditName: "FluffyStuff",
+    creditUrl: "https://github.com/FluffyStuff/riichi-mahjong-tiles",
+    excludeTiles: [],
   },
   {
     id: "style-2",
@@ -79,6 +90,10 @@ const TILESETS = /** @type {TilesetDef[]} */ ([
     fallback: "style-1",
     rankSide: "left",
     akaPlain: { "5Br": "B5", "5Cr": "C5", "5Pr": "P5" },
+    creditName: "Maison Lude",
+    creditUrl: null,
+    // No dedicated aka / seasons / back in this pack
+    excludeTiles: ["5Br", "5Cr", "5Pr", "F5", "F6", "F7", "F8", "X"],
   },
   {
     id: "style-3",
@@ -88,6 +103,10 @@ const TILESETS = /** @type {TilesetDef[]} */ ([
     files: STYLE1_FILES,
     fallback: "style-1",
     rankSide: "right",
+    creditName: "samoheen",
+    creditUrl: "https://github.com/samoheen/mahjong-tiles",
+    // No aka, jokers, or back in upstream HK set
+    excludeTiles: ["5Br", "5Cr", "5Pr", "J1", "J2", "X"],
   },
   {
     id: "style-5",
@@ -97,6 +116,9 @@ const TILESETS = /** @type {TilesetDef[]} */ ([
     files: STYLE1_FILES,
     fallback: "style-1",
     rankSide: "right",
+    creditName: "tempai-dev",
+    creditUrl: "https://github.com/tempai-dev/riichi-mahjong-tiles-svg",
+    excludeTiles: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "J1", "J2"],
   },
   {
     id: "style-4",
@@ -106,9 +128,22 @@ const TILESETS = /** @type {TilesetDef[]} */ ([
     files: STYLE1_FILES,
     fallback: "style-1",
     rankSide: "right",
+    creditName: "tempai-dev",
+    creditUrl: "https://github.com/tempai-dev/riichi-mahjong-tiles-svg",
+    excludeTiles: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "J1", "J2"],
   },
-  { id: "text", label: "Text (NMJL)", kind: "text" },
+  { id: "text", label: "Text (NMJL)", kind: "text", excludeTiles: [] },
 ]);
+
+/** Canonical tile ids shown in the library gallery (and for credit browsing). */
+const GALLERY_TILE_IDS = [
+  "1B", "2B", "3B", "4B", "5B", "6B", "7B", "8B", "9B", "5Br",
+  "1C", "2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "5Cr",
+  "1P", "2P", "3P", "4P", "5P", "6P", "7P", "8P", "9P", "5Pr",
+  "EW", "SW", "WW", "NW", "WD", "GD", "RD",
+  "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8",
+  "J1", "J2", "X",
+];
 
 const TILESET_BY_ID = Object.fromEntries(TILESETS.map((t) => [t.id, t]));
 const DEFAULT_TILE_STYLE = "style-1";
@@ -136,6 +171,81 @@ function normalizeStyleId(value) {
 
 function labelForStyle(id) {
   return getTileset(id).label;
+}
+
+/**
+ * True if this tile id is listed in the tileset’s excludeTiles array.
+ * @param {string} styleId
+ * @param {string} tileId
+ */
+function isExcludedTile(styleId, tileId) {
+  const ex = getTileset(styleId).excludeTiles;
+  return Array.isArray(ex) && ex.includes(tileId);
+}
+
+/**
+ * Gallery / key tile ids for a style, with exclusions removed.
+ * @param {string} [styleId]
+ * @param {string[]} [ids]
+ * @returns {string[]}
+ */
+function galleryIdsForStyle(styleId, ids = GALLERY_TILE_IDS) {
+  const style = normalizeStyleId(styleId);
+  return ids.filter((id) => !isExcludedTile(style, id));
+}
+
+/**
+ * Drop excluded tiles from a hand notation string (for Tile Key rows).
+ * Returns "" if nothing remains.
+ * @param {string} notation
+ * @param {string} styleId
+ */
+function filterTilesNotation(notation, styleId) {
+  const style = normalizeStyleId(styleId);
+  const kept = [];
+  for (const tok of parseHand(notation)) {
+    if (tok.type === "break") {
+      if (kept.length && kept[kept.length - 1] !== "|") kept.push("|");
+      continue;
+    }
+    if (tok.type === "tile" && !isExcludedTile(style, tok.id)) kept.push(tok.id);
+  }
+  while (kept.length && kept[0] === "|") kept.shift();
+  while (kept.length && kept[kept.length - 1] === "|") kept.pop();
+  return kept.join(" ");
+}
+
+/**
+ * Footer credit HTML for the active tileset (source name links to tiles.html).
+ * @param {string} [styleId]
+ * @returns {string}
+ */
+function creditHtml(styleId) {
+  const set = getTileset(styleId);
+  if (set.kind === "text") {
+    return `Tile display: Text (NMJL). <a href="tiles.html">Browse tile libraries</a>.`;
+  }
+  const name = set.creditName || set.label;
+  return `Tile art: <a href="tiles.html">${escapeCreditHtml(name)}</a>.`;
+}
+
+function escapeCreditHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/**
+ * Fill every `.tile-credit` (or `[data-tile-credit]`) with the active set’s attribution.
+ * @param {string} [styleId]
+ */
+function updateTileCredits(styleId) {
+  const html = creditHtml(styleId);
+  document.querySelectorAll(".tile-credit, [data-tile-credit]").forEach((el) => {
+    el.innerHTML = html;
+  });
 }
 
 const TEXT_GLYPH = {
@@ -460,8 +570,14 @@ window.Tiles = {
   getTileset,
   normalizeStyleId,
   labelForStyle,
+  creditHtml,
+  updateTileCredits,
+  isExcludedTile,
+  galleryIdsForStyle,
+  filterTilesNotation,
   imageCandidates,
   TILESETS,
+  GALLERY_TILE_IDS,
   STYLE1_FILES,
   STYLE2_FILES,
   DEFAULT_TILE_STYLE,

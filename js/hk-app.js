@@ -253,16 +253,18 @@
     note.textContent =
       style === "text"
         ? "Colored digits/letters: green = bam, red = crak, black = dot, blue = honors."
-        : "All tiles in the current tileset.";
+        : "Tiles in the current tileset (excluded faces are omitted).";
     el.appendChild(note);
 
     for (const row of rows) {
+      const tiles = Tiles.filterTilesNotation(row.tiles, style);
+      if (!tiles) continue;
       const line = document.createElement("div");
       line.className = "tile-key-row";
       const lab = document.createElement("span");
       lab.className = "tile-key-label";
       lab.textContent = row.label;
-      line.append(lab, Tiles.renderHand(row.tiles, style, opts));
+      line.append(lab, Tiles.renderHand(tiles, style, opts));
       el.appendChild(line);
     }
   }

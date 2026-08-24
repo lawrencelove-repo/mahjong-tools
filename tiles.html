@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tile Libraries · Mahjong</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var m = document.cookie.match(/(?:^|; )riichi-cheatsheet-dark-mode=([^;]*)/);
+        if (m && decodeURIComponent(m[1]) === "1") document.documentElement.dataset.theme = "dark";
+      } catch (e) {}
+    })();
+  </script>
+  <script src="js/tiles.js" defer></script>
+  <script src="js/settings.js" defer></script>
+  <script src="js/tiles-gallery.js" defer></script>
+</head>
+<body class="tiles-gallery-page">
+  <header class="toolbar no-print">
+    <div class="toolbar-main">
+      <h1>Tile Libraries</h1>
+      <a href="index.html" class="icon-btn" aria-label="Home" title="Home">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 10.5L12 3l9 7.5"/>
+          <path d="M5 10v10h14V10"/>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <main class="tiles-gallery">
+    <p class="tiles-gallery-lead">
+      Every tileset available in these cheatsheets. Click a tile to enlarge it.
+      Display size follows your global preference from Settings on any ruleset page.
+      Per-set exclusions are edited in <code>js/tiles.js</code> (<code>excludeTiles</code> on each entry in <code>TILESETS</code>).
+    </p>
+    <div id="tiles-gallery-root"></div>
+  </main>
+</body>
+</html>

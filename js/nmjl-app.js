@@ -197,7 +197,9 @@
       ["Dragons", "RD BD PD"],
       ["Soap / extras", "0P F J"],
     ];
-    for (const [label, tiles] of rows) {
+    for (const [label, tilesRaw] of rows) {
+      const tiles = Tiles.filterTilesNotation(tilesRaw, style);
+      if (!tiles) continue;
       const row = document.createElement("div");
       row.className = "example";
       const lab = document.createElement("span");

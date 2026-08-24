@@ -213,6 +213,9 @@ function applyTileStyle(select = document.getElementById("tile-style"), settings
     else delete document.body.dataset.rankSide;
   }
   if (select && select.value !== style) select.value = style;
+  if (typeof window !== "undefined" && window.Tiles?.updateTileCredits) {
+    window.Tiles.updateTileCredits(style);
+  }
   return style;
 }
 
@@ -489,6 +492,10 @@ function initThemeUi() {
 function initDisplayPrefsUi() {
   initUiScaleUi();
   initThemeUi();
+  // Footer credit when there is no tile-style select (e.g. landing / tiles.html)
+  if (typeof window !== "undefined" && window.Tiles?.updateTileCredits) {
+    window.Tiles.updateTileCredits(normalizeTileStyle(loadSettings().tileStyle));
+  }
 }
 
 if (document.readyState === "loading") {

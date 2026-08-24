@@ -218,6 +218,9 @@
     if (settings.showDoraPanel) {
       rows.push({ label: "Aka (red fives)", tiles: "5Br 5Cr 5Pr" });
     }
+    const extras = Tiles.filterTilesNotation("F1 F2 F3 F4 F5 F6 F7 F8 J1 J2 X", style);
+    if (extras) rows.push({ label: "Extras", tiles: extras });
+
     el.replaceChildren();
     const h = document.createElement("h2");
     h.textContent = `Tile Key · ${styleName}`;
@@ -228,16 +231,18 @@
     note.textContent =
       style === "text"
         ? "Colored digits/letters: green = bam, red = crak, black = dot, blue = honors."
-        : "All tiles in the current tileset.";
+        : "Tiles in the current tileset (excluded faces are omitted).";
     el.appendChild(note);
 
     for (const row of rows) {
+      const tiles = Tiles.filterTilesNotation(row.tiles, style);
+      if (!tiles) continue;
       const line = document.createElement("div");
       line.className = "tile-key-row";
       const lab = document.createElement("span");
       lab.className = "tile-key-label";
       lab.textContent = row.label;
-      line.append(lab, Tiles.renderHand(row.tiles, style, opts));
+      line.append(lab, Tiles.renderHand(tiles, style, opts));
       el.appendChild(line);
     }
   }
