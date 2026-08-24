@@ -59,6 +59,7 @@ const STYLE2_FILES = {
  *   creditName?: string,
  *   creditUrl?: string | null,
  *   excludeTiles?: string[],
+ *   disabled?: boolean,
  * }} TilesetDef
  */
 
@@ -67,6 +68,8 @@ const STYLE2_FILES = {
  *
  * excludeTiles — tile ids omitted from tiles.html and Tile Key panels.
  * Edit the arrays directly (e.g. "X", "F5", "J1", "5Br"). Empty/omitted = show all.
+ *
+ * disabled: true — keep assets on disk but hide from dropdowns, gallery, and keys.
  */
 const TILESETS = /** @type {TilesetDef[]} */ ([
   {
@@ -131,6 +134,7 @@ const TILESETS = /** @type {TilesetDef[]} */ ([
     creditName: "tempai-dev",
     creditUrl: "https://github.com/tempai-dev/riichi-mahjong-tiles-svg",
     excludeTiles: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "J1", "J2"],
+    disabled: true,
   },
   { id: "text", label: "Text (NMJL)", kind: "text", excludeTiles: [] },
 ]);
@@ -154,8 +158,13 @@ const TILE_STYLE_ALIASES = {
   custom: "style-2",
 };
 
-function listTilesets() {
-  return TILESETS.slice();
+/**
+ * Active tilesets for UI (dropdowns, gallery). Pass `{ includeDisabled: true }` to see all.
+ * @param {{ includeDisabled?: boolean }} [opts]
+ */
+function listTilesets(opts = {}) {
+  if (opts.includeDisabled) return TILESETS.slice();
+  return TILESETS.filter((t) => !t.disabled);
 }
 
 function getTileset(id) {
@@ -166,7 +175,9 @@ function getTileset(id) {
 function normalizeStyleId(value) {
   if (!value) return DEFAULT_TILE_STYLE;
   const aliased = TILE_STYLE_ALIASES[value] || value;
-  return TILESET_BY_ID[aliased] ? aliased : DEFAULT_TILE_STYLE;
+  const set = TILESET_BY_ID[aliased];
+  if (!set || set.disabled) return DEFAULT_TILE_STYLE;
+  return aliased;
 }
 
 function labelForStyle(id) {

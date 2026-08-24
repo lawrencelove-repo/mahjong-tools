@@ -7,3 +7,5 @@ License: MIT OR CC-PDDC (see upstream README). Upstream notes the SVGs are deriv
 Tile faces are cropped to remove the sheet’s baked-in outline and 3D side bevel so they match other styles under the site’s CSS tile border.
 
 Missing flowers / seasons / jokers fall back to **style-1** at runtime.
+
+**Disabled** in the app UI (`disabled: true` on this entry in `js/tiles.js`) — assets remain here for possible re-enable later.
