@@ -10,7 +10,7 @@ const UI_SCALE_COOKIE = "riichi-cheatsheet-ui-scale";
 const DARK_MODE_COOKIE = "riichi-cheatsheet-dark-mode";
 const SETTINGS_COOKIE_MAX_AGE = 60 * 60 * 24 * 400; // ~13 months
 const VALID_RANK_LABELS = ["off", "hover", "always"];
-const UI_SCALE_STEPS = [100, 125, 150, 200];
+const UI_SCALE_STEPS = [100, 125, 150];
 
 const DEFAULT_SETTINGS = {
   tileStyle: "style-1", // style-N | text (legacy: traditional → style-1, custom → style-2)
@@ -23,7 +23,7 @@ const DEFAULT_SETTINGS = {
   showScoringRef: false, // page-2 style scoring quick ref
   allowPage2: false, // when false, denser 1-page print; overflow still may spill if content huge — print CSS prefers 1 page unless this or scoring ref is on
   rankLabels: "hover", // off | hover | always — Arabic/honor glyphs on image tiles
-  uiScale: 100, // 100 | 125 | 150 | 200 — fonts, columns, tiles
+  uiScale: 100, // 100 | 125 | 150 — fonts, columns, tiles
   darkMode: false, // global theme; dedicated cookie
   showTileKey: false, // full tileset key / legend section
   nmjlYear: 2026, // American Mahjong card year (nmjl.html)
@@ -344,7 +344,7 @@ function setUiScale(percent, onChange) {
 }
 
 /**
- * Wire +/- display-size control (steps 100 / 125 / 150 / 200).
+ * Wire +/- display-size control (steps 100 / 125 / 150).
  * @param {ParentNode} root
  * @param {(pct: number, settings: object) => void} [onChange]
  */
