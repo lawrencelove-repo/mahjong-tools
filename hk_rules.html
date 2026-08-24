@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hong Kong Rules · Mahjong</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var m = document.cookie.match(/(?:^|; )riichi-cheatsheet-dark-mode=([^;]*)/);
+        if (m && decodeURIComponent(m[1]) === "1") document.documentElement.dataset.theme = "dark";
+      } catch (e) {}
+    })();
+  </script>
+  <script src="js/tiles.js" defer></script>
+  <script src="js/settings.js" defer></script>
+  <script src="js/site-nav.js" defer></script>
+  <script src="js/rules-page.js" defer></script>
+</head>
+<body class="rules-page" data-ruleset="hk">
+  <header class="toolbar no-print">
+    <div class="toolbar-main">
+      <h1>Hong Kong Rules</h1>
+      <button type="button" id="btn-menu" class="icon-btn toolbar-burger" aria-label="Menu" title="Menu" aria-expanded="false" aria-controls="site-menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 6h16"/>
+          <path d="M4 12h16"/>
+          <path d="M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="site-menu" class="site-menu">
+      <div class="toolbar-actions">
+        <a href="index.html" class="icon-btn" aria-label="Home" title="Home">
+          <span class="site-menu-action-label">Home</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 10.5L12 3l9 7.5"/>
+            <path d="M5 10v10h14V10"/>
+          </svg>
+        </a>
+        <button type="button" id="btn-settings" class="icon-btn" aria-label="Settings" title="Settings" aria-expanded="false" aria-controls="settings-panel">
+          <span class="site-menu-action-label">Settings</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+        <a href="hk.html" class="icon-btn" aria-label="Cheatsheet" title="Cheatsheet">
+          <span class="site-menu-action-label">Cheatsheet</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <path d="M14 2v6h6"/>
+            <path d="M16 13H8"/>
+            <path d="M16 17H8"/>
+            <path d="M10 9H8"/>
+          </svg>
+        </a>
+      </div>
+      <nav class="site-menu-rulesets" aria-label="Rulesets"></nav>
+    </div>
+  </header>
+
+  <div id="settings-panel" class="no-print" hidden>
+    <div class="settings-options">
+      <div class="settings-scale">
+        <div class="settings-scale-main">
+          <span class="settings-scale-title">Display size</span>
+          <span id="ui-scale-host"></span>
+        </div>
+        <button type="button" id="btn-settings-close" class="settings-close-btn" aria-label="Close settings" title="Close">Close</button>
+      </div>
+      <label><input type="checkbox" id="opt-dark-mode" /> Dark mode</label>
+    </div>
+  </div>
+
+  <main class="rules-doc">
+    <p class="rules-lead">
+      A play overview for <strong>Hong Kong / Cantonese old-style</strong> mahjong (faan scoring).
+      Pattern and faan lists are on the <a href="hk.html">Hong Kong cheatsheet</a> — this page covers how a hand is played.
+    </p>
+
+    <nav class="rules-toc" aria-label="On this page">
+      <a href="#setup">Setup</a>
+      <a href="#terms">Terms</a>
+      <a href="#turns">Turns</a>
+      <a href="#hands">Hands</a>
+      <a href="#winning">Winning</a>
+    </nav>
+
+    <section id="setup">
+      <h2>Setup</h2>
+      <ul>
+        <li><strong>Players:</strong> Four. East is dealer; winds rotate as the game progresses through rounds.</li>
+        <li><strong>Tiles:</strong> Usually <strong>136</strong> (suits + honors). Flowers and seasons (8+8) are common house options — include them, exclude them, or substitute blanks. Agree before dealing; the cheatsheet’s season setting mirrors that choice for examples.</li>
+        <li><strong>No jokers</strong> in standard HK play.</li>
+        <li><strong>Wall:</strong> Four walls of 17×2 (or 18×2 if flowers/seasons are in). Dice set the break point.</li>
+        <li><strong>Deal:</strong> <strong>13</strong> tiles each; East takes a <strong>14th</strong> and starts. If flowers/seasons are used, players often replace them immediately from the back of the wall until the dealt hand has none (table rule).</li>
+      </ul>
+    </section>
+
+    <section id="terms">
+      <h2>Names &amp; terms</h2>
+      <dl class="rules-glossary">
+        <dt>Characters / circles / bamboo</dt>
+        <dd>The three suits (man / pin / sou).</dd>
+        <dt>Winds &amp; dragons</dt>
+        <dd>Honors. Seat wind and prevailing (round) wind matter for scoring.</dd>
+        <dt>Flowers &amp; seasons</dt>
+        <dd>Bonus tiles when included. Drawing one usually scores and replaces from the wall; they are not kept as part of the 13-tile structure in the same way as suits.</dd>
+        <dt>Pong / chow / kong</dt>
+        <dd>Triplet, sequence (chow only from the previous player’s discard), and quad. English tables often say pung/chi/kong.</dd>
+        <dt>Faan (fan)</dt>
+        <dd>Scoring units. Tables set a minimum faan to win (commonly 3). Patterns add faan; payments scale with total faan.</dd>
+        <dt>Self-draw / discard win</dt>
+        <dd>Win on your draw vs. claiming someone’s discard (often called “joker-free” ron/tsumo equivalents — HK speech varies).</dd>
+        <dt>Ready / listening</dt>
+        <dd>One tile from winning (tenpai). Some tables care at a draw; many HK casual games simply end with a washout.</dd>
+      </dl>
+    </section>
+
+
+    <section id="turns">
+      <h2>Turns &amp; turn order</h2>
+      <p>
+        Order is <strong>counter-clockwise</strong> from East. On your turn:
+      </p>
+      <ol>
+        <li><strong>Draw</strong> one tile from the front of the wall (kong replacements come from the back).</li>
+        <li>If flowers/seasons are in play and you drew one, set it aside for scoring and <strong>replace</strong> until you have a normal tile (per table).</li>
+        <li>You may win on the draw, declare a kong, or otherwise act per house rules.</li>
+        <li><strong>Discard</strong> one tile. Others may claim it for a chow (only the next player), pung, kong, or win — with win usually beating other claims.</li>
+      </ol>
+      <p>
+        After a claimed meld, the claimant discards and play continues from them. A win ends the hand.
+      </p>
+    </section>
+
+    <section id="hands">
+      <h2>Hand formation (brief)</h2>
+      <p>
+        A standard winning hand is <strong>four sets + one pair</strong> (14 tiles). Sets are chows, pongs, or kongs, open or closed. Special hands (seven pairs, thirteen orphans, and various limited hands) appear on the faan chart when your table recognizes them.
+      </p>
+      <p>
+        Unlike riichi, you generally do <strong>not</strong> need a named “yaku” beyond meeting the table’s <strong>minimum faan</strong> — patterns themselves supply the faan.
+      </p>
+    </section>
+
+    <section id="winning">
+      <h2>Win conditions</h2>
+      <ul>
+        <li>Complete a legal hand that meets the table’s <strong>minimum faan</strong>.</li>
+        <li>Win on self-draw or on a discard (unless a house rule forbids certain discards).</li>
+        <li>Score by totaling faan from patterns, then apply the table’s payment scheme (often loser(s) pay the winner; self-draw may mean all three pay).</li>
+        <li>If the wall runs out: draw / washout; dealer may stay or rotate by agreement.</li>
+      </ul>
+      <p class="rules-note">
+        Faan patterns and examples: <a href="hk.html">Hong Kong cheatsheet</a>. Confirm minimum faan and flower rules with your table before the first deal.
+      </p>
+    </section>
+  </main>
+</body>
+</html>

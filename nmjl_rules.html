@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>American (NMJL) Rules · Mahjong</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var m = document.cookie.match(/(?:^|; )riichi-cheatsheet-dark-mode=([^;]*)/);
+        if (m && decodeURIComponent(m[1]) === "1") document.documentElement.dataset.theme = "dark";
+      } catch (e) {}
+    })();
+  </script>
+  <script src="js/tiles.js" defer></script>
+  <script src="js/settings.js" defer></script>
+  <script src="js/site-nav.js" defer></script>
+  <script src="js/rules-page.js" defer></script>
+</head>
+<body class="rules-page" data-ruleset="nmjl">
+  <header class="toolbar no-print">
+    <div class="toolbar-main">
+      <h1>American Rules</h1>
+      <button type="button" id="btn-menu" class="icon-btn toolbar-burger" aria-label="Menu" title="Menu" aria-expanded="false" aria-controls="site-menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 6h16"/>
+          <path d="M4 12h16"/>
+          <path d="M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="site-menu" class="site-menu">
+      <div class="toolbar-actions">
+        <a href="index.html" class="icon-btn" aria-label="Home" title="Home">
+          <span class="site-menu-action-label">Home</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 10.5L12 3l9 7.5"/>
+            <path d="M5 10v10h14V10"/>
+          </svg>
+        </a>
+        <button type="button" id="btn-settings" class="icon-btn" aria-label="Settings" title="Settings" aria-expanded="false" aria-controls="settings-panel">
+          <span class="site-menu-action-label">Settings</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+        <a href="nmjl.html" class="icon-btn" aria-label="Cheatsheet" title="Cheatsheet">
+          <span class="site-menu-action-label">Cheatsheet</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <path d="M14 2v6h6"/>
+            <path d="M16 13H8"/>
+            <path d="M16 17H8"/>
+            <path d="M10 9H8"/>
+          </svg>
+        </a>
+      </div>
+      <nav class="site-menu-rulesets" aria-label="Rulesets"></nav>
+    </div>
+  </header>
+
+  <div id="settings-panel" class="no-print" hidden>
+    <div class="settings-options">
+      <div class="settings-scale">
+        <div class="settings-scale-main">
+          <span class="settings-scale-title">Display size</span>
+          <span id="ui-scale-host"></span>
+        </div>
+        <button type="button" id="btn-settings-close" class="settings-close-btn" aria-label="Close settings" title="Close">Close</button>
+      </div>
+      <label><input type="checkbox" id="opt-dark-mode" /> Dark mode</label>
+    </div>
+  </div>
+
+  <main class="rules-doc">
+    <p class="rules-lead">
+      A play overview for <strong>National Mah Jongg League (NMJL)</strong> / American mahjong.
+      Hands come from the current year’s card — see the <a href="nmjl.html">American cheatsheet</a> for pattern families, not a substitute for an official card.
+    </p>
+
+    <nav class="rules-toc" aria-label="On this page">
+      <a href="#setup">Setup</a>
+      <a href="#terms">Terms</a>
+      <a href="#charleston">Charleston</a>
+      <a href="#turns">Turns</a>
+      <a href="#hands">Hands</a>
+      <a href="#winning">Winning</a>
+    </nav>
+
+    <section id="setup">
+      <h2>Setup</h2>
+      <ul>
+        <li><strong>Players:</strong> Four. East is dealer for the hand; seats may be called by wind or simply East/South/West/North around the table.</li>
+        <li><strong>Tiles:</strong> 152 — the usual 136 suited and honor tiles, plus <strong>8 flowers</strong> and <strong>8 jokers</strong>. One white dragon is treated as <em>soap</em> (zero) for number hands. Leave out unused blanks if your set has extras.</li>
+        <li><strong>Wall:</strong> Build four walls (typically 19 stacks × 2 high). Dice determine the break; deal proceeds around the table.</li>
+        <li><strong>Deal:</strong> Each player receives <strong>13</strong> tiles; East takes a <strong>14th</strong>. Then run the <strong>Charleston</strong> before anyone discards.</li>
+        <li><strong>Card:</strong> Every player needs the current NMJL card. Legal winning hands are only those printed on the card (plus any league clarifications).</li>
+      </ul>
+    </section>
+
+    <section id="terms">
+      <h2>Names &amp; terms</h2>
+      <dl class="rules-glossary">
+        <dt>Craks / bams / dots</dt>
+        <dd>The three suits (characters, bamboo, circles). Numbers 1–9.</dd>
+        <dt>Dragons &amp; winds</dt>
+        <dd>Honors. White dragon is often <em>soap</em> (0) in number hands; green and red are dragons. Winds are E/S/W/N.</dd>
+        <dt>Flowers</dt>
+        <dd>Eight flower tiles. They are not a suit; card hands specify when flowers are used (often as a group or with jokers per card text).</dd>
+        <dt>Jokers</dt>
+        <dd>Wild tiles that can stand in for most tiles in exposures and concealed hands, with card-specific limits (e.g. never in a singlet or certain pairs — follow the card).</dd>
+        <dt>Exposure</dt>
+        <dd>An open meld claimed from a discard (or sometimes self-called), displayed face-up. American play talks about exposures more than chi/pon vocabulary.</dd>
+        <dt>Pung / kong / quint</dt>
+        <dd>Triplet, quad, and five-of-a-kind (jokers make quints possible). Sequences are “runs” or named by the card.</dd>
+        <dt>Soap</dt>
+        <dd>White dragon used as zero in hands that need 0s (e.g. 2024-style number hands on some cards).</dd>
+        <dt>Mahjong</dt>
+        <dd>Calling a win when your 14th tile completes a card hand.</dd>
+        <dt>Dead hand</dt>
+        <dd>If you make an illegal exposure or otherwise break the rules for your declared line, your hand can be declared dead — you stop playing that hand.</dd>
+      </dl>
+    </section>
+
+    <section id="charleston">
+      <h2>Charleston (passing)</h2>
+      <p>
+        Before the first discard, players exchange tiles in a fixed ritual. Passes are simultaneous; you must pass the required number of tiles you still hold (never look at what you receive until your pass is out).
+      </p>
+      <ol>
+        <li><strong>First Charleston — right:</strong> Pass <strong>3</strong> tiles to the player on your right; receive 3 from your left.</li>
+        <li><strong>First Charleston — across:</strong> Pass <strong>3</strong> across the table; receive 3 from opposite.</li>
+        <li><strong>First Charleston — left:</strong> Pass <strong>3</strong> to your left; receive 3 from your right.</li>
+        <li><strong>Optional second Charleston:</strong> By agreement (often after a vote or “do you want a second?”), repeat right / across / left with 3 tiles each, or skip.</li>
+        <li><strong>Courtesy pass:</strong> Optional last exchange — typically up to <strong>3</strong> tiles across with the player opposite (you may pass fewer, including zero, if both agree on the count).</li>
+      </ol>
+      <p>
+        Jokers may be passed. After the Charleston (and courtesy), East discards to begin the hand. There is no further mandatory passing mid-hand.
+      </p>
+    </section>
+
+    <section id="turns">
+      <h2>Turns &amp; turn order</h2>
+      <p>
+        After Charleston, East discards first. Play continues <strong>counter-clockwise</strong> (to the right of the player who just discarded, in common American seating talk — follow your table’s “next player” convention consistently).
+      </p>
+      <ol>
+        <li>On your turn, <strong>pick</strong> the top tile from the wall (unless you just claimed a discard for an exposure — then you usually expose and discard without picking).</li>
+        <li>You may declare <strong>mahjong</strong> if the pick completes a card hand.</li>
+        <li>Otherwise <strong>discard</strong> one tile face-up.</li>
+        <li>Others may call that discard to complete an exposure allowed by the hand they are building, or to mahjong. Calls interrupt the next pick; the claiming player exposes and discards (or wins).</li>
+      </ol>
+      <p>
+        Exact call priority and whether you can claim for concealed-only hands vary slightly by club; when in doubt, NMJL card footnotes and league rulings control.
+      </p>
+    </section>
+
+    <section id="hands">
+      <h2>Hand formation (brief)</h2>
+      <p>
+        You are always aiming at a <strong>specific line on the card</strong> (sometimes switching lines as tiles arrive). Patterns are groups of pungs, kongs, pairs, singles, and runs as printed — not free-form “any four melds + pair.”
+      </p>
+      <p>
+        Jokers substitute inside many groups; flowers and soap appear only where the card shows them. Exposures must match a legal interpretation of your hand; illegal exposures can kill the hand.
+      </p>
+    </section>
+
+    <section id="winning">
+      <h2>Win conditions</h2>
+      <ul>
+        <li>Complete a hand exactly as shown on the <strong>current card</strong> (concealed or with the exposures the card allows).</li>
+        <li>Call <strong>mahjong</strong> on a self-pick or on a discard that finishes the hand.</li>
+        <li>Payoffs follow the card’s value (and any table multipliers). Hot wall / wall game (no one wins) is a push or table-specific settlement.</li>
+      </ul>
+      <p class="rules-note">
+        Pattern categories and examples: <a href="nmjl.html">American cheatsheet</a>. Always prefer the printed NMJL card for legality and scoring.
+      </p>
+    </section>
+  </main>
+</body>
+</html>

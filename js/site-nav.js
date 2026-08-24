@@ -100,13 +100,30 @@
     },
   ];
 
+  const RULES_PAGES = {
+    riichi: "riichi_rules.html",
+    nmjl: "nmjl_rules.html",
+    hk: "hk_rules.html",
+    filipino: "filipino_rules.html",
+  };
+
+  const RULES_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+  </svg>`;
+
   function currentRulesetId() {
     const file = (location.pathname.split("/").pop() || "").toLowerCase();
     if (file.includes("nmjl")) return "nmjl";
-    if (file.includes("hk")) return "hk";
     if (file.includes("filipino")) return "filipino";
+    if (file.includes("hk")) return "hk";
     if (file.includes("riichi") || file === "" || file === "index.html") return "riichi";
     return "";
+  }
+
+  function isRulesPage() {
+    const file = (location.pathname.split("/").pop() || "").toLowerCase();
+    return file.endsWith("_rules.html") || Object.values(RULES_PAGES).includes(file);
   }
 
   function fillRulesetNav(nav) {
@@ -119,6 +136,31 @@
       }><span>${r.title}</span><span class="site-menu-link-icon">${r.icon}</span></a>`;
     }).join("");
     nav.dataset.ready = "1";
+  }
+
+  function injectRulesLink(actions) {
+    if (!actions || actions.querySelector("[data-nav-rules]")) return;
+    if (isRulesPage()) return;
+    const id = currentRulesetId();
+    const href = RULES_PAGES[id];
+    if (!href) return;
+
+    const a = document.createElement("a");
+    a.href = href;
+    a.className = "icon-btn";
+    a.dataset.navRules = "1";
+    a.setAttribute("aria-label", "Rules");
+    a.title = "Rules";
+    a.innerHTML = `<span class="site-menu-action-label">Rules</span>${RULES_ICON}`;
+
+    const settings = actions.querySelector("#btn-settings");
+    if (settings && settings.nextSibling) {
+      actions.insertBefore(a, settings.nextSibling);
+    } else if (settings) {
+      settings.insertAdjacentElement("afterend", a);
+    } else {
+      actions.insertBefore(a, actions.firstChild);
+    }
   }
 
   const COMPACT_MQ =
@@ -181,6 +223,7 @@
     if (!toolbar || !menu || !btn) return;
 
     fillRulesetNav(menu.querySelector(".site-menu-rulesets"));
+    injectRulesLink(menu.querySelector(".toolbar-actions"));
 
     btn.addEventListener("click", (e) => {
       e.preventDefault();

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Riichi Rules · Mahjong</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var m = document.cookie.match(/(?:^|; )riichi-cheatsheet-dark-mode=([^;]*)/);
+        if (m && decodeURIComponent(m[1]) === "1") document.documentElement.dataset.theme = "dark";
+      } catch (e) {}
+    })();
+  </script>
+  <script src="js/tiles.js" defer></script>
+  <script src="js/settings.js" defer></script>
+  <script src="js/site-nav.js" defer></script>
+  <script src="js/rules-page.js" defer></script>
+</head>
+<body class="rules-page" data-ruleset="riichi">
+  <header class="toolbar no-print">
+    <div class="toolbar-main">
+      <h1>Riichi Rules</h1>
+      <button type="button" id="btn-menu" class="icon-btn toolbar-burger" aria-label="Menu" title="Menu" aria-expanded="false" aria-controls="site-menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 6h16"/>
+          <path d="M4 12h16"/>
+          <path d="M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="site-menu" class="site-menu">
+      <div class="toolbar-actions">
+        <a href="index.html" class="icon-btn" aria-label="Home" title="Home">
+          <span class="site-menu-action-label">Home</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 10.5L12 3l9 7.5"/>
+            <path d="M5 10v10h14V10"/>
+          </svg>
+        </a>
+        <button type="button" id="btn-settings" class="icon-btn" aria-label="Settings" title="Settings" aria-expanded="false" aria-controls="settings-panel">
+          <span class="site-menu-action-label">Settings</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+        <a href="riichi.html" class="icon-btn" aria-label="Cheatsheet" title="Cheatsheet">
+          <span class="site-menu-action-label">Cheatsheet</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <path d="M14 2v6h6"/>
+            <path d="M16 13H8"/>
+            <path d="M16 17H8"/>
+            <path d="M10 9H8"/>
+          </svg>
+        </a>
+      </div>
+      <nav class="site-menu-rulesets" aria-label="Rulesets"></nav>
+    </div>
+  </header>
+
+  <div id="settings-panel" class="no-print" hidden>
+    <div class="settings-options">
+      <div class="settings-scale">
+        <div class="settings-scale-main">
+          <span class="settings-scale-title">Display size</span>
+          <span id="ui-scale-host"></span>
+        </div>
+        <button type="button" id="btn-settings-close" class="settings-close-btn" aria-label="Close settings" title="Close">Close</button>
+      </div>
+      <label><input type="checkbox" id="opt-dark-mode" /> Dark mode</label>
+    </div>
+  </div>
+
+  <main class="rules-doc">
+    <p class="rules-lead">
+      A play overview for Japanese <strong>riichi</strong> mahjong. This is not a full scoring or yaku catalog —
+      use the <a href="riichi.html">yaku cheatsheet</a> for hand patterns and values.
+    </p>
+
+    <nav class="rules-toc" aria-label="On this page">
+      <a href="#setup">Setup</a>
+      <a href="#terms">Terms</a>
+      <a href="#turns">Turns</a>
+      <a href="#hands">Hands</a>
+      <a href="#winning">Winning</a>
+    </nav>
+
+    <section id="setup">
+      <h2>Setup</h2>
+      <ul>
+        <li><strong>Players:</strong> Four, seated at a square table. Each seat is a wind: East (dealer), South, West, North, clockwise.</li>
+        <li><strong>Tiles:</strong> 136 tiles — three suits (man / pin / sou, 1–9 × 4) plus honors (four winds and three dragons, × 4 each). No flowers, seasons, or jokers. If your set has extras, remove them. Optional: one red five per suit (<em>aka dora</em>).</li>
+        <li><strong>Wall:</strong> Shuffle, build four walls of 17 stacks × 2 tiles high (34 tiles per wall). Push walls together into a square.</li>
+        <li><strong>Deal:</strong> Dice (and often a wall break) determine where the deal starts. Each player gets <strong>13</strong> tiles; the dealer (East) draws a <strong>14th</strong> and plays first.</li>
+        <li><strong>Dead wall:</strong> The last 14 tiles of the wall (7 stacks) are the <em>rinshan</em> / dead wall. Dora indicators sit on it; replacements for kans come from here. Play continues from the live wall until it runs out (draw / exhaustive draw).</li>
+        <li><strong>Round structure:</strong> An East round, then South (and often West/North in longer games). Within a round, the dealer seat rotates after non-dealer wins or certain draws; dealer stays if they win or if everyone draws with the dealer in tenpai (table rules vary slightly).</li>
+      </ul>
+    </section>
+
+    <section id="terms">
+      <h2>Names &amp; terms</h2>
+      <dl class="rules-glossary">
+        <dt>Man / pin / sou</dt>
+        <dd>Characters, circles, and bamboo suits (often called characters, dots, and bamboo in English).</dd>
+        <dt>Honors</dt>
+        <dd>Winds (East, South, West, North) and dragons (white / haku, green / hatsu, red / chun).</dd>
+        <dt>Meld / set</dt>
+        <dd>A group of three (or four for a kan): a <em>pon</em> (triplet), <em>chi</em> (sequence in one suit), or <em>kan</em> (quad).</dd>
+        <dt>Pair</dt>
+        <dd>Two identical tiles; every standard winning hand includes one pair.</dd>
+        <dt>Call</dt>
+        <dd>Claiming a discarded tile to complete a meld: <em>chi</em> (only from the player on your left), <em>pon</em>, <em>kan</em>, or <em>ron</em> (win on discard).</dd>
+        <dt>Tsumo / ron</dt>
+        <dd>Win by self-draw (<em>tsumo</em>) or on another’s discard (<em>ron</em>).</dd>
+        <dt>Tenpai / noten</dt>
+        <dd>Ready hand (one tile from winning) vs. not ready. Matters at exhaustive draws.</dd>
+        <dt>Riichi</dt>
+        <dd>A declaration when you are closed (no open melds except from your own kans) and tenpai: pay a 1,000-point stick, lock your hand, and gain scoring benefits if you win.</dd>
+        <dt>Dora</dt>
+        <dd>Bonus tiles indicated by the dead-wall indicator (the next tile in sequence, wrapping 9→1 and honor cycles). Red fives and ura-dora after a riichi win also add value.</dd>
+        <dt>Yaku</dt>
+        <dd>Named hand patterns. You need at least one yaku to win (dora alone is not enough).</dd>
+        <dt>Furiten</dt>
+        <dd>You cannot ron if a winning tile is among your own discards (or under certain riichi/tenpai restrictions). You can still tsumo.</dd>
+      </dl>
+    </section>
+
+
+    <section id="turns">
+      <h2>Turns &amp; turn order</h2>
+      <p>
+        Play proceeds <strong>counter-clockwise</strong> from the dealer (East → North → West → South → East… in wind-seat terms; visually left around the table from East in standard seating diagrams).
+      </p>
+      <ol>
+        <li><strong>Draw</strong> one tile from the live wall (or a dead-wall replacement after declaring a kan).</li>
+        <li><strong>Optional:</strong> declare a closed kan, add to an open pon (shouminkan), declare riichi (if eligible), or win by tsumo.</li>
+        <li><strong>Discard</strong> one tile face-up into your discard river. Discards are kept in order so furiten and calls are clear.</li>
+        <li>Other players may <strong>call</strong> that discard (chi / pon / kan / ron) before the next player draws. Priority: ron over pon/kan over chi. If nobody calls, the next player draws.</li>
+      </ol>
+      <p>
+        After an open meld, the caller discards and play continues from them (the skipped players do not take a normal turn). Winning ends the hand immediately.
+      </p>
+    </section>
+
+    <section id="hands">
+      <h2>Hand formation (brief)</h2>
+      <p>
+        A standard win is <strong>four melds + one pair</strong> (14 tiles when complete). Melds may be closed (formed from your draws) or opened by calling. Sequences must be three consecutive tiles in one suit; triplets/quads are identical tiles.
+      </p>
+      <p>
+        Special shapes exist (seven pairs, thirteen orphans) and still require a valid yaku. Keep your hand secret until you open a meld or win. Open melds are laid face-up; closed tiles stay concealed.
+      </p>
+    </section>
+
+    <section id="winning">
+      <h2>Win conditions</h2>
+      <ul>
+        <li>Complete a valid hand shape <strong>and</strong> at least one <strong>yaku</strong> (or a yakuman pattern).</li>
+        <li>Win by <strong>tsumo</strong> (draw the winning tile) or <strong>ron</strong> (claim a discard), unless furiten blocks ron.</li>
+        <li>After a win, score using han/fu (or yakuman), then deal the next hand according to dealer rotation and round wind rules.</li>
+        <li>If the wall is exhausted with no win: exhaustive draw. Players in tenpai may exchange noten penalties (common rule); dealer may stay or rotate per table rules.</li>
+      </ul>
+      <p class="rules-note">
+        Scoring details, yaku lists, and payment charts live on the <a href="riichi.html">Riichi cheatsheet</a>.
+      </p>
+    </section>
+  </main>
+</body>
+</html>

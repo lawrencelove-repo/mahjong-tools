@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Filipino Rules · Mahjong</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var m = document.cookie.match(/(?:^|; )riichi-cheatsheet-dark-mode=([^;]*)/);
+        if (m && decodeURIComponent(m[1]) === "1") document.documentElement.dataset.theme = "dark";
+      } catch (e) {}
+    })();
+  </script>
+  <script src="js/tiles.js" defer></script>
+  <script src="js/settings.js" defer></script>
+  <script src="js/site-nav.js" defer></script>
+  <script src="js/rules-page.js" defer></script>
+</head>
+<body class="rules-page" data-ruleset="filipino">
+  <header class="toolbar no-print">
+    <div class="toolbar-main">
+      <h1>Filipino Rules</h1>
+      <button type="button" id="btn-menu" class="icon-btn toolbar-burger" aria-label="Menu" title="Menu" aria-expanded="false" aria-controls="site-menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 6h16"/>
+          <path d="M4 12h16"/>
+          <path d="M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="site-menu" class="site-menu">
+      <div class="toolbar-actions">
+        <a href="index.html" class="icon-btn" aria-label="Home" title="Home">
+          <span class="site-menu-action-label">Home</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 10.5L12 3l9 7.5"/>
+            <path d="M5 10v10h14V10"/>
+          </svg>
+        </a>
+        <button type="button" id="btn-settings" class="icon-btn" aria-label="Settings" title="Settings" aria-expanded="false" aria-controls="settings-panel">
+          <span class="site-menu-action-label">Settings</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+        <a href="filipino.html" class="icon-btn" aria-label="Cheatsheet" title="Cheatsheet">
+          <span class="site-menu-action-label">Cheatsheet</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <path d="M14 2v6h6"/>
+            <path d="M16 13H8"/>
+            <path d="M16 17H8"/>
+            <path d="M10 9H8"/>
+          </svg>
+        </a>
+      </div>
+      <nav class="site-menu-rulesets" aria-label="Rulesets"></nav>
+    </div>
+  </header>
+
+  <div id="settings-panel" class="no-print" hidden>
+    <div class="settings-options">
+      <div class="settings-scale">
+        <div class="settings-scale-main">
+          <span class="settings-scale-title">Display size</span>
+          <span id="ui-scale-host"></span>
+        </div>
+        <button type="button" id="btn-settings-close" class="settings-close-btn" aria-label="Close settings" title="Close">Close</button>
+      </div>
+      <label><input type="checkbox" id="opt-dark-mode" /> Dark mode</label>
+    </div>
+  </div>
+
+  <main class="rules-doc">
+    <p class="rules-lead">
+      A play overview for <strong>Filipino mahjong</strong> (17-tile / five-meld style). Local clubs vary;
+      treat house rules as authoritative. Pattern references: <a href="filipino.html">Filipino cheatsheet</a>.
+    </p>
+
+    <nav class="rules-toc" aria-label="On this page">
+      <a href="#setup">Setup</a>
+      <a href="#terms">Terms</a>
+      <a href="#turns">Turns</a>
+      <a href="#hands">Hands</a>
+      <a href="#winning">Winning</a>
+    </nav>
+
+    <section id="setup">
+      <h2>Setup</h2>
+      <ul>
+        <li><strong>Players:</strong> Four. Dealer (often called East) starts each hand.</li>
+        <li><strong>Hand size:</strong> This is the big difference from HK/riichi — players aim for a <strong>17-tile</strong> winning hand: <strong>five melds + one pair</strong>.</li>
+        <li><strong>Deal:</strong> <strong>16</strong> tiles each; the dealer receives a <strong>17th</strong> and plays first.</li>
+        <li><strong>Tiles:</strong> Suits and honors as usual. Flowers and seasons are widely used (or blanks standing in for seasons) — match your group’s set. Some tables add jokers; many do not. Agree before the first wall.</li>
+        <li><strong>Wall:</strong> Build walls large enough for the fuller deal (extra tiles if flowers/seasons/jokers are included). Dice break the wall as in other styles.</li>
+      </ul>
+    </section>
+
+    <section id="terms">
+      <h2>Names &amp; terms</h2>
+      <dl class="rules-glossary">
+        <dt>Characters / circles / bamboo</dt>
+        <dd>The three suits. English and Tagalog/local nicknames both appear at tables.</dd>
+        <dt>Winds &amp; dragons</dt>
+        <dd>Honors; seat and round wind may matter for bonuses depending on the club.</dd>
+        <dt>Flowers / seasons</dt>
+        <dd>Often kept as scoring or melds per house rules (sometimes treated more like honors than pure HK flower replacements). Confirm locally.</dd>
+        <dt>Pong / chow / kong</dt>
+        <dd>Triplet, sequence, quad — same building blocks as HK, but you need <strong>five</strong> sets instead of four.</dd>
+        <dt>Amoy / special hands</dt>
+        <dd>Many Filipino tables recognize a catalog of special or valued hands alongside ordinary five-meld wins; names and payouts are club-specific.</dd>
+        <dt>Kang / open meld</dt>
+        <dd>Declaring or claiming sets face-up. Chow is typically only from the prior discard.</dd>
+        <dt>Self-pick / throw</dt>
+        <dd>Win on your draw vs. on someone’s discard (wording varies by group).</dd>
+      </dl>
+    </section>
+
+
+    <section id="turns">
+      <h2>Turns &amp; turn order</h2>
+      <p>
+        Play moves <strong>counter-clockwise</strong> from the dealer. A normal turn:
+      </p>
+      <ol>
+        <li><strong>Draw</strong> from the wall (kong replacements from the back if your table uses that convention).</li>
+        <li>Resolve flowers/seasons if they are replacement tiles at your table.</li>
+        <li>Win on the draw if complete; otherwise you may expose a kong or other allowed declaration.</li>
+        <li><strong>Discard</strong> one tile. Others may claim for chow (next player), pung, kong, or win, with win taking priority.</li>
+      </ol>
+      <p>
+        Claiming a discard for a meld means you expose, then discard, and play continues from you. Winning ends the hand immediately.
+      </p>
+    </section>
+
+    <section id="hands">
+      <h2>Hand formation (brief)</h2>
+      <p>
+        The ordinary win is <strong>five melds + one pair</strong> (17 tiles). Melds are chows, pongs, and kongs, open or closed. Because there is an extra meld, hands feel “longer” than HK and discard pressure differs.
+      </p>
+      <p>
+        Special hands (seven pairs–style variants, honor hands, flower-heavy hands, etc.) depend on the club’s list — use the cheatsheet as a starting map, then defer to local payout sheets.
+      </p>
+    </section>
+
+    <section id="winning">
+      <h2>Win conditions</h2>
+      <ul>
+        <li>Complete five melds and a pair (or a recognized special hand) and declare the win on draw or discard.</li>
+        <li>Tables often require a <strong>minimum value</strong> or recognize only certain special hands for large payments — ask before playing for money.</li>
+        <li>Payments are almost always house-ruled (fixed chips per hand type, multipliers, dealer premiums, etc.).</li>
+        <li>Wall exhaustion is a draw; dealer rotation follows your group’s East-stay rules.</li>
+      </ul>
+      <p class="rules-note">
+        Pattern reminders: <a href="filipino.html">Filipino cheatsheet</a>. Filipino mahjong is highly regional — when this summary and your table disagree, the table wins.
+      </p>
+    </section>
+  </main>
+</body>
+</html>
