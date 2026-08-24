@@ -1831,6 +1831,64 @@ html[data-theme="dark"] .tenbou-legend {
   text-overflow: ellipsis;
 }
 
+.ts-score {
+  white-space: normal;
+  font-family: inherit;
+}
+
+.ts-score-title {
+  font-weight: 600;
+  margin-bottom: 0.55rem;
+}
+
+.ts-score-row {
+  margin-bottom: 0.55rem;
+}
+
+.ts-score-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+
+.ts-score-hand {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-items: flex-end;
+}
+
+.ts-score-cell {
+  display: inline-flex;
+  border-radius: 3px;
+  line-height: 0;
+}
+
+.ts-score-cell.is-match {
+  outline: 2px solid #2e7d32;
+  outline-offset: 1px;
+}
+
+.ts-score-cell.is-mismatch {
+  outline: 2px solid #c62828;
+  outline-offset: 1px;
+}
+
+.ts-tile-unknown {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--tile-h) * 0.72);
+  height: var(--tile-h);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--panel-muted);
+  border: 1px dashed var(--line);
+  border-radius: 3px;
+}
+
 .toolbar-link {
   font-size: 0.8rem;
   color: inherit;

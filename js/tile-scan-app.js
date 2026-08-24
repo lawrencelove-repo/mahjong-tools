@@ -193,6 +193,69 @@
     return [...set];
   }
 
+  const LEMON_STYLE = "style-2";
+
+  /** @param {string} id */
+  function renderLemonTile(id) {
+    if (!id || id === "?") {
+      const ph = document.createElement("span");
+      ph.className = "ts-tile-unknown";
+      ph.title = "Unknown";
+      ph.textContent = "?";
+      return ph;
+    }
+    if (window.Tiles?.renderTile) {
+      return window.Tiles.renderTile(id, LEMON_STYLE, "off");
+    }
+    const span = document.createElement("span");
+    span.textContent = id;
+    return span;
+  }
+
+  /**
+   * @param {HTMLElement} host
+   * @param {string[]} expected
+   * @param {string[]} got
+   * @param {number} ok
+   */
+  function renderScoreCompare(host, expected, got, ok) {
+    host.replaceChildren();
+    const title = document.createElement("div");
+    title.className = "ts-score-title";
+    title.textContent = `Sample score: ${ok} / ${expected.length} exact (order-sensitive)`;
+    host.appendChild(title);
+
+    const rows = [
+      { label: "Expected", ids: expected },
+      { label: "Got", ids: got },
+    ];
+    for (const row of rows) {
+      const block = document.createElement("div");
+      block.className = "ts-score-row";
+      const lab = document.createElement("div");
+      lab.className = "ts-score-label";
+      lab.textContent = row.label;
+      const hand = document.createElement("div");
+      hand.className = "ts-score-hand hand";
+      hand.dataset.style = LEMON_STYLE;
+      const len = Math.max(expected.length, got.length);
+      for (let i = 0; i < len; i++) {
+        const id = row.ids[i];
+        const cell = document.createElement("span");
+        cell.className = "ts-score-cell";
+        if (expected[i] && got[i] && expected[i] !== got[i]) {
+          cell.classList.add("is-mismatch");
+        } else if (expected[i] && got[i] && expected[i] === got[i]) {
+          cell.classList.add("is-match");
+        }
+        if (id) cell.appendChild(renderLemonTile(id));
+        hand.appendChild(cell);
+      }
+      block.append(lab, hand);
+      host.appendChild(block);
+    }
+  }
+
   async function analyze(opts = {}) {
     if (!sourceImage || !window.TileScanCv) return;
     $("#ts-analyze").disabled = true;
@@ -216,11 +279,8 @@
         const scoreEl = $("#ts-score");
         scoreEl.hidden = false;
         scoreEl.className =
-          "hv-result " + (ok === expected.length ? "is-ok" : "is-error");
-        scoreEl.textContent =
-          `Sample score: ${ok} / ${expected.length} exact (order-sensitive)\n` +
-          `Expected: ${expected.join(" ")}\n` +
-          `Got:      ${tileIds.join(" ")}`;
+          "hv-result ts-score " + (ok === expected.length ? "is-ok" : "is-error");
+        renderScoreCompare(scoreEl, expected, tileIds, ok);
         msg += ` Sample match ${ok}/${expected.length}.`;
         console.log("[tile-scan]", { ok, expected, got: tileIds, lastResult });
       } else {
