@@ -366,16 +366,57 @@ body {
 }
 
 #settings-panel label:has(> input[type="checkbox"]) {
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 0.5rem;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  min-height: 2.15rem;
+  padding: 0.2rem 0;
+  cursor: pointer;
+  user-select: none;
 }
 
 #settings-panel label:has(> input[type="checkbox"]) input[type="checkbox"] {
-  width: 1.15rem;
-  height: 1.15rem;
-  margin-top: 0.15rem;
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
   flex-shrink: 0;
+  width: 2.75rem;
+  height: 1.55rem;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--muted) 28%, var(--paper));
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+#settings-panel label:has(> input[type="checkbox"]) input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(1.55rem - 6px);
+  height: calc(1.55rem - 6px);
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: 0 1px 3px var(--shadow);
+  transition: transform 0.15s ease;
+}
+
+#settings-panel label:has(> input[type="checkbox"]) input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+#settings-panel label:has(> input[type="checkbox"]) input[type="checkbox"]:checked::after {
+  transform: translateX(1.2rem);
+}
+
+#settings-panel label:has(> input[type="checkbox"]) input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* Touch / narrow phones: larger settings controls (independent of tiny rem shrink) */
@@ -400,14 +441,22 @@ body {
   }
 
   #settings-panel label:has(> input[type="checkbox"]) {
-    min-height: 2.5rem;
-    align-items: center;
+    min-height: 2.75rem;
     font-size: 1rem;
   }
 
   #settings-panel label:has(> input[type="checkbox"]) input[type="checkbox"] {
-    width: 1.35rem;
-    height: 1.35rem;
+    width: 3.1rem;
+    height: 1.75rem;
+  }
+
+  #settings-panel label:has(> input[type="checkbox"]) input[type="checkbox"]::after {
+    width: calc(1.75rem - 6px);
+    height: calc(1.75rem - 6px);
+  }
+
+  #settings-panel label:has(> input[type="checkbox"]) input[type="checkbox"]:checked::after {
+    transform: translateX(1.35rem);
   }
 
   .settings-scale {
