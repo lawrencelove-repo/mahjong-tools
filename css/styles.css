@@ -266,15 +266,6 @@ body {
   cursor: pointer;
 }
 
-#settings-panel select {
-  font: inherit;
-  color: var(--ink);
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 0.25rem 0.4rem;
-}
-
 .toolbar button.primary {
   background: var(--accent);
   color: #fff;
@@ -334,6 +325,109 @@ body {
 .ui-scale-control .icon-btn:disabled {
   opacity: 0.35;
   cursor: default;
+}
+
+#settings-panel select {
+  font: inherit;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 100%;
+  min-height: 2.5rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.45rem 0.6rem;
+}
+
+#settings-panel {
+  padding: 0.75rem 1rem 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+
+#settings-panel[hidden] {
+  display: none !important;
+}
+
+.settings-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.5rem 1.25rem;
+  padding-bottom: 0.75rem;
+}
+
+#settings-panel label {
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: stretch;
+}
+
+#settings-panel label:has(> input[type="checkbox"]) {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+#settings-panel label:has(> input[type="checkbox"]) input[type="checkbox"] {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+}
+
+/* Touch / narrow phones: larger settings controls (independent of tiny rem shrink) */
+@media (max-width: 900px) and (orientation: portrait) and (hover: none),
+  (max-width: 480px) and (orientation: portrait),
+  (pointer: coarse) {
+  .settings-options {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  #settings-panel label {
+    font-size: 1rem;
+  }
+
+  #settings-panel select {
+    /* Keep ≥16px so iOS does not zoom; bump further for fat-finger taps */
+    font-size: max(1.05rem, 16px);
+    min-height: 2.85rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+  }
+
+  #settings-panel label:has(> input[type="checkbox"]) {
+    min-height: 2.5rem;
+    align-items: center;
+    font-size: 1rem;
+  }
+
+  #settings-panel label:has(> input[type="checkbox"]) input[type="checkbox"] {
+    width: 1.35rem;
+    height: 1.35rem;
+  }
+
+  .settings-scale {
+    font-size: 1rem;
+  }
+
+  .ui-scale-control {
+    padding: 0.2rem 0.3rem;
+  }
+
+  .ui-scale-control .icon-btn {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1.15rem;
+  }
+
+  .ui-scale-label {
+    min-width: 3.5rem;
+    font-size: 0.9rem;
+  }
 }
 
 .toolbar .icon-btn {
@@ -493,42 +587,12 @@ body {
   margin-left: 0.25rem;
 }
 
-#settings-panel {
-  padding: 0.75rem 1rem 0;
-  border-bottom: 1px solid var(--line);
-  background: var(--paper);
-}
-
-#settings-panel[hidden] {
-  display: none !important;
-}
-
-.settings-options {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.5rem 1.25rem;
-  padding-bottom: 0.75rem;
-}
-
-#settings-panel label {
-  font-size: 0.85rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  align-items: flex-start;
-}
-
-#settings-panel label:has(> input[type="checkbox"]) {
-  flex-direction: row;
-  align-items: flex-start;
-}
-
 .settings-scale {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 0.35rem;
-  font-size: 0.85rem;
+  align-items: stretch;
+  gap: 0.4rem;
+  font-size: 0.9rem;
 }
 
 .settings-scale-title {
