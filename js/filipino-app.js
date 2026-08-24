@@ -240,7 +240,9 @@
     $("#btn-settings").addEventListener("click", () => {
       setSettingsOpen($("#settings-panel").hidden);
     });
-    $("#btn-settings-collapse").addEventListener("click", () => setSettingsOpen(false));
+    const closeSettings = () => setSettingsOpen(false);
+    $("#btn-settings-collapse").addEventListener("click", closeSettings);
+    $("#btn-settings-close")?.addEventListener("click", closeSettings);
     $("#btn-print").addEventListener("click", () => window.print());
   }
 
