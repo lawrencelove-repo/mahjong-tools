@@ -83,8 +83,10 @@
 
     <nav class="rules-toc" aria-label="On this page">
       <a href="#setup">Setup</a>
+      <a href="#equipment">Sticks &amp; markers</a>
       <a href="#terms">Terms</a>
       <a href="#turns">Turns</a>
+      <a href="#discards">Discards</a>
       <a href="#hands">Hands</a>
       <a href="#winning">Winning</a>
     </nav>
@@ -115,6 +117,100 @@
       </p>
     </section>
 
+    <section id="equipment">
+      <h2>Point sticks, wind marker &amp; compass</h2>
+      <p>
+        Many sets include scoring sticks and wind accessories. They are <strong>optional</strong> if you track scores on paper or an app, but they are the traditional way to pay and to show whose turn and which round it is.
+      </p>
+
+      <h3>Point sticks (tenbou)</h3>
+      <p>
+        Players start with a fixed score (commonly <strong>25,000</strong> or <strong>30,000</strong>). Sticks represent that score in four common denominations. There is no number printed on them — classic <strong>hand sticks</strong> are white with red and black circles. (Automatic-table sets often use solid colors instead: white 100, blue 1,000, yellow 5,000, red 10,000.)
+      </p>
+
+      <div class="tenbou-legend" role="list" aria-label="Point stick denominations">
+        <div class="tenbou-item" role="listitem">
+          <svg class="tenbou-stick" viewBox="0 0 120 28" width="120" height="28" aria-hidden="true">
+            <rect x="1" y="4" width="118" height="20" rx="4" fill="var(--tenbou-body)" stroke="var(--tenbou-edge)" stroke-width="1"/>
+            <!-- 100: eight black dots (2×4), like 8-pin -->
+            <g fill="var(--tenbou-black)">
+              <circle cx="42" cy="10" r="2.2"/><circle cx="52" cy="10" r="2.2"/><circle cx="62" cy="10" r="2.2"/><circle cx="72" cy="10" r="2.2"/>
+              <circle cx="42" cy="18" r="2.2"/><circle cx="52" cy="18" r="2.2"/><circle cx="62" cy="18" r="2.2"/><circle cx="72" cy="18" r="2.2"/>
+            </g>
+          </svg>
+          <span class="tenbou-label"><strong>100</strong></span>
+        </div>
+        <div class="tenbou-item" role="listitem">
+          <svg class="tenbou-stick" viewBox="0 0 120 28" width="120" height="28" aria-hidden="true">
+            <rect x="1" y="4" width="118" height="20" rx="4" fill="var(--tenbou-body)" stroke="var(--tenbou-edge)" stroke-width="1"/>
+            <!-- 1,000: single red circle -->
+            <circle cx="60" cy="14" r="6" fill="var(--tenbou-red)"/>
+          </svg>
+          <span class="tenbou-label"><strong>1,000</strong> · riichi bet</span>
+        </div>
+        <div class="tenbou-item" role="listitem">
+          <svg class="tenbou-stick" viewBox="0 0 120 28" width="120" height="28" aria-hidden="true">
+            <rect x="1" y="4" width="118" height="20" rx="4" fill="var(--tenbou-body)" stroke="var(--tenbou-edge)" stroke-width="1"/>
+            <!-- 5,000: center red + four surrounding reds (common “5-pin” style) -->
+            <g fill="var(--tenbou-red)">
+              <circle cx="60" cy="14" r="4.5"/>
+              <circle cx="48" cy="9" r="2.4"/><circle cx="72" cy="9" r="2.4"/>
+              <circle cx="48" cy="19" r="2.4"/><circle cx="72" cy="19" r="2.4"/>
+            </g>
+          </svg>
+          <span class="tenbou-label"><strong>5,000</strong></span>
+        </div>
+        <div class="tenbou-item" role="listitem">
+          <svg class="tenbou-stick" viewBox="0 0 120 28" width="120" height="28" aria-hidden="true">
+            <rect x="1" y="4" width="118" height="20" rx="4" fill="var(--tenbou-body)" stroke="var(--tenbou-edge)" stroke-width="1"/>
+            <!-- 10,000: denser red + black mix (schematic of the ornate face) -->
+            <g fill="var(--tenbou-red)">
+              <circle cx="38" cy="10" r="2.2"/><circle cx="48" cy="10" r="2.2"/><circle cx="58" cy="10" r="2.2"/>
+              <circle cx="38" cy="18" r="2.2"/><circle cx="48" cy="18" r="2.2"/><circle cx="58" cy="18" r="2.2"/>
+              <circle cx="72" cy="10" r="2.2"/><circle cx="82" cy="10" r="2.2"/>
+              <circle cx="72" cy="18" r="2.2"/><circle cx="82" cy="18" r="2.2"/>
+            </g>
+            <g fill="var(--tenbou-black)">
+              <circle cx="65" cy="14" r="2.6"/>
+              <circle cx="28" cy="14" r="2.2"/>
+              <circle cx="92" cy="14" r="2.2"/>
+            </g>
+          </svg>
+          <span class="tenbou-label"><strong>10,000</strong></span>
+        </div>
+      </div>
+      <p class="tenbou-note">
+        Exact dot layouts vary by maker; “more red / busier = higher value” is the usual rule of thumb. A <strong>25,000</strong> start is often dealt as 1×10,000 + 2×5,000 + 4×1,000 + 10×100.
+      </p>
+      <p>
+        When someone wins, losers hand over sticks for the scored amount. You can make change among yourselves so each person keeps a usable mix of values.
+      </p>
+      <ul>
+        <li><strong>Riichi bet:</strong> When you declare riichi, place a <strong>1,000-point</strong> stick on the table (toward the center). That stick sits as a pot. The eventual winner of the hand collects all riichi sticks currently on the table (including their own if they win). If the hand is a draw, riichi sticks usually stay for the next hand’s winner (table rules).</li>
+        <li><strong>Honba (counters):</strong> When the dealer stays for another hand (renchan) — after a dealer win, or after a draw where the dealer is tenpai under common rules — place a <strong>100-point</strong> stick near the dealer (or on the wind marker) for each consecutive stay. Each honba adds a small bonus to the next win (typically +300 to the winner on ron, or +100 from each player on tsumo). Clear the sticks when the dealer finally rotates.</li>
+        <li><strong>Tenpai / noten after a draw:</strong> See <a href="#winning">Winning</a> for how sticks settle when the wall runs out.</li>
+      </ul>
+
+      <h3>Wind marker (round-wind indicator)</h3>
+      <p>
+        A small block or tile shows the <strong>prevailing / round wind</strong> (<em>bakaze</em>): East for the first round, then South (and West/North in longer games). Seat winds are personal (who is dealer East this hand); the marker is shared and only changes when the whole table advances to the next round.
+      </p>
+      <p>
+        Place it where everyone can see it — often beside the dead wall or at the center. When East round ends and South round begins, turn the marker to South. Combined with knowing who is currently dealer, everyone can tell which wind tiles score as “seat wind” vs “round wind.”
+      </p>
+
+      <h3>Compass (optional)</h3>
+      <p>
+        A table <strong>compass</strong> (or wind dial) sits in the middle and orients the four seat winds so newcomers can see East / South / West / North at a glance. Some compasses also display the round wind or hold the honba / riichi sticks.
+      </p>
+      <p>
+        Important: mahjong seat order is <strong>not</strong> the same as a geographic compass. Going <strong>counter-clockwise</strong> around the table, seats run East → North → West → South. Going <strong>clockwise</strong>, they run East → South → West → North. Use the compass as a seating aid, not as true north.
+      </p>
+      <p>
+        When the dealer rotates, either rotate the compass so the new East faces the new dealer, or leave the compass fixed and remember that “East” on the dial means the current dealer seat — pick one convention and stick to it.
+      </p>
+    </section>
+
     <section id="terms">
       <h2>Names &amp; terms</h2>
       <dl class="rules-glossary">
@@ -140,6 +236,14 @@
         <dd>Named hand patterns. You need at least one yaku to win (dora alone is not enough).</dd>
         <dt>Furiten</dt>
         <dd>You cannot ron if a winning tile is among your own discards (or under certain riichi/tenpai restrictions). You can still tsumo.</dd>
+        <dt>Point sticks / tenbou</dt>
+        <dd>Physical counters for score, riichi bets, honba, and tenpai/noten payments.</dd>
+        <dt>Honba</dt>
+        <dd>Consecutive dealer-stay counter; usually marked with 100-point sticks and adds a small bonus to the next win.</dd>
+        <dt>Bakaze / seat wind</dt>
+        <dd>Round wind (shared, on the wind marker) vs. your personal seat wind this hand (East is always the dealer).</dd>
+        <dt>River / discard pile</dt>
+        <dd>Your face-up discards in order — used for calls, defense, and furiten.</dd>
       </dl>
     </section>
 
@@ -160,8 +264,25 @@
       </p>
     </section>
 
+    <section id="discards">
+      <h2>Discards (the river)</h2>
+      <p>
+        In riichi, discards are public information and are watched closely. Each player builds a neat <strong>river</strong> in front of themselves — usually left-to-right in rows of six — so the order of every discard stays visible for the whole hand.
+      </p>
+      <ul>
+        <li><strong>Do not reshuffle or hide discards.</strong> Later tiles go after earlier ones. If you called a meld, the claimed tile is taken from someone’s river (or marked), leaving a gap or a clear memory of what left.</li>
+        <li><strong>Defense:</strong> Opponents read which tiles are “safe” (already discarded, or matching honor/terminals that look dead) before dealing into a riichi or a threatening hand.</li>
+        <li><strong>Furiten:</strong> If any tile that would complete your hand already appears in <em>your</em> river, you are furiten and cannot ron — only tsumo. Temporary furiten also applies if you pass on a winning discard and then try to ron a different tile before your next draw (common rule).</li>
+        <li><strong>Riichi discard:</strong> The tile you discard when declaring riichi is often turned sideways in the river so everyone can see when you riichi’d and which tile was the declaration discard.</li>
+        <li><strong>Calls:</strong> Chi / pon / kan / ron all refer to the latest discard. Because rivers are ordered, it is obvious whose tile was claimed and whether a win tile was ever thrown earlier.</li>
+      </ul>
+      <p>
+        Good habit: pause a beat after every discard so others can call, then the next player draws. Rushing draws is a common source of missed calls and arguments.
+      </p>
+    </section>
+
     <section id="hands">
-      <h2>Hand formation (brief)</h2>
+      <h2>Hand formation overview</h2>
       <p>
         A standard win is <strong>four melds + one pair</strong> (14 tiles when complete). Melds may be closed (formed from your draws) or opened by calling. Sequences must be three consecutive tiles in one suit; triplets/quads are identical tiles.
       </p>
@@ -175,9 +296,26 @@
       <ul>
         <li>Complete a valid hand shape <strong>and</strong> at least one <strong>yaku</strong> (or a yakuman pattern).</li>
         <li>Win by <strong>tsumo</strong> (draw the winning tile) or <strong>ron</strong> (claim a discard), unless furiten blocks ron.</li>
-        <li>After a win, score using han/fu (or yakuman), then deal the next hand according to dealer rotation and round wind rules.</li>
-        <li>If the wall is exhausted with no win: exhaustive draw. Players in tenpai may exchange noten penalties (common rule); dealer may stay or rotate per table rules.</li>
+        <li>After a win, score using han/fu (or yakuman). Pay with sticks (or write it down). The winner also takes any riichi sticks on the table, and honba bonuses if counters are out.</li>
+        <li>Then deal the next hand according to dealer rotation and round wind rules.</li>
       </ul>
+
+      <h3>Exhaustive draw (ryuukyoku) and tenpai sticks</h3>
+      <p>
+        If the live wall runs out and nobody has won after the last discard, the hand is a draw. Players then declare <strong>tenpai</strong> (ready) or <strong>noten</strong> (not ready), usually in seat order starting with East. Anyone who declared riichi must show their hand. Others who claim tenpai show enough of the hand to prove it; you may voluntarily say noten even if you are tenpai (to hide your waits).
+      </p>
+      <p>
+        Noten players pay a shared <strong>3,000-point</strong> pool to the tenpai players (paid with sticks):
+      </p>
+      <ul>
+        <li><strong>1 tenpai / 3 noten:</strong> each noten pays <strong>1,000</strong> to the tenpai player (tenpai gains 3,000).</li>
+        <li><strong>2 tenpai / 2 noten:</strong> each noten pays <strong>1,500</strong>; each tenpai receives 1,500.</li>
+        <li><strong>3 tenpai / 1 noten:</strong> the noten player pays <strong>1,000</strong> to each tenpai (pays 3,000 total).</li>
+        <li><strong>All tenpai or all noten:</strong> no exchange.</li>
+      </ul>
+      <p>
+        Shape-only tenpai (ready but without a yaku yet) still counts as tenpai for this payment. After settling, check whether the dealer was tenpai: under common <em>tenpai renchan</em> rules the dealer stays and a honba stick is added; if the dealer was noten, seats rotate. Riichi sticks left on the table usually carry to the next hand.
+      </p>
       <p class="rules-note">
         Scoring details, yaku lists, and payment charts live on the <a href="riichi.html">Riichi cheatsheet</a>.
       </p>
