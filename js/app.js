@@ -218,7 +218,7 @@
     if (settings.showDoraPanel) {
       rows.push({ label: "Aka (red fives)", tiles: "5Br 5Cr 5Pr" });
     }
-    const extras = Tiles.filterTilesNotation("F1 F2 F3 F4 F5 F6 F7 F8 J1 J2 X", style);
+    const extras = Tiles.filterTilesNotation("F1 F2 F3 F4 F5 F6 F7 F8 J1 J2", style);
     if (extras) rows.push({ label: "Extras", tiles: extras });
 
     el.replaceChildren();

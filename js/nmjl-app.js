@@ -195,7 +195,7 @@
       ["Crak", "123456789C"],
       ["Winds (NEWS)", "NW EW WW SW"],
       ["Dragons", "RD BD PD"],
-      ["Soap / extras", "0P F J"],
+      ["Soap / extras", "0P F J X"],
     ];
     for (const [label, tilesRaw] of rows) {
       const tiles = Tiles.filterTilesNotation(tilesRaw, style);

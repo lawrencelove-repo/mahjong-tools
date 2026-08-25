@@ -94,6 +94,7 @@
     }
 
     renderLegend();
+    renderTileKey();
     document.body.dataset.tileStyle = settings.tileStyle;
     document.body.dataset.allowPage2 = settings.allowPage2 ? "true" : "false";
     document.body.dataset.rankLabels = settings.rankLabels;
@@ -185,6 +186,67 @@
     }
   }
 
+  function renderTileKey() {
+    let el = $("#tile-key");
+    if (!settings.showTileKey) {
+      el?.remove();
+      return;
+    }
+    if (!el) {
+      el = document.createElement("section");
+      el.id = "tile-key";
+      el.className = "aux-panel tile-key";
+      $("#aux-root").appendChild(el);
+    }
+
+    const opts = { rankLabels: settings.rankLabels };
+    const style = settings.tileStyle;
+    const styleName =
+      typeof Tiles !== "undefined" && Tiles.labelForStyle
+        ? Tiles.labelForStyle(style)
+        : style;
+    const mode = seasonsMode();
+
+    const rows = [
+      { label: "Bam (souzu)", tiles: "1B 2B 3B 4B 5B 6B 7B 8B 9B" },
+      { label: "Crak (manzu)", tiles: "1C 2C 3C 4C 5C 6C 7C 8C 9C" },
+      { label: "Dot (pinzu)", tiles: "1P 2P 3P 4P 5P 6P 7P 8P 9P" },
+    ];
+    if (mode !== "exclude") {
+      rows.push({
+        label: mode === "blanks" ? "Seasons as blanks" : "Flowers / seasons",
+        tiles: mode === "blanks" ? "X X X X X X X X" : "F1 F2 F3 F4 F5 F6 F7 F8",
+      });
+    }
+    const jokers = Tiles.filterTilesNotation("J", style);
+    if (jokers) rows.push({ label: "Joker", tiles: jokers });
+
+    el.replaceChildren();
+    const h = document.createElement("h2");
+    h.textContent = `Tile Key · ${styleName}`;
+    el.appendChild(h);
+
+    const note = document.createElement("p");
+    note.className = "tile-key-note";
+    note.textContent =
+      style === "text"
+        ? "Colored digits/letters: green = bam, red = crak, black = dot, blue = honors / joker."
+        : "Tiles in the current tileset (excluded faces are omitted).";
+    el.appendChild(note);
+
+    for (const row of rows) {
+      const tiles = Tiles.filterTilesNotation(row.tiles, style);
+      if (!tiles) continue;
+      const line = document.createElement("div");
+      line.className = "tile-key-row";
+      const lab = document.createElement("span");
+      lab.className = "tile-key-label";
+      lab.textContent = row.label;
+      line.append(lab, Tiles.renderHand(tiles, style, opts));
+      el.appendChild(line);
+    }
+  }
+
   function setSettingsOpen(open) {
     const panel = $("#settings-panel");
     $("#btn-settings").setAttribute("aria-expanded", String(open));
@@ -226,6 +288,7 @@
     for (const [key, sel] of [
       ["showExtraTiles", "#opt-extras"],
       ["allowPage2", "#opt-page2"],
+      ["showTileKey", "#opt-tile-key"],
     ]) {
       const el = $(sel);
       if (!el) continue;

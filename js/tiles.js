@@ -43,7 +43,7 @@ const STYLE2_FILES = {
   F: "F1", F1: "F1", F2: "F2", F3: "F3", F4: "F4",
   F5: "F1", F6: "F2", F7: "F3", F8: "F4",
   J: "J1", J1: "J1", J2: "J2",
-  X: "J1",
+  X: "Blank",
 };
 
 /**
@@ -95,8 +95,8 @@ const TILESETS = /** @type {TilesetDef[]} */ ([
     akaPlain: { "5Br": "B5", "5Cr": "C5", "5Pr": "P5" },
     creditName: "Maison Lude",
     creditUrl: null,
-    // No dedicated aka / seasons / back in this pack
-    excludeTiles: ["5Br", "5Cr", "5Pr", "F5", "F6", "F7", "F8", "X"],
+    // No dedicated aka / seasons in this pack
+    excludeTiles: ["5Br", "5Cr", "5Pr", "F5", "F6", "F7", "F8"],
   },
   {
     id: "style-3",
