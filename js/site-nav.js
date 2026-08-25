@@ -244,6 +244,15 @@
       if (burgerIsVisible(btn)) setMenuOpen(false);
     });
 
+    document.addEventListener("pointerdown", (e) => {
+      if (!toolbar.classList.contains("is-menu-open")) return;
+      if (!burgerIsVisible(btn)) return;
+      const t = e.target;
+      if (!(t instanceof Node)) return;
+      if (menu.contains(t) || btn.contains(t)) return;
+      setMenuOpen(false);
+    });
+
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && toolbar.classList.contains("is-menu-open")) {
         setMenuOpen(false);
