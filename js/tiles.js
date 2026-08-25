@@ -59,6 +59,7 @@ const STYLE2_FILES = {
  *   creditName?: string,
  *   creditUrl?: string | null,
  *   excludeTiles?: string[],
+ *   galleryExtraTiles?: string[],
  *   disabled?: boolean,
  * }} TilesetDef
  */
@@ -82,7 +83,12 @@ const TILESETS = /** @type {TilesetDef[]} */ ([
     rankSide: "right",
     creditName: "FluffyStuff",
     creditUrl: "https://github.com/FluffyStuff/riichi-mahjong-tiles",
-    excludeTiles: ["X"],
+    // Gallery: one flower, one joker, no aka; keep soap (WD). Hide blank back.
+    excludeTiles: [
+      "X",
+      "5Br", "5Cr", "5Pr",
+      "J2",
+    ],
   },
   {
     id: "style-2",
@@ -136,7 +142,18 @@ const TILESETS = /** @type {TilesetDef[]} */ ([
     excludeTiles: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "J1", "J2"],
     disabled: true,
   },
-  { id: "text", label: "Text (NMJL)", kind: "text", excludeTiles: [] },
+  {
+    id: "text",
+    label: "Text (NMJL)",
+    kind: "text",
+    // Gallery: one flower, one joker, no aka; soap as 0 (NMJL white dragon)
+    excludeTiles: [
+      "5Br", "5Cr", "5Pr",
+      "F2", "F3", "F4", "F5", "F6", "F7", "F8",
+      "J2",
+    ],
+    galleryExtraTiles: ["0P"],
+  },
 ]);
 
 /** Canonical tile ids shown in the library gallery (and for credit browsing). */
@@ -196,13 +213,22 @@ function isExcludedTile(styleId, tileId) {
 
 /**
  * Gallery / key tile ids for a style, with exclusions removed.
+ * Optional tileset.galleryExtraTiles are inserted after the dragons (after RD).
  * @param {string} [styleId]
  * @param {string[]} [ids]
  * @returns {string[]}
  */
 function galleryIdsForStyle(styleId, ids = GALLERY_TILE_IDS) {
   const style = normalizeStyleId(styleId);
-  return ids.filter((id) => !isExcludedTile(style, id));
+  const extras = getTileset(style).galleryExtraTiles || [];
+  const merged = ids.slice();
+  for (const id of extras) {
+    if (merged.includes(id)) continue;
+    const rd = merged.indexOf("RD");
+    if (rd >= 0) merged.splice(rd + 1, 0, id);
+    else merged.push(id);
+  }
+  return merged.filter((id) => !isExcludedTile(style, id));
 }
 
 /**
