@@ -406,5 +406,6 @@
   document.addEventListener("DOMContentLoaded", () => {
     bindControls();
     render();
+    window.SiteNav?.registerPrintRerender?.(render);
   });
 })();

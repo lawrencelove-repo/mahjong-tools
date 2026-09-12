@@ -1952,6 +1952,176 @@ html[data-theme="dark"] .tenbou-legend {
   }
 }
 
+/* Printer-friendly: dense text-only sheet, portrait or landscape (dialog chooses) */
+@media print {
+  body[data-print-friendly="true"] {
+    font-size: 8pt !important;
+    line-height: 1.15;
+  }
+
+  body[data-print-friendly="true"] html,
+  html:has(body[data-print-friendly="true"]) {
+    font-size: 8pt !important;
+  }
+
+  body[data-print-friendly="true"] .sheet-header {
+    margin-bottom: 0.2rem;
+    padding-bottom: 0.15rem;
+  }
+
+  body[data-print-friendly="true"] .sheet-header h1 {
+    font-size: 11pt !important;
+    margin: 0;
+  }
+
+  body[data-print-friendly="true"] .sheet-header .subtitle,
+  body[data-print-friendly="true"] #tile-legend,
+  body[data-print-friendly="true"] #tile-key,
+  body[data-print-friendly="true"] #scoring-ref,
+  body[data-print-friendly="true"] .tile-key,
+  body[data-print-friendly="true"] .credit,
+  body[data-print-friendly="true"] .nmjl-callout {
+    display: none !important;
+  }
+
+  body[data-print-friendly="true"] .yaku-section {
+    margin-bottom: 0.2rem;
+    break-inside: auto;
+  }
+
+  body[data-print-friendly="true"] .yaku-section h2 {
+    font-size: 8.5pt !important;
+    margin: 0 0 0.12rem;
+    padding: 0.05rem 0;
+  }
+
+  body[data-print-friendly="true"] .yaku-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.08rem 0.35rem;
+  }
+
+  body[data-print-friendly="true"].nmjl-page .nmjl-grid,
+  body[data-print-friendly="true"] .nmjl-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  body[data-print-friendly="true"] .yaku-card {
+    padding: 0.05rem 0;
+    break-inside: avoid;
+  }
+
+  body[data-print-friendly="true"] .yaku-head {
+    gap: 0.15rem 0.3rem;
+    margin-bottom: 0;
+  }
+
+  body[data-print-friendly="true"] .yaku-name {
+    font-size: 8pt !important;
+    font-weight: 650;
+  }
+
+  body[data-print-friendly="true"] .yaku-desc {
+    font-size: 7pt !important;
+    margin: 0.05rem 0;
+    line-height: 1.2;
+  }
+
+  body[data-print-friendly="true"] .badge {
+    font-size: 6.5pt !important;
+    padding: 0 0.2rem;
+  }
+
+  body[data-print-friendly="true"] .example {
+    margin: 0.05rem 0;
+  }
+
+  body[data-print-friendly="true"] .example-label {
+    font-size: 7pt !important;
+  }
+
+  body[data-print-friendly="true"] .hand,
+  body[data-print-friendly="true"] .meld {
+    gap: 0;
+  }
+
+  body[data-print-friendly="true"] .tile-text,
+  body[data-print-friendly="true"] .tile.tile-text {
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: auto !important;
+    padding: 0 0.04em !important;
+    font-size: 8pt !important;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  body[data-print-friendly="true"] .tile-img,
+  body[data-print-friendly="true"] .tile-wrap,
+  body[data-print-friendly="true"] .tile-rank {
+    display: none !important;
+  }
+
+  body[data-print-friendly="true"] .payout-notes,
+  body[data-print-friendly="true"] .aux-panel {
+    margin-top: 0.25rem;
+    padding: 0.2rem 0;
+    font-size: 7pt !important;
+  }
+
+  body[data-print-friendly="true"] .payout-notes h2,
+  body[data-print-friendly="true"] .aux-panel h2 {
+    font-size: 8pt !important;
+    margin: 0 0 0.1rem;
+  }
+
+  body[data-print-friendly="true"] .payout-table,
+  body[data-print-friendly="true"] .score-table {
+    font-size: 7pt !important;
+  }
+
+  body[data-print-friendly="true"] .payout-table th,
+  body[data-print-friendly="true"] .payout-table td,
+  body[data-print-friendly="true"] .score-table th,
+  body[data-print-friendly="true"] .score-table td {
+    padding: 0.05rem 0.2rem;
+  }
+
+  body[data-print-friendly="true"] .score-notes {
+    margin: 0.1rem 0 0;
+    padding-left: 1rem;
+  }
+
+  body[data-print-friendly="true"] .print-page-break {
+    break-before: auto !important;
+  }
+
+  @media (orientation: landscape) {
+    body[data-print-friendly="true"] .yaku-grid {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    body[data-print-friendly="true"].nmjl-page .nmjl-grid,
+    body[data-print-friendly="true"] .nmjl-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (orientation: portrait) {
+    body[data-print-friendly="true"] .yaku-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    body[data-print-friendly="true"].nmjl-page .nmjl-grid,
+    body[data-print-friendly="true"] .nmjl-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
 @media (max-width: 700px) {
   .yaku-grid {
     grid-template-columns: 1fr;

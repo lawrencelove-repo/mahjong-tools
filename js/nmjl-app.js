@@ -309,4 +309,5 @@
   fillYearSelect();
   bindControls();
   render();
+  window.SiteNav?.registerPrintRerender?.(render);
 })();

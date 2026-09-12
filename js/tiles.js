@@ -512,9 +512,21 @@ function nmjlTextPresentation(id, meta) {
  * @param {{ rankLabels?: "off"|"hover"|"always", nmjlText?: boolean }} [opts]
  * @returns {HTMLElement}
  */
+function isPrintFriendly() {
+  return typeof document !== "undefined" && document.body?.dataset?.printFriendly === "true";
+}
+
+function printFriendlyNmjlText() {
+  return !!document.body?.classList?.contains("nmjl-page");
+}
+
 function renderHand(notation, style = DEFAULT_TILE_STYLE, opts = {}) {
-  const styleId = normalizeStyleId(style);
-  const rankLabels = opts.rankLabels || "hover";
+  const pf = isPrintFriendly();
+  const styleId = pf ? "text" : normalizeStyleId(style);
+  const rankLabels = pf ? "off" : opts.rankLabels || "hover";
+  const tileOpts = pf
+    ? { ...opts, rankLabels, nmjlText: opts.nmjlText || printFriendlyNmjlText() }
+    : opts;
   const wrap = document.createElement("div");
   wrap.className = "hand";
   wrap.dataset.style = styleId;
@@ -540,7 +552,7 @@ function renderHand(notation, style = DEFAULT_TILE_STYLE, opts = {}) {
       group.appendChild(span);
       continue;
     }
-    group.appendChild(renderTile(tok.id, styleId, rankLabels, opts));
+    group.appendChild(renderTile(tok.id, styleId, rankLabels, tileOpts));
   }
   flush();
   return wrap;

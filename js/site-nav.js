@@ -163,6 +163,84 @@
     }
   }
 
+  const PRINT_FRIENDLY_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <line x1="8" y1="13" x2="16" y2="13"/>
+    <line x1="8" y1="17" x2="16" y2="17"/>
+  </svg>`;
+
+  /** @type {null | (() => void)} */
+  let printRerender = null;
+
+  function registerPrintRerender(fn) {
+    printRerender = typeof fn === "function" ? fn : null;
+  }
+
+  function runPrintFriendly() {
+    const body = document.body;
+    if (!body || !document.getElementById("print-sheet")) return;
+
+    const prevAllow = body.dataset.allowPage2;
+    body.dataset.printFriendly = "true";
+    body.dataset.allowPage2 = "true";
+
+    let pageStyle = document.getElementById("print-friendly-page-style");
+    if (!pageStyle) {
+      pageStyle = document.createElement("style");
+      pageStyle.id = "print-friendly-page-style";
+      document.head.appendChild(pageStyle);
+    }
+    // Letter, no forced orientation — print dialog chooses portrait or landscape
+    pageStyle.textContent = "@media print { @page { size: letter; margin: 0.25in; } }";
+
+    try {
+      printRerender?.();
+    } catch (_) {
+      /* keep going to print */
+    }
+
+    let cleaned = false;
+    const cleanup = () => {
+      if (cleaned) return;
+      cleaned = true;
+      window.clearTimeout(fallback);
+      delete body.dataset.printFriendly;
+      if (prevAllow !== undefined) body.dataset.allowPage2 = prevAllow;
+      else delete body.dataset.allowPage2;
+      pageStyle.remove();
+      try {
+        printRerender?.();
+      } catch (_) {
+        /* ignore */
+      }
+    };
+
+    const fallback = window.setTimeout(cleanup, 120000);
+    window.addEventListener("afterprint", cleanup, { once: true });
+    window.setTimeout(() => window.print(), 40);
+  }
+
+  function injectPrintFriendly(actions) {
+    if (!actions || actions.querySelector("[data-nav-print-friendly]")) return;
+    const printBtn = actions.querySelector("#btn-print");
+    if (!printBtn) return;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "btn-print-friendly";
+    btn.className = "icon-btn";
+    btn.dataset.navPrintFriendly = "1";
+    btn.setAttribute("aria-label", "Printer-friendly");
+    btn.title = "Printer-friendly";
+    btn.innerHTML = `<span class="site-menu-action-label">Printer-friendly</span>${PRINT_FRIENDLY_ICON}`;
+    printBtn.insertAdjacentElement("afterend", btn);
+    btn.addEventListener("click", () => {
+      if (burgerIsVisible(document.getElementById("btn-menu"))) setMenuOpen(false);
+      runPrintFriendly();
+    });
+  }
+
   const COMPACT_MQ =
     "(max-width: 900px) and (orientation: portrait) and (hover: none), (max-width: 480px) and (orientation: portrait)";
 
@@ -224,6 +302,7 @@
 
     fillRulesetNav(menu.querySelector(".site-menu-rulesets"));
     injectRulesLink(menu.querySelector(".toolbar-actions"));
+    injectPrintFriendly(menu.querySelector(".toolbar-actions"));
 
     btn.addEventListener("click", (e) => {
       e.preventDefault();
@@ -325,5 +404,11 @@
     init();
   }
 
-  window.SiteNav = { setMenuOpen, isCompactNav, syncMenuVisibility };
+  window.SiteNav = {
+    setMenuOpen,
+    isCompactNav,
+    syncMenuVisibility,
+    registerPrintRerender,
+    runPrintFriendly,
+  };
 })();

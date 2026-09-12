@@ -360,4 +360,5 @@
 
   bindControls();
   render();
+  window.SiteNav?.registerPrintRerender?.(render);
 })();
