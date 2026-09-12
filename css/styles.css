@@ -2044,6 +2044,12 @@ html[data-theme="dark"] .tenbou-legend {
     gap: 0;
   }
 
+  /* "|" meld breaks → exactly one space between groups */
+  body[data-print-friendly="true"] .meld + .meld::before {
+    content: " ";
+    white-space: pre;
+  }
+
   body[data-print-friendly="true"] .tile-text,
   body[data-print-friendly="true"] .tile.tile-text {
     border: none !important;
