@@ -450,6 +450,8 @@ function applyDarkMode(settings = loadSettings(), checkbox = document.getElement
   document.documentElement.dataset.theme = theme;
   if (document.body) document.body.dataset.theme = theme;
   if (checkbox) checkbox.checked = on;
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = on ? "#161513" : "#2c5f4a";
   return on;
 }
 
