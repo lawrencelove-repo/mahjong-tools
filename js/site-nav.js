@@ -241,8 +241,11 @@
     });
   }
 
+  // Keep in sync with the compact-header @media in css/styles.css
   const COMPACT_MQ =
-    "(max-width: 900px) and (orientation: portrait) and (hover: none), (max-width: 480px) and (orientation: portrait)";
+    "(max-width: 900px) and (orientation: portrait) and (hover: none), " +
+    "(max-width: 480px) and (orientation: portrait), " +
+    "(max-width: 1366px) and (orientation: landscape) and (hover: none) and (pointer: coarse)";
 
   function isCompactNav() {
     return window.matchMedia(COMPACT_MQ).matches;

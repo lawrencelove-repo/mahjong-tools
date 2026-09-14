@@ -189,7 +189,7 @@ body {
 
 /*
  * Desktop site-menu is an inline trailing cluster (action icons).
- * Ruleset links stay hidden until the compact portrait breakpoint.
+ * Ruleset links stay hidden until the compact (hamburger) breakpoint.
  * Display size (+/−) lives in Settings (#ui-scale-host).
  */
 .site-menu {
@@ -496,7 +496,7 @@ body {
   text-decoration: none;
 }
 
-/* Hidden by default (after .icon-btn). Compact portrait MQ re-enables it. */
+/* Hidden by default (after .icon-btn). Compact nav MQ re-enables it. */
 .toolbar .toolbar-burger {
   display: none !important;
   margin-left: auto;
@@ -517,9 +517,16 @@ body {
   display: block;
 }
 
-/* Compact header: mobile portrait only (not laptop landscape / half-screen) */
+/*
+ * Compact header (hamburger + overlay menu):
+ * - Phones/tablets in portrait (touch)
+ * - Narrow portrait phones without hover:none quirks
+ * - Tablets in landscape (e.g. iPad) via coarse pointer — keeps mouse
+ *   desktop / laptop half-screen windows on the inline icon cluster
+ */
 @media (max-width: 900px) and (orientation: portrait) and (hover: none),
-  (max-width: 480px) and (orientation: portrait) {
+  (max-width: 480px) and (orientation: portrait),
+  (max-width: 1366px) and (orientation: landscape) and (hover: none) and (pointer: coarse) {
   .toolbar {
     position: sticky;
     flex-direction: row;
