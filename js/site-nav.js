@@ -241,14 +241,35 @@
     });
   }
 
-  // Keep in sync with the compact-header @media in css/styles.css
-  const COMPACT_MQ =
-    "(max-width: 900px) and (orientation: portrait) and (hover: none), " +
-    "(max-width: 480px) and (orientation: portrait), " +
-    "(max-width: 1366px) and (orientation: landscape) and (hover: none) and (pointer: coarse)";
+  // Compact layout is driven by html.nav-compact (see js/nav-boot.js + css/styles.css)
+  const boot = window.__riichiNavBoot;
 
   function isCompactNav() {
-    return window.matchMedia(COMPACT_MQ).matches;
+    if (boot && typeof boot.isCompactNav === "function") return boot.isCompactNav();
+    // Fallback if nav-boot.js did not load
+    try {
+      if (window.matchMedia("(max-width: 900px) and (orientation: portrait) and (hover: none)").matches) {
+        return true;
+      }
+      if (window.matchMedia("(max-width: 480px) and (orientation: portrait)").matches) return true;
+      if (
+        window.matchMedia("(max-width: 1600px) and (orientation: landscape) and (any-pointer: coarse)")
+          .matches
+      ) {
+        return true;
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    const appleTouch =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) ||
+      (/Macintosh|Mac OS X/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+    return (
+      appleTouch &&
+      window.matchMedia("(orientation: landscape)").matches &&
+      window.innerWidth <= 1600
+    );
   }
 
   function burgerIsVisible(btn) {
@@ -281,8 +302,11 @@
     const menu = document.getElementById("site-menu");
     const toolbar = document.querySelector("header.toolbar");
     const btn = document.getElementById("btn-menu");
-    const compact = isCompactNav();
-    document.documentElement.classList.toggle("nav-compact", compact);
+    const compact =
+      boot && typeof boot.syncNavCompact === "function" ? boot.syncNavCompact() : isCompactNav();
+    if (!(boot && typeof boot.syncNavCompact === "function")) {
+      document.documentElement.classList.toggle("nav-compact", compact);
+    }
     if (!menu) return;
 
     if (compact) {
@@ -341,10 +365,25 @@
       }
     });
 
-    const mq = window.matchMedia(COMPACT_MQ);
     const onMq = () => syncMenuVisibility();
-    if (mq.addEventListener) mq.addEventListener("change", onMq);
-    else mq.addListener(onMq);
+    const mqQueries = [
+      "(orientation: landscape)",
+      "(orientation: portrait)",
+      "(any-pointer: coarse)",
+      "(hover: none)",
+      "(max-width: 900px)",
+      "(max-width: 480px)",
+      "(max-width: 1600px)",
+    ];
+    for (const q of mqQueries) {
+      try {
+        const mq = window.matchMedia(q);
+        if (mq.addEventListener) mq.addEventListener("change", onMq);
+        else mq.addListener(onMq);
+      } catch (e) {
+        /* ignore */
+      }
+    }
     window.addEventListener("resize", syncMenuVisibility);
     window.addEventListener("orientationchange", () => {
       setTimeout(syncMenuVisibility, 50);

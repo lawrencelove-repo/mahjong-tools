@@ -518,129 +518,125 @@ body {
 }
 
 /*
- * Compact header (hamburger + overlay menu):
- * - Phones/tablets in portrait (touch)
- * - Narrow portrait phones without hover:none quirks
- * - Tablets in landscape (e.g. iPad) via coarse pointer — keeps mouse
- *   desktop / laptop half-screen windows on the inline icon cluster
+ * Compact header (hamburger + overlay menu).
+ * Toggled by html.nav-compact from js/nav-boot.js + site-nav.js — not CSS-only
+ * media queries. Modern iPads use a desktop Mac UA and unreliable hover/pointer
+ * features, so (hover: none) / (pointer: coarse) alone misses landscape tablets.
+ * Mouse-only desktops stay on the inline icon cluster.
  */
-@media (max-width: 900px) and (orientation: portrait) and (hover: none),
-  (max-width: 480px) and (orientation: portrait),
-  (max-width: 1366px) and (orientation: landscape) and (hover: none) and (pointer: coarse) {
-  .toolbar {
-    position: sticky;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-    gap: 0;
-    padding: 0.4rem 0.65rem;
-  }
+html.nav-compact .toolbar {
+  position: sticky;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0;
+  padding: 0.4rem 0.65rem;
+}
 
-  .toolbar-main {
-    flex-wrap: nowrap;
-    gap: 0.45rem 0.6rem;
-    width: 100%;
-  }
+html.nav-compact .toolbar-main {
+  flex-wrap: nowrap;
+  gap: 0.45rem 0.6rem;
+  width: 100%;
+}
 
-  .toolbar h1 {
-    margin: 0;
-    font-size: 1rem;
-  }
+html.nav-compact .toolbar h1 {
+  margin: 0;
+  font-size: 1rem;
+}
 
-  .toolbar-main .group-radios {
-    flex: 1 1 auto;
-    min-width: 0;
-    margin-left: 0;
-    gap: 0.4rem;
-    font-size: 0.8rem;
-  }
+html.nav-compact .toolbar-main .group-radios {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: 0;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+}
 
-  .toolbar .toolbar-burger {
-    display: inline-flex !important;
-    margin-left: auto;
-    flex-shrink: 0;
-  }
+html.nav-compact .toolbar .toolbar-burger {
+  display: inline-flex !important;
+  margin-left: auto;
+  flex-shrink: 0;
+}
 
-  /* Overlay panel under the header — does not push page content */
-  .site-menu {
-    display: none;
-    position: absolute;
-    top: calc(100% + 1px);
-    right: 0.4rem;
-    left: auto;
-    z-index: 30;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.1rem;
-    width: max-content;
-    max-width: calc(100vw - 0.8rem);
-    margin: 0;
-    padding: 0.4rem 0.35rem;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: var(--paper);
-    box-shadow: 0 8px 24px var(--shadow);
-  }
+/* Overlay panel under the header — does not push page content */
+html.nav-compact .site-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 1px);
+  right: 0.4rem;
+  left: auto;
+  z-index: 30;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.1rem;
+  width: max-content;
+  max-width: calc(100vw - 0.8rem);
+  margin: 0;
+  padding: 0.4rem 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 0 8px 24px var(--shadow);
+}
 
-  .toolbar.is-menu-open .site-menu:not([hidden]) {
-    display: flex;
-  }
+html.nav-compact .toolbar.is-menu-open .site-menu:not([hidden]) {
+  display: flex;
+}
 
-  .site-menu[hidden] {
-    display: none !important;
-  }
+html.nav-compact .site-menu[hidden] {
+  display: none !important;
+}
 
-  .toolbar-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    margin-left: 0;
-    width: 100%;
-    gap: 0.05rem;
-  }
+html.nav-compact .toolbar-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-left: 0;
+  width: 100%;
+  gap: 0.05rem;
+}
 
-  .toolbar-actions .icon-btn,
-  .toolbar-actions a.icon-btn {
-    width: auto;
-    height: auto;
-    min-height: 2rem;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    padding: 0.4rem 0.45rem;
-    border: none;
-    background: transparent;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: inherit;
-  }
+html.nav-compact .toolbar-actions .icon-btn,
+html.nav-compact .toolbar-actions a.icon-btn {
+  width: auto;
+  height: auto;
+  min-height: 2rem;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.4rem 0.45rem;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: inherit;
+}
 
-  .toolbar-actions .icon-btn:hover,
-  .toolbar-actions a.icon-btn:hover {
-    background: var(--badge-bg);
-    color: var(--accent);
-    border-color: transparent;
-  }
+html.nav-compact .toolbar-actions .icon-btn:hover,
+html.nav-compact .toolbar-actions a.icon-btn:hover {
+  background: var(--badge-bg);
+  color: var(--accent);
+  border-color: transparent;
+}
 
-  .site-menu-action-label {
-    display: inline;
-    white-space: nowrap;
-  }
+html.nav-compact .site-menu-action-label {
+  display: inline;
+  white-space: nowrap;
+}
 
-  .toolbar .site-menu-rulesets {
-    display: flex !important;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.05rem;
-    margin-top: 0.35rem;
-    padding-top: 0.4rem;
-    border-top: 1px solid var(--line);
-  }
+html.nav-compact .toolbar .site-menu-rulesets {
+  display: flex !important;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.05rem;
+  margin-top: 0.35rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--line);
+}
 
-  .site-menu-link {
-    padding: 0.4rem 0.45rem;
-    font-size: 0.9rem;
-  }
+html.nav-compact .site-menu-link {
+  padding: 0.4rem 0.45rem;
+  font-size: 0.9rem;
 }
 
 .group-radios {
