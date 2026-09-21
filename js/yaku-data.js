@@ -258,8 +258,8 @@ window.YAKU_DATA = [
     tags: ["core"],
     description: "123 + 456 + 789 sequences in one suit.",
     examples: [
-      { label: "Pinzu", tiles: "123P | 456P | 789P | 22B | 345C" },
-      { label: "Souzu", tiles: "123B | 456B | 789B | WD WD | 678P" },
+      { label: "Pinzu (Dots)", tiles: "123P | 456P | 789P | 22B | 345C" },
+      { label: "Souzu (Bamboo)", tiles: "123B | 456B | 789B | WD WD | 678P" },
     ],
   },
   {
@@ -414,8 +414,8 @@ window.YAKU_DATA = [
     tags: ["core"],
     description: "One suit plus honors only.",
     examples: [
-      { label: "Pin + honors", tiles: "123P | 456P | 789P | EW EW EW | RD RD" },
-      { label: "Sou + honors", tiles: "111B | 456B | 789B | WD WD WD | NW NW" },
+      { label: "Pinzu (Dots) + honors", tiles: "123P | 456P | 789P | EW EW EW | RD RD" },
+      { label: "Souzu (Bamboo) + honors", tiles: "111B | 456B | 789B | WD WD WD | NW NW" },
     ],
   },
 
@@ -432,9 +432,9 @@ window.YAKU_DATA = [
     tags: ["core"],
     description: "All tiles in a single suit (no honors).",
     examples: [
-      { label: "Pinzu", tiles: "123P | 456P | 789P | 22P | 333P" },
-      { label: "Manzu", tiles: "111C | 234C | 567C | 789C | 9C 9C" },
-      { label: "Souzu", tiles: "123B | 456B | 789B | 22B | 888B" },
+      { label: "Pinzu (Dots)", tiles: "123P | 456P | 789P | 22P | 333P" },
+      { label: "Manzu (Craks)", tiles: "111C | 234C | 567C | 789C | 9C 9C" },
+      { label: "Souzu (Bamboo)", tiles: "123B | 456B | 789B | 22B | 888B" },
     ],
   },
 
@@ -554,7 +554,7 @@ window.YAKU_DATA = [
     section: "yakuman",
     category: "yakuman",
     tags: ["core"],
-    description: "Only green tiles: 2,3,4,6,8 sou and/or green dragon.",
+    description: "Only green tiles: 2,3,4,6,8 bamboo and/or green dragon.",
     examples: [
       { label: "", tiles: "234B | 234B | 6B 6B | 8B 8B 8B | GD GD GD" },
     ],
@@ -571,7 +571,7 @@ window.YAKU_DATA = [
     tags: ["core"],
     description: "1112345678999 in one suit plus one extra tile of that suit. Closed only.",
     examples: [
-      { label: "Pinzu + 5", tiles: "1P 1P 1P | 2P 3P 4P | 5P 5P | 6P 7P 8P | 9P 9P 9P" },
+      { label: "Pinzu (Dots) + 5", tiles: "1P 1P 1P | 2P 3P 4P 5P 6P 7P 8P | 9P 9P 9P | 5P" },
     ],
   },
   {

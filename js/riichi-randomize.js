@@ -107,8 +107,23 @@
     return fallback14();
   }
 
+  function suitLabel(suit) {
+    return { B: "Souzu (Bamboo)", C: "Manzu (Craks)", P: "Pinzu (Dots)" }[suit] || suit;
+  }
+
+  /** Prefer Japanese suit name on the example label; fall back to first suited tile. */
+  function resolveSuit(example, label) {
+    const text = label || example?.label || "";
+    if (/Pinzu|Dots/i.test(text)) return "P";
+    if (/Souzu|Bamboo/i.test(text)) return "B";
+    if (/Manzu|Craks/i.test(text)) return "C";
+    const m = (example?.tiles || "").match(/[1-9]([BCP])/);
+    return m ? m[1] : null;
+  }
+
   function sanshokuDoujun() {
-    const { makePool, takeSanshokuChow, tryChow, tryPair, tryPung, fallback14 } = B();
+    const { makePool, takeSanshokuChow, tryChow, tryPair, tryPung, fallback14, groupsToNotation } =
+      B();
     for (let attempt = 0; attempt < 50; attempt++) {
       const pool = makePool();
       const start = 1 + Math.floor(Math.random() * 7);
@@ -119,29 +134,37 @@
       if (!meld) continue;
       const pair = tryPair(pool, { allowHonors: true });
       if (!pair) continue;
-      return [...three, meld, pair];
+      const seq = `${start}${start + 1}${start + 2}`;
+      return { tiles: groupsToNotation([...three, meld, pair]), label: seq };
     }
-    return fallback14();
+    return { tiles: groupsToNotation(fallback14()), label: "234" };
   }
 
-  function ittsu() {
-    const { makePool, SUITS, pick, takeStraight, randomMixedMeld, tryPair, fallback14 } = B();
+  function ittsu(forcedSuit) {
+    const { makePool, SUITS, pick, takeStraight, randomMixedMeld, tryPair, fallback14, groupsToNotation } =
+      B();
     for (let attempt = 0; attempt < 50; attempt++) {
       const pool = makePool();
-      const suit = pick(SUITS);
+      const suit = forcedSuit && SUITS.includes(forcedSuit) ? forcedSuit : pick(SUITS);
       const straight = takeStraight(pool, suit);
       if (!straight) continue;
       const meld = randomMixedMeld(pool, { allowHonors: true, chowBias: 0.5 });
       if (!meld) continue;
       const pair = tryPair(pool, { allowHonors: true });
       if (!pair) continue;
-      return [...straight, meld, pair];
+      return {
+        tiles: groupsToNotation([...straight, meld, pair]),
+        label: suitLabel(suit),
+      };
     }
-    return fallback14();
+    return {
+      tiles: groupsToNotation(fallback14()),
+      label: suitLabel(forcedSuit || "P"),
+    };
   }
 
   function sanshokuDoukou() {
-    const { makePool, takeSanshokuPung, tryChow, tryPair, fallback14 } = B();
+    const { makePool, takeSanshokuPung, tryChow, tryPair, fallback14, groupsToNotation } = B();
     for (let attempt = 0; attempt < 50; attempt++) {
       const pool = makePool();
       const num = 1 + Math.floor(Math.random() * 9);
@@ -151,9 +174,12 @@
       if (!chow) continue;
       const pair = tryPair(pool, { allowHonors: true });
       if (!pair) continue;
-      return [...three, chow, pair];
+      return {
+        tiles: groupsToNotation([...three, chow, pair]),
+        label: `${num}s`,
+      };
     }
-    return fallback14();
+    return { tiles: groupsToNotation(fallback14()), label: "5s" };
   }
 
   function sanankou() {
@@ -341,81 +367,77 @@
   /**
    * @param {{ id: string }} yaku
    * @param {{ tiles: string, label?: string }} example
+   * @returns {{ tiles: string, label?: string }}
    */
   function randomizeExample(yaku, example) {
     const b = B();
-    if (!b) return example?.tiles || "";
+    const fallbackLabel = example?.label || "";
+    if (!b) return { tiles: example?.tiles || "", label: fallbackLabel };
 
-    let groups;
+    function done(tiles, label) {
+      return { tiles, label: label != null ? label : fallbackLabel };
+    }
+    function fromGroups(groups, label) {
+      return done(notation(groups || b.fallback14()), label);
+    }
+
     switch (yaku.id) {
       case "pinfu":
-        groups = pinfu();
-        break;
+        return fromGroups(pinfu());
       case "iipeikou":
-        groups = iipeikou();
-        break;
+        return fromGroups(iipeikou());
       case "tanyao":
-        groups = tanyao();
-        break;
+        return fromGroups(tanyao());
       case "yakuhai-haku":
-        groups = withYakuhai("WD");
-        break;
+        return fromGroups(withYakuhai("WD"));
       case "yakuhai-hatsu":
-        groups = withYakuhai("GD");
-        break;
+        return fromGroups(withYakuhai("GD"));
       case "yakuhai-chun":
-        groups = withYakuhai("RD");
-        break;
+        return fromGroups(withYakuhai("RD"));
       case "yakuhai-wind":
-        groups = withYakuhai(b.pick(b.WINDS));
-        break;
+        return fromGroups(withYakuhai(b.pick(b.WINDS)));
       case "chiitoitsu":
-        groups = b.randomSevenPairs();
-        break;
+        return fromGroups(b.randomSevenPairs());
       case "sanshoku-doujun":
-        groups = sanshokuDoujun();
-        break;
-      case "ittsu":
-        groups = ittsu();
-        break;
+        return sanshokuDoujun();
+      case "ittsu": {
+        const suit = resolveSuit(example, fallbackLabel) || "P";
+        return ittsu(suit);
+      }
       case "chanta":
-        groups = chantaLike(true);
-        break;
+        return fromGroups(chantaLike(true));
       case "sanshoku-doukou":
-        groups = sanshokuDoukou();
-        break;
+        return sanshokuDoukou();
       case "sanankou":
+        return fromGroups(sanankou());
       case "suuankou":
       case "suuankou-tanki":
-        groups = yaku.id === "sanankou" ? sanankou() : b.randomAllPungs14();
-        break;
+        return fromGroups(b.randomAllPungs14());
       case "sankantsu":
-        groups = sankantsu();
-        break;
+        return fromGroups(sankantsu());
       case "toitoi":
-        groups = b.randomAllPungs14();
-        break;
+        return fromGroups(b.randomAllPungs14());
       case "shousangen":
-        groups = shousangen();
-        break;
+        return fromGroups(shousangen());
       case "honroutou":
-        groups = honroutou();
-        break;
+        return fromGroups(honroutou());
       case "ryanpeikou":
-        groups = ryanpeikou();
-        break;
+        return fromGroups(ryanpeikou());
       case "junchan":
-        groups = chantaLike(false);
-        break;
-      case "honitsu":
-        groups = b.randomHalfFlush14();
-        break;
-      case "chinitsu":
-        groups = b.randomFullFlush14();
-        break;
+        return fromGroups(chantaLike(false));
+      case "honitsu": {
+        const suit = resolveSuit(example, fallbackLabel) || "P";
+        const groups = b.randomHalfFlush14({ suit });
+        return done(notation(groups), `${suitLabel(suit)} + honors`);
+      }
+      case "chinitsu": {
+        const suit = resolveSuit(example, fallbackLabel) || "P";
+        const groups = b.randomFullFlush14({ suit });
+        return done(notation(groups), suitLabel(suit));
+      }
       case "kokushi":
       case "kokushi-13":
-        return b.kokushiNotation();
+        return done(b.kokushiNotation(), fallbackLabel);
       case "daisangen": {
         const { makePool, DRAGONS, takePung, tryChow, tryPair, fallback14 } = b;
         for (let i = 0; i < 40; i++) {
@@ -426,22 +448,27 @@
           if (!chow) continue;
           const pair = tryPair(pool, { allowHonors: false });
           if (!pair) continue;
-          return notation([...gs, chow, pair]);
+          return fromGroups([...gs, chow, pair]);
         }
-        return notation(fallback14());
+        return fromGroups(fallback14());
       }
       case "shousuushii": {
         const { makePool, WINDS, shuffle, takePung, takePair, tryChow, fallback14 } = b;
         for (let i = 0; i < 40; i++) {
           const pool = makePool();
           const w = shuffle(WINDS);
-          const gs = [takePung(pool, w[0]), takePung(pool, w[1]), takePung(pool, w[2]), takePair(pool, w[3])];
+          const gs = [
+            takePung(pool, w[0]),
+            takePung(pool, w[1]),
+            takePung(pool, w[2]),
+            takePair(pool, w[3]),
+          ];
           if (gs.some((g) => !g)) continue;
           const chow = tryChow(pool, {});
           if (!chow) continue;
-          return notation([gs[0], gs[1], gs[2], chow, gs[3]]);
+          return fromGroups([gs[0], gs[1], gs[2], chow, gs[3]]);
         }
-        return notation(fallback14());
+        return fromGroups(fallback14());
       }
       case "daisuushii": {
         const { makePool, WINDS, takePung, tryPair, fallback14 } = b;
@@ -451,12 +478,12 @@
           if (gs.some((g) => !g)) continue;
           const pair = tryPair(pool, { allowHonors: false });
           if (!pair) continue;
-          return notation([...gs, pair]);
+          return fromGroups([...gs, pair]);
         }
-        return notation(fallback14());
+        return fromGroups(fallback14());
       }
       case "tsuuiisou": {
-        const { makePool, tryPung, tryPair, HONORS, fallback14 } = b;
+        const { tryPung, tryPair, HONORS, fallback14 } = b;
         for (let i = 0; i < 60; i++) {
           const pool = {};
           for (const id of HONORS) pool[id] = 4;
@@ -473,31 +500,29 @@
           if (!ok) continue;
           const pair = tryPair(pool, { allowHonors: true });
           if (!pair) continue;
-          return notation([...gs, pair]);
+          return fromGroups([...gs, pair]);
         }
-        return notation(fallback14());
+        return fromGroups(fallback14());
       }
       case "chinroutou":
-        groups = b.buildHand((pool, o) => b.tryPung(pool, o), 4, {
-          nums: [1, 9],
-          honors: false,
-          allowHonors: false,
-        });
-        break;
+        return fromGroups(
+          b.buildHand((pool, o) => b.tryPung(pool, o), 4, {
+            nums: [1, 9],
+            honors: false,
+            allowHonors: false,
+          })
+        );
       case "ryuuiisou":
-        groups = ryuuiisou();
-        break;
-      case "chuuren":
-        return b.nineGatesNotation();
+        return fromGroups(ryuuiisou());
+      case "chuuren": {
+        const ng = b.nineGatesNotation();
+        return done(ng.tiles, ng.label);
+      }
       case "suukantsu":
-        groups = suukantsu();
-        break;
+        return fromGroups(suukantsu());
       default:
-        // Timing / luck yaku with no tile constraint — any standard hand
-        groups = b.randomStandard14();
-        break;
+        return fromGroups(b.randomStandard14());
     }
-    return notation(groups || b.fallback14());
   }
 
   window.RIICHI_RANDOMIZE = { randomizeExample };

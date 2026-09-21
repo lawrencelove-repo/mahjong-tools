@@ -717,10 +717,13 @@ window.NMJL_NOTATION = {
         if (/^D{2,5}$/i.test(tok)) {
           return Array.from({ length: tok.length }, () => "RD").join(" ");
         }
+        // Sugar EE/SSS/NNNN etc. Do not treat tile ids EW/SW/WW/NW as repeats
+        // (WW alone is one West; WWW is three Wests).
         const windRep = tok.match(/^(E|S|W|N)\1{1,4}$/i);
         if (windRep) {
           const map = { E: "EW", S: "SW", W: "WW", N: "NW" };
           const id = map[windRep[1].toUpperCase()];
+          if (tok.toUpperCase() === id) return id;
           return Array.from({ length: tok.length }, () => id).join(" ");
         }
         if (/^F{2,5}$/i.test(tok)) {

@@ -160,8 +160,8 @@
       }
       const ex = document.createElement("div");
       ex.className = "example";
-      const expanded = NMJL_NOTATION.expandHand(tiles);
-      ex.appendChild(Tiles.renderHand(expanded, settings.tileStyle, tileOpts()));
+      // versions are already expanded (randomizeHand / expandHand above)
+      ex.appendChild(Tiles.renderHand(tiles, settings.tileStyle, tileOpts()));
       host.appendChild(ex);
     });
   }

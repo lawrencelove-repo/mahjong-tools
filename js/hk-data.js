@@ -326,7 +326,7 @@ window.HK_DATA = [
     category: "limit",
     tags: ["core"],
     description: "1112345678999 of one suit plus any extra tile of that suit.",
-    examples: [{ tiles: "111P | 2345678P | 999P | 5P" }],
+    examples: [{ tiles: "1P 1P 1P | 2P 3P 4P 5P 6P 7P 8P | 9P 9P 9P | 5P" }],
   },
   {
     id: "all-kongs",

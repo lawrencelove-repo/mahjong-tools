@@ -226,9 +226,10 @@
     ];
   }
 
-  function randomFullFlush14() {
+  function randomFullFlush14(opts = {}) {
+    const forced = opts.suit && SUITS.includes(opts.suit) ? opts.suit : null;
     for (let attempt = 0; attempt < 60; attempt++) {
-      const suit = pick(SUITS);
+      const suit = forced || pick(SUITS);
       const groups = buildHand(
         (pool, o) => randomMixedMeld(pool, o),
         4,
@@ -239,9 +240,10 @@
     return fallback14();
   }
 
-  function randomHalfFlush14() {
+  function randomHalfFlush14(opts = {}) {
+    const forced = opts.suit && SUITS.includes(opts.suit) ? opts.suit : null;
     for (let attempt = 0; attempt < 80; attempt++) {
-      const suit = pick(SUITS);
+      const suit = forced || pick(SUITS);
       const pool = makePool({ suits: [suit] });
       const groups = [];
       let ok = true;
@@ -329,7 +331,24 @@
   function nineGatesNotation() {
     const suit = pick(SUITS);
     const extra = 1 + Math.floor(Math.random() * 9);
-    return [1, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 9, extra].map((n) => `${n}${suit}`).join(" ");
+    const t = (n) => `${n}${suit}`;
+    const tiles = [
+      `${t(1)} ${t(1)} ${t(1)}`,
+      `${t(2)} ${t(3)} ${t(4)} ${t(5)} ${t(6)} ${t(7)} ${t(8)}`,
+      `${t(9)} ${t(9)} ${t(9)}`,
+      t(extra),
+    ].join(" | ");
+    const suitNames = {
+      B: "Souzu (Bamboo)",
+      C: "Manzu (Craks)",
+      P: "Pinzu (Dots)",
+    };
+    return {
+      tiles,
+      label: `${suitNames[suit] || suit} + ${extra}`,
+      suit,
+      extra,
+    };
   }
 
   window.HAND_BUILD = {

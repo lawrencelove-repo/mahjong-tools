@@ -151,19 +151,26 @@
         for (const ex of y.examples) {
           const block = document.createElement("div");
           block.className = "example";
-          if (ex.label) {
-            const lab = document.createElement("span");
-            lab.className = "example-label";
-            lab.textContent = ex.label;
-            block.appendChild(lab);
-          }
           let tiles = ex.tiles;
+          let label = ex.label;
           if (doRandom) {
             if (window.RIICHI_RANDOMIZE?.randomizeExample) {
-              tiles = RIICHI_RANDOMIZE.randomizeExample(y, ex);
+              const result = RIICHI_RANDOMIZE.randomizeExample(y, ex);
+              if (result && typeof result === "object") {
+                tiles = result.tiles;
+                if (result.label != null && result.label !== "") label = result.label;
+              } else if (typeof result === "string") {
+                tiles = result;
+              }
             } else if (window.HAND_RANDOMIZE?.randomizeSuits) {
               tiles = HAND_RANDOMIZE.randomizeSuits(tiles);
             }
+          }
+          if (label) {
+            const lab = document.createElement("span");
+            lab.className = "example-label";
+            lab.textContent = label;
+            block.appendChild(lab);
           }
           block.appendChild(
             Tiles.renderHand(tiles, settings.tileStyle, {
@@ -232,9 +239,9 @@
         : style;
 
     const rows = [
-      { label: "Bam (souzu)", tiles: "1B 2B 3B 4B 5B 6B 7B 8B 9B" },
-      { label: "Crak (manzu)", tiles: "1C 2C 3C 4C 5C 6C 7C 8C 9C" },
-      { label: "Dot (pinzu)", tiles: "1P 2P 3P 4P 5P 6P 7P 8P 9P" },
+      { label: "Souzu (Bamboo)", tiles: "1B 2B 3B 4B 5B 6B 7B 8B 9B" },
+      { label: "Manzu (Craks)", tiles: "1C 2C 3C 4C 5C 6C 7C 8C 9C" },
+      { label: "Pinzu (Dots)", tiles: "1P 2P 3P 4P 5P 6P 7P 8P 9P" },
       { label: "Winds", tiles: "EW SW WW NW" },
       { label: "Dragons", tiles: "WD GD RD" },
     ];

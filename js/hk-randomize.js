@@ -251,7 +251,8 @@
   }
 
   function nineGates() {
-    return B().nineGatesNotation();
+    const ng = B().nineGatesNotation();
+    return typeof ng === "string" ? ng : ng.tiles;
   }
 
   /**
