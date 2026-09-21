@@ -1418,6 +1418,12 @@ html[data-theme="dark"] .suit-blue { color: #64b5f6; }
   margin: 0 0 1.6rem;
 }
 
+.filipino-quick-start .rules-doc > section + section {
+  margin-top: 1.6rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--line);
+}
+
 .rules-doc h2 {
   margin: 0 0 0.55rem;
   font-family: var(--font-display, Georgia, "Noto Serif", serif);
@@ -1520,6 +1526,225 @@ html[data-theme="dark"] .tenbou-legend {
 
 .rules-doc a {
   color: var(--accent);
+}
+
+.rules-quick-ref-lead {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.95em;
+}
+
+.rules-meld-ref {
+  margin: 0 0 1.15rem;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.rules-meld-ref:last-child,
+.rules-hand-ref:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.rules-hand-ref {
+  margin: 0 0 1.15rem;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.rules-meld-ref h3,
+.rules-hand-ref h3 {
+  margin: 0 0 0.25rem;
+}
+
+.rules-meld-ref > p,
+.rules-hand-ref > p {
+  margin: 0 0 0.55rem;
+  color: var(--muted);
+  font-size: 0.95em;
+}
+
+.rules-meld-example {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.45rem 0.55rem;
+}
+
+.qs-starting-hand {
+  align-items: flex-end;
+}
+
+.qs-starting-hand-tiles {
+  margin: 0;
+  padding: 0.2rem 0.15rem;
+}
+
+.qs-starting-hand-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 0.75rem;
+  margin: 0 0 0.15rem;
+}
+
+.qs-dealer-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.92em;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+}
+
+.qs-starting-hand-display .meld {
+  gap: 4px;
+}
+
+.qs-starting-hand-rows {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.qs-starting-hand-row.hand {
+  flex-wrap: nowrap;
+}
+
+.qs-starting-hand-row .meld {
+  flex-wrap: nowrap;
+  gap: 4px;
+}
+
+.rules-meld-tiles {
+  appearance: none;
+  margin: 0;
+  padding: 0.55rem 0.35rem 0.2rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.rules-meld-tiles:hover,
+.rules-meld-tiles:focus-visible {
+  border-color: var(--line);
+  background: var(--panel-soft, var(--badge-bg));
+  outline: none;
+}
+
+.rules-example-hand {
+  --tile-h: calc(var(--tile-h-base) * var(--ui-scale) * 2);
+  pointer-events: none;
+}
+
+.rules-meld-hand .meld {
+  align-items: flex-end;
+  gap: 4px;
+  padding-top: 1.35rem;
+}
+
+.rules-full-hand .meld {
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.rules-example-hand .tile-wrap,
+.rules-example-hand .tile-text {
+  position: relative;
+}
+
+.rules-example-hand .tile-text {
+  width: 2.3em;
+  height: 3.1em;
+  min-width: 2.3em;
+  font-size: 2.1rem;
+}
+
+.rules-claim-arrow {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 2px);
+  transform: translateX(-50%);
+  display: flex;
+  color: var(--accent);
+  line-height: 0;
+  pointer-events: none;
+}
+
+.rules-meld-refresh {
+  appearance: none;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  margin: 0 0 0.15rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--panel-soft, var(--badge-bg));
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.rules-meld-refresh:hover,
+.rules-meld-refresh:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+  outline: none;
+}
+
+.rules-meld-refresh svg {
+  display: block;
+}
+
+.qs-tile-row {
+  margin: 0 0 1rem;
+}
+
+.qs-tile-row h3 {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 1em;
+  font-weight: 650;
+}
+
+.qs-equal-tile-widths .tile-img {
+  width: var(--qs-tile-w);
+  object-fit: contain;
+}
+
+.qs-equal-tile-widths .tile-text {
+  width: var(--qs-tile-w);
+  min-width: var(--qs-tile-w);
+  box-sizing: border-box;
+}
+
+#qs-full-tileset-body .qs-suit-copies {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+#qs-full-tileset-body .qs-suit-copies .meld {
+  flex-wrap: nowrap;
+}
+
+#qs-full-tileset-body .qs-flowers-tileset {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.rules-toc a[href="#qs-flowers"][hidden],
+a.qs-toc-flowers[hidden] {
+  display: none;
 }
 
 .toolbar-actions .icon-btn.is-current {

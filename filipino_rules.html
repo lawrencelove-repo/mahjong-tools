@@ -83,6 +83,20 @@
         <button type="button" id="btn-settings-close" class="settings-close-btn" aria-label="Close settings" title="Close">Close</button>
       </div>
       <label><input type="checkbox" id="opt-dark-mode" /> Dark mode</label>
+      <label><input type="checkbox" id="opt-include-jokers" /> Include Jokers</label>
+      <label>
+        Tiles
+        <select id="tile-style" aria-label="Tile style"></select>
+      </label>
+      <label>
+        Seasons / flowers
+        <select id="hk-seasons">
+          <option value="exclude">Exclude seasons &amp; flowers</option>
+          <option value="include">Include seasons</option>
+          <option value="blanks">Use blanks as seasons</option>
+          <option value="flowers">Include Flowers</option>
+        </select>
+      </label>
     </div>
   </div>
 
@@ -135,6 +149,25 @@
       <p>
         If your table skips wilds entirely, ignore this step. Always confirm before the first hand whether wilds are on, and whether honors can be wild.
       </p>
+
+      <div id="jokers-block" hidden>
+        <h3>Jokers (optional house rule)</h3>
+        <p>
+          Some Filipino tables (especially diaspora / club sets) add <strong>four physical joker tiles</strong> to the wall.
+          This is separate from the dice-chosen wild face above — confirm which system your table uses (or whether it uses both).
+        </p>
+        <ul>
+          <li><strong>Count:</strong> Four jokers in the set.</li>
+          <li><strong>Substitution:</strong> A joker stands in for any suited tile you need to complete a meld or the eye (pair).</li>
+          <li><strong>Never discard:</strong> Jokers stay in hand until used; you do not throw them into the discard river.</li>
+          <li><strong>Exchange / redeem:</strong> If a joker is sitting in an <em>exposed</em> meld, you — or any other player — may replace it with the matching natural tile and take the joker into your own hand (timing follows the house; often on your turn before you discard).</li>
+          <li><strong>Joker Eye:</strong> Completing the winning pair with a joker is commonly <strong>self-draw only</strong> (you cannot claim a discard for a joker-eye win).</li>
+          <li><strong>Specials:</strong> Some tables pay extras for holding multiple jokers (e.g. three before the first discard, or all four) — payouts are house-ruled.</li>
+        </ul>
+        <p class="rules-note">
+          Tables differ on whether jokers may appear in exposed melds at all. If your club forbids exposed jokers, the exchange rule above does not apply — ask before the first wall.
+        </p>
+      </div>
     </section>
 
     <section id="terms">
@@ -195,7 +228,9 @@
         <li>Wall exhaustion is a draw; dealer rotation follows your group’s East-stay rules.</li>
       </ul>
       <p class="rules-note">
-        Pattern reminders: <a href="filipino.html">Filipino cheatsheet</a>. Filipino mahjong is highly regional — when this summary and your table disagree, the table wins.
+        Pattern reminders: <a href="filipino.html">Filipino cheatsheet</a>.
+        Visual intro: <a href="filipino-quick-start.html">Filipino Quick Start</a>.
+        Filipino mahjong is highly regional — when this summary and your table disagree, the table wins.
       </p>
     </section>
   </main>

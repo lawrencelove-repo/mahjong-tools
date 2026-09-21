@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="assets/favicon/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png" />
+  <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#2c5f4a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Mahjong" />
+  <title>Filipino Quick Start · Mahjong</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="js/nav-boot.js"></script>
+  <script>
+    (function () {
+      try {
+        var m = document.cookie.match(/(?:^|; )riichi-cheatsheet-dark-mode=([^;]*)/);
+        if (m && decodeURIComponent(m[1]) === "1") document.documentElement.dataset.theme = "dark";
+      } catch (e) {}
+    })();
+  </script>
+  <script src="js/tiles.js" defer></script>
+  <script src="js/settings.js" defer></script>
+  <script src="js/site-nav.js" defer></script>
+  <script src="js/filipino-quick-start.js" defer></script>
+  <script src="js/pwa.js" defer></script>
+</head>
+<body class="rules-page filipino-quick-start" data-ruleset="filipino">
+  <header class="toolbar no-print">
+    <div class="toolbar-main">
+      <h1>Filipino Quick Start</h1>
+      <button type="button" id="btn-menu" class="icon-btn toolbar-burger" aria-label="Menu" title="Menu" aria-expanded="false" aria-controls="site-menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 6h16"/>
+          <path d="M4 12h16"/>
+          <path d="M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="site-menu" class="site-menu">
+      <div class="toolbar-actions">
+        <a href="index.html" class="icon-btn" aria-label="Home" title="Home">
+          <span class="site-menu-action-label">Home</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 10.5L12 3l9 7.5"/>
+            <path d="M5 10v10h14V10"/>
+          </svg>
+        </a>
+        <button type="button" id="btn-settings" class="icon-btn" aria-label="Settings" title="Settings" aria-expanded="false" aria-controls="settings-panel">
+          <span class="site-menu-action-label">Settings</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+        <a href="filipino.html" class="icon-btn" aria-label="Cheatsheet" title="Cheatsheet">
+          <span class="site-menu-action-label">Cheatsheet</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <path d="M14 2v6h6"/>
+            <path d="M16 13H8"/>
+            <path d="M16 17H8"/>
+            <path d="M10 9H8"/>
+          </svg>
+        </a>
+      </div>
+      <nav class="site-menu-rulesets" aria-label="Rulesets"></nav>
+    </div>
+  </header>
+
+  <div id="settings-panel" class="no-print" hidden>
+    <div class="settings-options">
+      <div class="settings-scale">
+        <div class="settings-scale-main">
+          <span class="settings-scale-title">Display size</span>
+          <span id="ui-scale-host"></span>
+        </div>
+        <button type="button" id="btn-settings-close" class="settings-close-btn" aria-label="Close settings" title="Close">Close</button>
+      </div>
+      <label><input type="checkbox" id="opt-dark-mode" /> Dark mode</label>
+      <label><input type="checkbox" id="opt-include-jokers" /> Include Jokers</label>
+      <label>
+        Tiles
+        <select id="tile-style" aria-label="Tile style"></select>
+      </label>
+      <label>
+        Seasons / flowers
+        <select id="hk-seasons">
+          <option value="exclude">Exclude seasons &amp; flowers</option>
+          <option value="include">Include seasons</option>
+          <option value="blanks">Use blanks as seasons</option>
+          <option value="flowers">Include Flowers</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <main class="rules-doc">
+    <p class="rules-lead">
+      A visual intro to <strong>Filipino mahjong</strong>. Tile counts and examples follow your Settings
+      (jokers and flowers). Full rules: <a href="filipino_rules.html">Filipino Rules</a>.
+    </p>
+
+    <nav class="rules-toc" aria-label="On this page">
+      <a href="#setup">Setup</a>
+      <a href="#wall">The Wall</a>
+      <a href="#suits">Suits</a>
+      <a href="#qs-flowers" class="qs-toc-flowers" hidden>Flowers</a>
+      <a href="#starting-hand">Starting Hand</a>
+      <a href="#melds">Melds</a>
+      <a href="#winning-hands">Winning Hands</a>
+      <a href="#full-tileset">Full Tileset</a>
+    </nav>
+
+    <section id="setup">
+      <h2>Setup</h2>
+      <div id="qs-setup-body"></div>
+    </section>
+
+    <section id="wall">
+      <h2>The Wall</h2>
+      <div id="qs-wall-body"></div>
+    </section>
+
+    <section id="suits">
+      <h2>The Tiles: Suits</h2>
+      <p class="rules-quick-ref-lead">The three suited tile families. Each rank has four copies in the set.</p>
+      <div id="qs-suits-body"></div>
+    </section>
+
+    <section id="qs-flowers" hidden>
+      <h2>The Tiles: Flowers</h2>
+      <div id="qs-flowers-body"></div>
+    </section>
+
+    <section id="starting-hand">
+      <h2>Starting Hand example</h2>
+      <p class="rules-quick-ref-lead">
+        A random dealt hand sorted by suit. Use refresh for a new deal; check Dealer/Mano for the 17th tile.
+      </p>
+      <div class="rules-meld-example qs-starting-hand">
+        <div id="qs-starting-hand-tiles" class="qs-starting-hand-tiles" aria-live="polite"></div>
+        <div class="qs-starting-hand-controls">
+          <button type="button" id="qs-starting-hand-refresh" class="rules-meld-refresh" aria-label="Refresh starting hand" title="Refresh">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
+              <path d="M21 3v6h-6"/>
+            </svg>
+          </button>
+          <label class="qs-dealer-label">
+            <input type="checkbox" id="qs-dealer-mano" />
+            Dealer/Mano
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section id="melds">
+      <h2>Melds</h2>
+      <p class="rules-quick-ref-lead">
+        Melds you can claim from a discard (arrow marks the claimed tile). Tap the tiles or the refresh control for another example.
+      </p>
+
+      <article class="rules-meld-ref" data-meld="pong">
+        <h3>Pong</h3>
+        <p>Three of a kind — three identical tiles.</p>
+        <div class="rules-meld-example">
+          <button type="button" class="rules-meld-tiles" aria-label="Show another pong example"></button>
+          <button type="button" class="rules-meld-refresh" aria-label="Refresh pong example" title="Refresh">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
+              <path d="M21 3v6h-6"/>
+            </svg>
+          </button>
+        </div>
+      </article>
+
+      <article class="rules-meld-ref" data-meld="chow">
+        <h3>Chow</h3>
+        <p>A sequence of three consecutive tiles in one suit.</p>
+        <div class="rules-meld-example">
+          <button type="button" class="rules-meld-tiles" aria-label="Show another chow example"></button>
+          <button type="button" class="rules-meld-refresh" aria-label="Refresh chow example" title="Refresh">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
+              <path d="M21 3v6h-6"/>
+            </svg>
+          </button>
+        </div>
+      </article>
+
+      <article class="rules-meld-ref" data-meld="kong">
+        <h3>Kong</h3>
+        <p>Four of a kind — four identical tiles.</p>
+        <div class="rules-meld-example">
+          <button type="button" class="rules-meld-tiles" aria-label="Show another kong example"></button>
+          <button type="button" class="rules-meld-refresh" aria-label="Refresh kong example" title="Refresh">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
+              <path d="M21 3v6h-6"/>
+            </svg>
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <section id="winning-hands">
+      <h2>Winning Hands</h2>
+      <p class="rules-quick-ref-lead">
+        Illustrative sample hands only — tap the tiles or refresh for another random legal layout<span data-jokers-example-note hidden> (at most one joker)</span>.
+      </p>
+
+      <article class="rules-hand-ref" data-hand="todas">
+        <h3>Todas</h3>
+        <p>Example: a basic win — five melds and a pair (17 tiles).</p>
+        <div class="rules-meld-example">
+          <button type="button" class="rules-meld-tiles" aria-label="Show another Todas example"></button>
+          <button type="button" class="rules-meld-refresh" aria-label="Refresh Todas example" title="Refresh">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
+              <path d="M21 3v6h-6"/>
+            </svg>
+          </button>
+        </div>
+      </article>
+
+      <article class="rules-hand-ref" data-hand="seven-pairs">
+        <h3>Seven Pairs</h3>
+        <p>Example: seven pairs plus one pung (17 tiles).</p>
+        <div class="rules-meld-example">
+          <button type="button" class="rules-meld-tiles" aria-label="Show another Seven Pairs example"></button>
+          <button type="button" class="rules-meld-refresh" aria-label="Refresh Seven Pairs example" title="Refresh">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
+              <path d="M21 3v6h-6"/>
+            </svg>
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <section id="full-tileset">
+      <h2>Full Tileset</h2>
+      <p class="rules-quick-ref-lead">
+        Every tile in play for the current settings, grouped by suit (four copies of each suited and honor face).
+      </p>
+      <div id="qs-full-tileset-body"></div>
+    </section>
+  </main>
+</body>
+</html>

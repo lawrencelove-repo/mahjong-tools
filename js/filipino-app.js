@@ -18,10 +18,14 @@
   function visibleHands() {
     const mode = seasonsMode();
     return FILIPINO_DATA.filter((h) => {
-      if (mode !== "exclude") return true;
-      const bonus =
-        h.tags?.includes("bonus-flower") || h.tags?.includes("bonus-season");
-      return !bonus;
+      if (!settings.includeJokers && h.id === "joker-eye") return false;
+      if (mode === "exclude") {
+        const bonus =
+          h.tags?.includes("bonus-flower") || h.tags?.includes("bonus-season");
+        return !bonus;
+      }
+      // include | blanks | flowers — show flower/season scoring rows
+      return true;
     });
   }
 
@@ -159,12 +163,17 @@
     if (settings.tileStyle === "text") {
       const key = document.createElement("div");
       key.className = "nmjl-text-key";
-      key.innerHTML = [
+      const items = [
         `<span class="nmjl-text-key-item"><span class="tile tile-text suit-green">6</span> bam</span>`,
         `<span class="nmjl-text-key-item"><span class="tile tile-text suit-red">6</span> crak</span>`,
         `<span class="nmjl-text-key-item"><span class="tile tile-text suit-black">6</span> dot</span>`,
-        `<span class="nmjl-text-key-item"><span class="tile tile-text suit-blue">J</span> joker</span>`,
-      ].join("");
+      ];
+      if (settings.includeJokers) {
+        items.push(
+          `<span class="nmjl-text-key-item"><span class="tile tile-text suit-blue">J</span> joker</span>`
+        );
+      }
+      key.innerHTML = items.join("");
       el.appendChild(key);
     }
     if (settings.showExtraTiles || mode !== "exclude") {
@@ -172,12 +181,18 @@
       row.className = "nmjl-extras-row";
       const label = document.createElement("span");
       label.className = "legend-label";
-      label.textContent =
-        mode === "blanks"
-          ? "Seasons as blanks · flowers"
-          : "Flowers / seasons (often all “flowers” in Filipino play)";
-      const tiles =
-        mode === "blanks" ? "F1 F2 F3 F4 | X X X X | J" : "F1 F2 F3 F4 | F5 F6 F7 F8 | J";
+      let tiles;
+      if (mode === "blanks") {
+        label.textContent = "Seasons as blanks · flowers";
+        tiles = "F1 F2 F3 F4 | X X X X";
+      } else if (mode === "flowers") {
+        label.textContent = "Flowers (winds, dragons & flower tiles)";
+        tiles = "EW SW WW NW | WD GD RD | F1 F2 F3 F4 F5 F6 F7 F8";
+      } else {
+        label.textContent = "Flowers / seasons (often all “flowers” in Filipino play)";
+        tiles = "F1 F2 F3 F4 | F5 F6 F7 F8";
+      }
+      if (settings.includeJokers) tiles += " | J";
       row.append(
         label,
         Tiles.renderHand(tiles, settings.tileStyle, { rankLabels: settings.rankLabels })
@@ -212,14 +227,20 @@
       { label: "Crak (manzu)", tiles: "1C 2C 3C 4C 5C 6C 7C 8C 9C" },
       { label: "Dot (pinzu)", tiles: "1P 2P 3P 4P 5P 6P 7P 8P 9P" },
     ];
-    if (mode !== "exclude") {
+    if (mode === "flowers") {
+      rows.push(
+        { label: "Winds (as Flowers)", tiles: "EW SW WW NW" },
+        { label: "Dragons (as Flowers)", tiles: "WD GD RD" },
+        { label: "Flower tiles", tiles: "F1 F2 F3 F4 F5 F6 F7 F8" }
+      );
+    } else if (mode !== "exclude") {
       rows.push({
         label: mode === "blanks" ? "Seasons as blanks" : "Flowers / seasons",
         tiles: mode === "blanks" ? "X X X X X X X X" : "F1 F2 F3 F4 F5 F6 F7 F8",
       });
     }
     const jokers = Tiles.filterTilesNotation("J", style);
-    if (jokers) rows.push({ label: "Joker", tiles: jokers });
+    if (settings.includeJokers && jokers) rows.push({ label: "Joker", tiles: jokers });
 
     el.replaceChildren();
     const h = document.createElement("h2");
@@ -258,6 +279,11 @@
     AppSettings.bindTileStyleSelect($("#tile-style"), (style, saved) => {
       Object.assign(settings, saved);
       settings.tileStyle = style;
+      render();
+    });
+
+    AppSettings.bindIncludeJokersCheckbox($("#opt-include-jokers"), (_on, saved) => {
+      Object.assign(settings, saved);
       render();
     });
 

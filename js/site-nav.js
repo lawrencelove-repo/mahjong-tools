@@ -107,9 +107,17 @@
     filipino: "filipino_rules.html",
   };
 
+  const QUICK_START_PAGES = {
+    filipino: "filipino-quick-start.html",
+  };
+
   const RULES_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+  </svg>`;
+
+  const QUICK_START_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/>
   </svg>`;
 
   function currentRulesetId() {
@@ -123,7 +131,17 @@
 
   function isRulesPage() {
     const file = (location.pathname.split("/").pop() || "").toLowerCase();
-    return file.endsWith("_rules.html") || Object.values(RULES_PAGES).includes(file);
+    return (
+      file.endsWith("_rules.html") ||
+      file.includes("quick-start") ||
+      Object.values(RULES_PAGES).includes(file) ||
+      Object.values(QUICK_START_PAGES).includes(file)
+    );
+  }
+
+  function isQuickStartPage() {
+    const file = (location.pathname.split("/").pop() || "").toLowerCase();
+    return file.includes("quick-start") || Object.values(QUICK_START_PAGES).includes(file);
   }
 
   function fillRulesetNav(nav) {
@@ -138,20 +156,20 @@
     nav.dataset.ready = "1";
   }
 
-  function injectRulesLink(actions) {
-    if (!actions || actions.querySelector("[data-nav-rules]")) return;
-    if (isRulesPage()) return;
-    const id = currentRulesetId();
-    const href = RULES_PAGES[id];
+  function injectNavAction(actions, { datasetKey, href, label, iconHtml, skipIf }) {
+    if (!actions || actions.querySelector(`[${datasetKey}]`)) return;
+    if (skipIf?.()) return;
     if (!href) return;
 
     const a = document.createElement("a");
     a.href = href;
     a.className = "icon-btn";
-    a.dataset.navRules = "1";
-    a.setAttribute("aria-label", "Rules");
-    a.title = "Rules";
-    a.innerHTML = `<span class="site-menu-action-label">Rules</span>${RULES_ICON}`;
+    a.setAttribute(datasetKey, "1");
+    if (label === "Quick Start" && isQuickStartPage()) a.classList.add("is-current");
+    if (label === "Rules" && isRulesPage() && !isQuickStartPage()) a.classList.add("is-current");
+    a.setAttribute("aria-label", label);
+    a.title = label;
+    a.innerHTML = `<span class="site-menu-action-label">${label}</span>${iconHtml}`;
 
     const settings = actions.querySelector("#btn-settings");
     if (settings && settings.nextSibling) {
@@ -161,6 +179,28 @@
     } else {
       actions.insertBefore(a, actions.firstChild);
     }
+  }
+
+  function injectRulesLink(actions) {
+    const id = currentRulesetId();
+    injectNavAction(actions, {
+      datasetKey: "data-nav-rules",
+      href: RULES_PAGES[id],
+      label: "Rules",
+      iconHtml: RULES_ICON,
+      skipIf: () => isRulesPage() && !isQuickStartPage(),
+    });
+  }
+
+  function injectQuickStartLink(actions) {
+    const id = currentRulesetId();
+    injectNavAction(actions, {
+      datasetKey: "data-nav-quick-start",
+      href: QUICK_START_PAGES[id],
+      label: "Quick Start",
+      iconHtml: QUICK_START_ICON,
+      skipIf: () => isQuickStartPage() || !QUICK_START_PAGES[id],
+    });
   }
 
   const PRINT_FRIENDLY_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -329,6 +369,7 @@
 
     fillRulesetNav(menu.querySelector(".site-menu-rulesets"));
     injectRulesLink(menu.querySelector(".toolbar-actions"));
+    injectQuickStartLink(menu.querySelector(".toolbar-actions"));
     injectPrintFriendly(menu.querySelector(".toolbar-actions"));
 
     btn.addEventListener("click", (e) => {

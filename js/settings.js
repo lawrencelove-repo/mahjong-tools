@@ -1,6 +1,6 @@
 /**
  * App settings — persisted in a cookie (with localStorage migration).
- * tileStyle, rankLabels, uiScale, and darkMode also have dedicated cookies shared across all pages.
+ * tileStyle, rankLabels, uiScale, darkMode, and includeJokers also have dedicated cookies shared across pages.
  */
 
 const SETTINGS_KEY = "riichi-cheatsheet-settings";
@@ -8,6 +8,7 @@ const TILE_STYLE_COOKIE = "riichi-cheatsheet-tile-style";
 const RANK_LABELS_COOKIE = "riichi-cheatsheet-rank-labels";
 const UI_SCALE_COOKIE = "riichi-cheatsheet-ui-scale";
 const DARK_MODE_COOKIE = "riichi-cheatsheet-dark-mode";
+const INCLUDE_JOKERS_COOKIE = "riichi-cheatsheet-include-jokers";
 const SETTINGS_COOKIE_MAX_AGE = 60 * 60 * 24 * 400; // ~13 months
 const VALID_RANK_LABELS = ["off", "hover", "always"];
 const UI_SCALE_STEPS = [100, 125, 150];
@@ -25,10 +26,11 @@ const DEFAULT_SETTINGS = {
   rankLabels: "hover", // off | hover | always — Arabic/honor glyphs on image tiles
   uiScale: 100, // 100 | 125 | 150 — fonts, columns, tiles
   darkMode: false, // global theme; dedicated cookie
+  includeJokers: false, // Filipino: physical jokers in rules/examples; dedicated cookie
   showTileKey: false, // full tileset key / legend section
   nmjlYear: 2026, // American Mahjong card year (nmjl.html)
   hkGroupBy: "faan", // faan | category — Hong Kong page
-  hkSeasons: "exclude", // include | exclude | blanks — flowers/seasons display
+  hkSeasons: "exclude", // include | exclude | blanks | flowers — flowers/seasons display
   hkLanguage: "en-zh", // en | zh | en-zh — English and/or Chinese (Cantonese names)
   filipinoGroupBy: "points", // points | category — Filipino page
   updatedAt: 0,
@@ -123,6 +125,11 @@ function normalizeDarkMode(value) {
   return false;
 }
 
+function normalizeIncludeJokers(value) {
+  if (value === true || value === 1 || value === "1" || value === "true") return true;
+  return false;
+}
+
 function stepUiScale(current, delta) {
   const cur = normalizeUiScale(current);
   const idx = UI_SCALE_STEPS.indexOf(cur);
@@ -151,6 +158,7 @@ function applyDedicatedCookies(settings) {
     rankLabels: normalizeRankLabels(settings.rankLabels),
     uiScale: normalizeUiScale(settings.uiScale),
     darkMode: normalizeDarkMode(settings.darkMode),
+    includeJokers: normalizeIncludeJokers(settings.includeJokers),
   };
   const tileCookie = readCookie(TILE_STYLE_COOKIE);
   if (tileCookie) next.tileStyle = normalizeTileStyle(tileCookie);
@@ -161,6 +169,10 @@ function applyDedicatedCookies(settings) {
   const darkCookie = readCookie(DARK_MODE_COOKIE);
   if (darkCookie !== null && darkCookie !== "") {
     next.darkMode = normalizeDarkMode(darkCookie);
+  }
+  const jokersCookie = readCookie(INCLUDE_JOKERS_COOKIE);
+  if (jokersCookie !== null && jokersCookie !== "") {
+    next.includeJokers = normalizeIncludeJokers(jokersCookie);
   }
   return next;
 }
@@ -179,6 +191,7 @@ function saveSettings(settings) {
     rankLabels: normalizeRankLabels(settings.rankLabels),
     uiScale: normalizeUiScale(settings.uiScale),
     darkMode: normalizeDarkMode(settings.darkMode),
+    includeJokers: normalizeIncludeJokers(settings.includeJokers),
     updatedAt: Date.now(),
   };
   const payload = JSON.stringify(next);
@@ -187,6 +200,7 @@ function saveSettings(settings) {
   writeCookie(RANK_LABELS_COOKIE, next.rankLabels);
   writeCookie(UI_SCALE_COOKIE, String(next.uiScale));
   writeCookie(DARK_MODE_COOKIE, next.darkMode ? "1" : "0");
+  writeCookie(INCLUDE_JOKERS_COOKIE, next.includeJokers ? "1" : "0");
   try {
     localStorage.setItem(SETTINGS_KEY, payload);
   } catch {
@@ -486,6 +500,49 @@ function bindDarkModeCheckbox(checkbox = document.getElementById("opt-dark-mode"
   };
 }
 
+/**
+ * Wire Settings → Include Jokers checkbox to the dedicated cookie.
+ * @param {HTMLInputElement|null} [checkbox]
+ * @param {(on: boolean, settings: object) => void} [onChange]
+ */
+function bindIncludeJokersCheckbox(checkbox = document.getElementById("opt-include-jokers"), onChange) {
+  applyIncludeJokers(loadSettings(), checkbox || null);
+  if (!checkbox) return () => {};
+
+  const onToggle = () => {
+    const settings = saveSettings({ ...loadSettings(), includeJokers: checkbox.checked });
+    applyIncludeJokers(settings, checkbox);
+    onChange?.(checkbox.checked, settings);
+  };
+  checkbox.addEventListener("change", onToggle);
+
+  const onStorage = (e) => {
+    if (e.key && e.key !== SETTINGS_KEY) return;
+    const prev = checkbox.checked;
+    const settings = loadSettings();
+    applyIncludeJokers(settings, checkbox);
+    if (checkbox.checked !== prev) onChange?.(checkbox.checked, settings);
+  };
+  window.addEventListener("storage", onStorage);
+
+  return () => {
+    checkbox.removeEventListener("change", onToggle);
+    window.removeEventListener("storage", onStorage);
+  };
+}
+
+/**
+ * Apply includeJokers to checkbox and body[data-include-jokers].
+ * @param {typeof DEFAULT_SETTINGS} [settings]
+ * @param {HTMLInputElement|null} [checkbox]
+ */
+function applyIncludeJokers(settings = loadSettings(), checkbox = document.getElementById("opt-include-jokers")) {
+  const on = normalizeIncludeJokers(settings.includeJokers);
+  if (document.body) document.body.dataset.includeJokers = on ? "true" : "false";
+  if (checkbox) checkbox.checked = on;
+  return on;
+}
+
 function initThemeUi() {
   applyDarkMode(loadSettings());
   bindDarkModeCheckbox();
@@ -574,6 +631,22 @@ function hkSeasonRows(mode) {
 function filipinoSeasonRows(mode) {
   const honorNote =
     "Winds and dragons usually stay in as bonus “flowers” — only remove them if your house rules say so.";
+  if (mode === "flowers") {
+    return [
+      [
+        "Wall",
+        "144 tiles — 108 suited + winds, dragons &amp; 8 flower tiles (all treated as Flowers).",
+      ],
+      [
+        "Remove",
+        "Nothing required. Confirm joker count with your table.",
+      ],
+      [
+        "Flowers",
+        "Winds, dragons, and the 8 flower tiles are all “Flowers” — expose and replace when drawn.",
+      ],
+    ];
+  }
   if (mode === "include") {
     return [
       [
@@ -687,7 +760,9 @@ function getQuickStartHtml(style, settings) {
         ? "Include seasons"
         : mode === "blanks"
           ? "Blanks as seasons"
-          : "Exclude seasons & flowers";
+          : mode === "flowers"
+            ? "Include Flowers"
+            : "Exclude seasons & flowers";
     return (
       `<p class="quick-start-mode">17-tile hands · setup follows <strong>${escapeHtml(modeLabel)}</strong>.</p>` +
       quickStartDl([
@@ -722,17 +797,20 @@ window.AppSettings = {
   normalizeRankLabels,
   normalizeUiScale,
   normalizeDarkMode,
+  normalizeIncludeJokers,
   stepUiScale,
   fillTileStyleSelect,
   applyTileStyle,
   applyRankLabels,
   applyUiScale,
   applyDarkMode,
+  applyIncludeJokers,
   setUiScale,
   bindTileStyleSelect,
   bindRankLabelsSelect,
   bindUiScaleControl,
   bindDarkModeCheckbox,
+  bindIncludeJokersCheckbox,
   mountUiScaleControl,
   getQuickStartHtml,
   renderQuickStart,
