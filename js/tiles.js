@@ -92,7 +92,7 @@ const TILESETS = /** @type {TilesetDef[]} */ ([
   },
   {
     id: "style-2",
-    label: "Lemons",
+    label: "Suns & Lemons",
     kind: "image",
     dir: "style-2",
     files: STYLE2_FILES,

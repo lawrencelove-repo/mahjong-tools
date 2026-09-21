@@ -272,7 +272,6 @@
     const panel = $("#settings-panel");
     $("#btn-settings").setAttribute("aria-expanded", String(open));
     panel.hidden = !open;
-    if (open) window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function bindControls() {

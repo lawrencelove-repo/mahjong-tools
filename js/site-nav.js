@@ -336,6 +336,7 @@
     btn.setAttribute("aria-expanded", String(open));
     if (open) menu.removeAttribute("hidden");
     else menu.setAttribute("hidden", "");
+    requestAnimationFrame(syncToolbarHeight);
   }
 
   function syncMenuVisibility() {
@@ -360,6 +361,13 @@
     }
   }
 
+  function syncToolbarHeight() {
+    const toolbar = document.querySelector("header.toolbar");
+    if (!toolbar) return;
+    const h = Math.ceil(toolbar.getBoundingClientRect().height);
+    document.documentElement.style.setProperty("--toolbar-height", `${h}px`);
+  }
+
   function init() {
     if (document.body?.classList.contains("landing-page")) return;
     const toolbar = document.querySelector("header.toolbar");
@@ -367,10 +375,12 @@
     const btn = document.getElementById("btn-menu");
     if (!toolbar || !menu || !btn) return;
 
+    syncToolbarHeight();
     fillRulesetNav(menu.querySelector(".site-menu-rulesets"));
     injectRulesLink(menu.querySelector(".toolbar-actions"));
     injectQuickStartLink(menu.querySelector(".toolbar-actions"));
     injectPrintFriendly(menu.querySelector(".toolbar-actions"));
+    syncToolbarHeight();
 
     btn.addEventListener("click", (e) => {
       e.preventDefault();
@@ -389,6 +399,7 @@
 
     document.getElementById("btn-settings")?.addEventListener("click", () => {
       if (burgerIsVisible(btn)) setMenuOpen(false);
+      requestAnimationFrame(syncToolbarHeight);
     });
 
     document.addEventListener("pointerdown", (e) => {
@@ -406,7 +417,10 @@
       }
     });
 
-    const onMq = () => syncMenuVisibility();
+    const onMq = () => {
+      syncMenuVisibility();
+      syncToolbarHeight();
+    };
     const mqQueries = [
       "(orientation: landscape)",
       "(orientation: portrait)",
@@ -425,11 +439,18 @@
         /* ignore */
       }
     }
-    window.addEventListener("resize", syncMenuVisibility);
+    window.addEventListener("resize", () => {
+      syncMenuVisibility();
+      syncToolbarHeight();
+    });
     window.addEventListener("orientationchange", () => {
-      setTimeout(syncMenuVisibility, 50);
+      setTimeout(() => {
+        syncMenuVisibility();
+        syncToolbarHeight();
+      }, 50);
     });
     syncMenuVisibility();
+    syncToolbarHeight();
     initBackToTop();
   }
 

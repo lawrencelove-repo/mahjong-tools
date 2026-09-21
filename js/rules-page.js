@@ -10,7 +10,6 @@
     if (!panel || !btn) return;
     panel.hidden = !open;
     btn.setAttribute("aria-expanded", String(open));
-    if (open) window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function applyJokersUi() {
