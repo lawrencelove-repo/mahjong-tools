@@ -79,9 +79,6 @@
     const head = document.createElement("div");
     head.className = "yaku-head";
 
-    const top = document.createElement("div");
-    top.className = "nmjl-hand-top";
-
     const badges = document.createElement("div");
     badges.className = "yaku-badges";
 
@@ -110,30 +107,26 @@
       v.title = "Placeholder — correct against your licensed card";
       badges.appendChild(v);
     }
-    top.appendChild(badges);
-    head.appendChild(top);
+    head.appendChild(badges);
+    card.appendChild(head);
 
     if (hand.note) {
       const note = document.createElement("p");
       note.className = "yaku-desc";
       note.textContent = hand.note;
-      head.appendChild(note);
+      card.appendChild(note);
     }
-
-    card.appendChild(head);
 
     const examplesHost = document.createElement("div");
     card.appendChild(examplesHost);
 
     const paint = () => paintHandExamples(examplesHost, hand, categoryId);
     window.HAND_RANDOMIZE?.attachRefresh?.({
-      head: top,
+      head,
       host: examplesHost,
       enabled: !!settings.randomizeTiles,
       onRefresh: paint,
     });
-    // attachRefresh adds yaku-hand-refresh; keep nmjl class for spacing
-    top.querySelector(".yaku-hand-refresh")?.classList.add("nmjl-hand-refresh");
     paint();
 
     return card;

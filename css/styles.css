@@ -1006,28 +1006,6 @@ main#print-sheet {
   line-height: 1.4;
 }
 
-.nmjl-hand .yaku-head {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.2rem;
-}
-
-.nmjl-hand-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.35rem;
-  width: 100%;
-}
-
-.nmjl-hand-top .yaku-badges {
-  flex: 1 1 auto;
-}
-
-.nmjl-hand-refresh {
-  margin: 0;
-}
-
 .yaku-hand-refresh {
   margin-left: auto;
   flex: 0 0 auto;
