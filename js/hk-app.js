@@ -147,65 +147,69 @@
       card.appendChild(d);
     }
 
-    for (const ex of h.examples || []) {
-      const wrap = document.createElement("div");
-      wrap.className = "example";
-      if (ex.label) {
-        const lab = document.createElement("span");
-        lab.className = "example-label";
-        lab.textContent = ex.label;
-        wrap.appendChild(lab);
-      }
-      wrap.appendChild(
-        Tiles.renderHand(mapSeasonTiles(ex.tiles), settings.tileStyle, {
-          rankLabels: settings.rankLabels,
-        })
-      );
-      card.appendChild(wrap);
+    if (h.examples?.length) {
+      const examplesHost = document.createElement("div");
+      card.appendChild(examplesHost);
+
+      const paint = () => {
+        examplesHost.replaceChildren();
+        const doRandom = !!settings.randomizeTiles;
+        for (const ex of h.examples) {
+          const wrap = document.createElement("div");
+          wrap.className = "example";
+          if (ex.label) {
+            const lab = document.createElement("span");
+            lab.className = "example-label";
+            lab.textContent = ex.label;
+            wrap.appendChild(lab);
+          }
+          let tiles = ex.tiles;
+          if (doRandom) {
+            if (window.HK_RANDOMIZE?.randomizeExample) {
+              tiles = HK_RANDOMIZE.randomizeExample(h, ex);
+            } else if (window.HAND_RANDOMIZE?.randomizeSuits) {
+              tiles = HAND_RANDOMIZE.randomizeSuits(tiles);
+            }
+          }
+          wrap.appendChild(
+            Tiles.renderHand(mapSeasonTiles(tiles), settings.tileStyle, {
+              rankLabels: settings.rankLabels,
+            })
+          );
+          examplesHost.appendChild(wrap);
+        }
+      };
+
+      window.HAND_RANDOMIZE?.attachRefresh?.({
+        head,
+        host: examplesHost,
+        enabled: !!settings.randomizeTiles,
+        onRefresh: paint,
+      });
+      paint();
     }
     return card;
   }
 
   function renderLegend() {
     const el = $("#tile-legend");
-    const mode = seasonsMode();
-    if (!settings.showExtraTiles && settings.tileStyle !== "text" && mode === "exclude") {
+    // No flowers/seasons strip at the top (those live in Tile Key when enabled).
+    if (settings.tileStyle !== "text") {
       el.hidden = true;
       el.innerHTML = "";
       return;
     }
     el.hidden = false;
     el.replaceChildren();
-
-    if (settings.tileStyle === "text") {
-      const key = document.createElement("div");
-      key.className = "nmjl-text-key";
-      key.innerHTML = [
-        `<span class="nmjl-text-key-item"><span class="tile tile-text suit-green">6</span> bam</span>`,
-        `<span class="nmjl-text-key-item"><span class="tile tile-text suit-red">6</span> crak</span>`,
-        `<span class="nmjl-text-key-item"><span class="tile tile-text suit-black">6</span> dot</span>`,
-        `<span class="nmjl-text-key-item"><span class="tile tile-text suit-blue">E</span> honors</span>`,
-      ].join("");
-      el.appendChild(key);
-    }
-
-    if (settings.showExtraTiles || mode !== "exclude") {
-      const row = document.createElement("div");
-      row.className = "nmjl-extras-row";
-      const label = document.createElement("span");
-      label.className = "legend-label";
-      label.textContent =
-        mode === "blanks" ? "Seasons as blanks · extras" : "Flowers / seasons";
-      const seasonTiles =
-        mode === "blanks" ? "X X X X" : "F1 F2 F3 F4 | F5 F6 F7 F8";
-      row.append(
-        label,
-        Tiles.renderHand(seasonTiles, settings.tileStyle, {
-          rankLabels: settings.rankLabels,
-        })
-      );
-      el.appendChild(row);
-    }
+    const key = document.createElement("div");
+    key.className = "nmjl-text-key";
+    key.innerHTML = [
+      `<span class="nmjl-text-key-item"><span class="tile tile-text suit-green">6</span> bam</span>`,
+      `<span class="nmjl-text-key-item"><span class="tile tile-text suit-red">6</span> crak</span>`,
+      `<span class="nmjl-text-key-item"><span class="tile tile-text suit-black">6</span> dot</span>`,
+      `<span class="nmjl-text-key-item"><span class="tile tile-text suit-blue">E</span> honors</span>`,
+    ].join("");
+    el.appendChild(key);
   }
 
   function renderTileKey() {
@@ -311,6 +315,11 @@
     AppSettings.bindRankLabelsSelect($("#rank-labels"), (mode, saved) => {
       Object.assign(settings, saved);
       settings.rankLabels = mode;
+      render();
+    });
+
+    AppSettings.bindRandomizeTilesCheckbox($("#opt-randomize-tiles"), (_on, saved) => {
+      Object.assign(settings, saved);
       render();
     });
 

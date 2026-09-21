@@ -142,22 +142,45 @@
     card.appendChild(desc);
 
     if (y.examples?.length) {
-      for (const ex of y.examples) {
-        const block = document.createElement("div");
-        block.className = "example";
-        if (ex.label) {
-          const lab = document.createElement("span");
-          lab.className = "example-label";
-          lab.textContent = ex.label;
-          block.appendChild(lab);
+      const examplesHost = document.createElement("div");
+      card.appendChild(examplesHost);
+
+      const paint = () => {
+        examplesHost.replaceChildren();
+        const doRandom = !!settings.randomizeTiles;
+        for (const ex of y.examples) {
+          const block = document.createElement("div");
+          block.className = "example";
+          if (ex.label) {
+            const lab = document.createElement("span");
+            lab.className = "example-label";
+            lab.textContent = ex.label;
+            block.appendChild(lab);
+          }
+          let tiles = ex.tiles;
+          if (doRandom) {
+            if (window.RIICHI_RANDOMIZE?.randomizeExample) {
+              tiles = RIICHI_RANDOMIZE.randomizeExample(y, ex);
+            } else if (window.HAND_RANDOMIZE?.randomizeSuits) {
+              tiles = HAND_RANDOMIZE.randomizeSuits(tiles);
+            }
+          }
+          block.appendChild(
+            Tiles.renderHand(tiles, settings.tileStyle, {
+              rankLabels: settings.rankLabels,
+            })
+          );
+          examplesHost.appendChild(block);
         }
-        block.appendChild(
-          Tiles.renderHand(ex.tiles, settings.tileStyle, {
-            rankLabels: settings.rankLabels,
-          })
-        );
-        card.appendChild(block);
-      }
+      };
+
+      window.HAND_RANDOMIZE?.attachRefresh?.({
+        head,
+        host: examplesHost,
+        enabled: !!settings.randomizeTiles,
+        onRefresh: paint,
+      });
+      paint();
     }
 
     return card;
@@ -277,37 +300,19 @@
 
   function renderLegend() {
     const el = $("#tile-legend");
-    if (!settings.showExtraTiles && settings.tileStyle !== "text") {
+    // No extras strip at the top (flowers/jokers live in Tile Key when enabled).
+    if (settings.tileStyle !== "text") {
       el.hidden = true;
+      el.innerHTML = "";
       return;
     }
     el.hidden = false;
-    const parts = [];
-    if (settings.tileStyle === "text") {
-      parts.push(
-        `<span class="tile tile-text suit-green">6</span> bam`,
-        `<span class="tile tile-text suit-red">6</span> crak`,
-        `<span class="tile tile-text suit-black">6</span> dot`,
-        `<span class="tile tile-text suit-blue">E</span> honors`
-      );
-    }
-    if (settings.showExtraTiles) {
-      const hand = Tiles.renderHand("F1 F2 F3 F4 | J1 J2", settings.tileStyle, {
-        rankLabels: settings.rankLabels,
-      });
-      el.replaceChildren();
-      const label = document.createElement("span");
-      label.textContent = "Extras: ";
-      el.append(label, hand);
-      if (settings.tileStyle === "text") {
-        const colors = document.createElement("span");
-        colors.className = "legend-colors";
-        colors.innerHTML = " · " + parts.join(" · ");
-        el.appendChild(colors);
-      }
-      return;
-    }
-    el.innerHTML = parts.join(" · ");
+    el.innerHTML = [
+      `<span class="tile tile-text suit-green">6</span> bam`,
+      `<span class="tile tile-text suit-red">6</span> crak`,
+      `<span class="tile tile-text suit-black">6</span> dot`,
+      `<span class="tile tile-text suit-blue">E</span> honors`,
+    ].join(" · ");
   }
 
   function bindControls() {
@@ -338,6 +343,11 @@
     AppSettings.bindRankLabelsSelect($("#rank-labels"), (mode, saved) => {
       Object.assign(settings, saved);
       settings.rankLabels = mode;
+      render();
+    });
+
+    AppSettings.bindRandomizeTilesCheckbox($("#opt-randomize-tiles"), (_on, saved) => {
+      Object.assign(settings, saved);
       render();
     });
 

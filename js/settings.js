@@ -1,6 +1,7 @@
 /**
  * App settings — persisted in a cookie (with localStorage migration).
- * tileStyle, rankLabels, uiScale, darkMode, and includeJokers also have dedicated cookies shared across pages.
+ * tileStyle, rankLabels, uiScale, darkMode, includeJokers, and randomizeTiles
+ * also have dedicated cookies shared across pages.
  */
 
 const SETTINGS_KEY = "riichi-cheatsheet-settings";
@@ -9,6 +10,7 @@ const RANK_LABELS_COOKIE = "riichi-cheatsheet-rank-labels";
 const UI_SCALE_COOKIE = "riichi-cheatsheet-ui-scale";
 const DARK_MODE_COOKIE = "riichi-cheatsheet-dark-mode";
 const INCLUDE_JOKERS_COOKIE = "riichi-cheatsheet-include-jokers";
+const RANDOMIZE_TILES_COOKIE = "riichi-cheatsheet-randomize-tiles";
 const SETTINGS_COOKIE_MAX_AGE = 60 * 60 * 24 * 400; // ~13 months
 const VALID_RANK_LABELS = ["off", "hover", "always"];
 const UI_SCALE_STEPS = [100, 125, 150];
@@ -27,6 +29,7 @@ const DEFAULT_SETTINGS = {
   uiScale: 100, // 100 | 125 | 150 — fonts, columns, tiles
   darkMode: false, // global theme; dedicated cookie
   includeJokers: false, // Filipino: physical jokers in rules/examples; dedicated cookie
+  randomizeTiles: true, // cheatsheet hand examples: suit/rule remaps + refresh
   showTileKey: false, // full tileset key / legend section
   nmjlYear: 2026, // American Mahjong card year (nmjl.html)
   hkGroupBy: "faan", // faan | category — Hong Kong page
@@ -130,6 +133,12 @@ function normalizeIncludeJokers(value) {
   return false;
 }
 
+function normalizeRandomizeTiles(value) {
+  if (value === false || value === 0 || value === "0" || value === "false") return false;
+  if (value === true || value === 1 || value === "1" || value === "true") return true;
+  return DEFAULT_SETTINGS.randomizeTiles;
+}
+
 function stepUiScale(current, delta) {
   const cur = normalizeUiScale(current);
   const idx = UI_SCALE_STEPS.indexOf(cur);
@@ -159,6 +168,7 @@ function applyDedicatedCookies(settings) {
     uiScale: normalizeUiScale(settings.uiScale),
     darkMode: normalizeDarkMode(settings.darkMode),
     includeJokers: normalizeIncludeJokers(settings.includeJokers),
+    randomizeTiles: normalizeRandomizeTiles(settings.randomizeTiles),
   };
   const tileCookie = readCookie(TILE_STYLE_COOKIE);
   if (tileCookie) next.tileStyle = normalizeTileStyle(tileCookie);
@@ -173,6 +183,10 @@ function applyDedicatedCookies(settings) {
   const jokersCookie = readCookie(INCLUDE_JOKERS_COOKIE);
   if (jokersCookie !== null && jokersCookie !== "") {
     next.includeJokers = normalizeIncludeJokers(jokersCookie);
+  }
+  const randomizeCookie = readCookie(RANDOMIZE_TILES_COOKIE);
+  if (randomizeCookie !== null && randomizeCookie !== "") {
+    next.randomizeTiles = normalizeRandomizeTiles(randomizeCookie);
   }
   return next;
 }
@@ -192,6 +206,7 @@ function saveSettings(settings) {
     uiScale: normalizeUiScale(settings.uiScale),
     darkMode: normalizeDarkMode(settings.darkMode),
     includeJokers: normalizeIncludeJokers(settings.includeJokers),
+    randomizeTiles: normalizeRandomizeTiles(settings.randomizeTiles),
     updatedAt: Date.now(),
   };
   const payload = JSON.stringify(next);
@@ -201,6 +216,7 @@ function saveSettings(settings) {
   writeCookie(UI_SCALE_COOKIE, String(next.uiScale));
   writeCookie(DARK_MODE_COOKIE, next.darkMode ? "1" : "0");
   writeCookie(INCLUDE_JOKERS_COOKIE, next.includeJokers ? "1" : "0");
+  writeCookie(RANDOMIZE_TILES_COOKIE, next.randomizeTiles ? "1" : "0");
   try {
     localStorage.setItem(SETTINGS_KEY, payload);
   } catch {
@@ -543,6 +559,49 @@ function applyIncludeJokers(settings = loadSettings(), checkbox = document.getEl
   return on;
 }
 
+/**
+ * Wire Settings → Randomize Tiles checkbox to the dedicated cookie.
+ * @param {HTMLInputElement|null} [checkbox]
+ * @param {(on: boolean, settings: object) => void} [onChange]
+ */
+function bindRandomizeTilesCheckbox(checkbox = document.getElementById("opt-randomize-tiles"), onChange) {
+  applyRandomizeTiles(loadSettings(), checkbox || null);
+  if (!checkbox) return () => {};
+
+  const onToggle = () => {
+    const settings = saveSettings({ ...loadSettings(), randomizeTiles: checkbox.checked });
+    applyRandomizeTiles(settings, checkbox);
+    onChange?.(checkbox.checked, settings);
+  };
+  checkbox.addEventListener("change", onToggle);
+
+  const onStorage = (e) => {
+    if (e.key && e.key !== SETTINGS_KEY) return;
+    const prev = checkbox.checked;
+    const settings = loadSettings();
+    applyRandomizeTiles(settings, checkbox);
+    if (checkbox.checked !== prev) onChange?.(checkbox.checked, settings);
+  };
+  window.addEventListener("storage", onStorage);
+
+  return () => {
+    checkbox.removeEventListener("change", onToggle);
+    window.removeEventListener("storage", onStorage);
+  };
+}
+
+/**
+ * Apply randomizeTiles to checkbox and body[data-randomize-tiles].
+ * @param {typeof DEFAULT_SETTINGS} [settings]
+ * @param {HTMLInputElement|null} [checkbox]
+ */
+function applyRandomizeTiles(settings = loadSettings(), checkbox = document.getElementById("opt-randomize-tiles")) {
+  const on = normalizeRandomizeTiles(settings.randomizeTiles);
+  if (document.body) document.body.dataset.randomizeTiles = on ? "true" : "false";
+  if (checkbox) checkbox.checked = on;
+  return on;
+}
+
 function initThemeUi() {
   applyDarkMode(loadSettings());
   bindDarkModeCheckbox();
@@ -798,6 +857,7 @@ window.AppSettings = {
   normalizeUiScale,
   normalizeDarkMode,
   normalizeIncludeJokers,
+  normalizeRandomizeTiles,
   stepUiScale,
   fillTileStyleSelect,
   applyTileStyle,
@@ -805,12 +865,14 @@ window.AppSettings = {
   applyUiScale,
   applyDarkMode,
   applyIncludeJokers,
+  applyRandomizeTiles,
   setUiScale,
   bindTileStyleSelect,
   bindRankLabelsSelect,
   bindUiScaleControl,
   bindDarkModeCheckbox,
   bindIncludeJokersCheckbox,
+  bindRandomizeTilesCheckbox,
   mountUiScaleControl,
   getQuickStartHtml,
   renderQuickStart,

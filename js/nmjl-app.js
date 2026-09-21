@@ -70,9 +70,6 @@
     $("#tile-style").value = settings.tileStyle;
   }
 
-  const REFRESH_SVG =
-    '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>';
-
   function renderHandCard(hand, categoryId) {
     const card = document.createElement("article");
     card.className = "yaku-card nmjl-hand";
@@ -114,15 +111,6 @@
       badges.appendChild(v);
     }
     top.appendChild(badges);
-
-    const refreshBtn = document.createElement("button");
-    refreshBtn.type = "button";
-    refreshBtn.className = "rules-meld-refresh nmjl-hand-refresh no-print";
-    refreshBtn.setAttribute("aria-label", "Randomize hand example");
-    refreshBtn.title = "Randomize";
-    refreshBtn.innerHTML = REFRESH_SVG;
-    top.appendChild(refreshBtn);
-
     head.appendChild(top);
 
     if (hand.note) {
@@ -135,38 +123,33 @@
     card.appendChild(head);
 
     const examplesHost = document.createElement("div");
-    examplesHost.className = "nmjl-hand-examples";
     card.appendChild(examplesHost);
 
     const paint = () => paintHandExamples(examplesHost, hand, categoryId);
+    window.HAND_RANDOMIZE?.attachRefresh?.({
+      head: top,
+      host: examplesHost,
+      enabled: !!settings.randomizeTiles,
+      onRefresh: paint,
+    });
+    // attachRefresh adds yaku-hand-refresh; keep nmjl class for spacing
+    top.querySelector(".yaku-hand-refresh")?.classList.add("nmjl-hand-refresh");
     paint();
-
-    refreshBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      paint();
-    });
-    examplesHost.addEventListener("click", () => paint());
-    examplesHost.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        paint();
-      }
-    });
-    examplesHost.tabIndex = 0;
-    examplesHost.setAttribute("role", "button");
-    examplesHost.setAttribute("aria-label", "Randomize hand example");
 
     return card;
   }
 
   function paintHandExamples(host, hand, categoryId) {
     host.replaceChildren();
-    const randomize = window.NMJL_RANDOMIZE?.randomizeHand;
-    const versions = randomize
-      ? randomize(hand, { categoryId })
-      : (Array.isArray(hand.tiles) ? hand.tiles : [hand.tiles]).map((t) =>
-          NMJL_NOTATION.expandHand(t)
-        );
+    const doRandom = !!settings.randomizeTiles;
+    let versions;
+    if (doRandom && window.NMJL_RANDOMIZE?.randomizeHand) {
+      versions = NMJL_RANDOMIZE.randomizeHand(hand, { categoryId });
+    } else {
+      versions = (Array.isArray(hand.tiles) ? hand.tiles : [hand.tiles]).map((t) =>
+        NMJL_NOTATION.expandHand(t)
+      );
+    }
 
     versions.forEach((tiles, i) => {
       if (i > 0) {
@@ -280,6 +263,11 @@
     AppSettings.bindRankLabelsSelect($("#rank-labels"), (mode, saved) => {
       Object.assign(settings, saved);
       settings.rankLabels = mode;
+      render();
+    });
+
+    AppSettings.bindRandomizeTilesCheckbox($("#opt-randomize-tiles"), (_on, saved) => {
+      Object.assign(settings, saved);
       render();
     });
 
