@@ -646,10 +646,65 @@ function quickStartDl(rows) {
     .join("")}</dl>`;
 }
 
+/** @param {number} totalTiles */
+function wallGeometry(totalTiles) {
+  const stacks = Math.floor(totalTiles / 8);
+  const leftover = totalTiles - stacks * 8;
+  return { stacks, leftover, perSide: stacks * 2 };
+}
+
+/**
+ * Wall blurb: four walls, two high, N stacks (matching Filipino Quick Start).
+ * @param {number} totalTiles
+ */
+function wallDealBlurb(totalTiles) {
+  const { stacks, leftover } = wallGeometry(totalTiles);
+  let leftoverNote = "";
+  if (leftover === 4) {
+    leftoverNote =
+      ` The remaining <strong>4</strong> tiles go on the dealer’s wall (one extra stack of two).`;
+  } else if (leftover > 0) {
+    leftoverNote = ` The remaining <strong>${leftover}</strong> tiles go on the dealer’s wall.`;
+  }
+  return (
+    `With <strong>${totalTiles}</strong> tiles, build <strong>four walls</strong> (two tiles high × ` +
+    `<strong>${stacks}</strong> stacks per side, ${stacks * 2} tiles each).${leftoverNote}`
+  );
+}
+
+/**
+ * HK / Cantonese wall size from seasons setting.
+ * @param {string} mode
+ */
+function hkTileCount(mode) {
+  if (mode === "include" || mode === "blanks") return 144;
+  return 136;
+}
+
+/**
+ * Filipino wall size — same rules as filipino-quick-start.js.
+ * Flowers mode brings winds, dragons, and 8 flower tiles back; jokers are +4.
+ * @param {string} mode
+ * @param {boolean} includeJokers
+ */
+function filipinoTileCount(mode, includeJokers) {
+  let t = 108; // suited only when flowers are out
+  if (mode === "flowers") t += 16 + 12 + 8; // winds + dragons + flowers
+  else if (mode === "include" || mode === "blanks") t = 144; // suited/honors + 8 bonus
+  if (includeJokers) t += 4;
+  return t;
+}
+
 function hkSeasonRows(mode) {
+  const T = hkTileCount(mode);
+  const wall = wallDealBlurb(T);
   if (mode === "include") {
     return [
-      ["Wall", "144 tiles — 136 suited/honors + 8 flowers &amp; seasons."],
+      ["Wall", wall],
+      [
+        "Composition",
+        "<strong>144</strong> tiles — 136 suited/honors + 8 flowers &amp; seasons.",
+      ],
       [
         "Remove",
         "Nothing from a standard Chinese set. Leave out jokers and blanks if your set has them.",
@@ -662,9 +717,10 @@ function hkSeasonRows(mode) {
   }
   if (mode === "blanks") {
     return [
+      ["Wall", wall],
       [
-        "Wall",
-        "136 suited/honors + blank tiles used as flower/season stand-ins (house count, often 8).",
+        "Composition",
+        "<strong>144</strong> tiles — 136 suited/honors + blank stand-ins for flowers/seasons (house count, often 8).",
       ],
       [
         "Remove",
@@ -676,9 +732,12 @@ function hkSeasonRows(mode) {
       ],
     ];
   }
-  // exclude (default)
   return [
-    ["Wall", "136 tiles — 4 of each suited tile and honor (no bonus tiles)."],
+    ["Wall", wall],
+    [
+      "Composition",
+      "<strong>136</strong> tiles — 4 of each suited tile and honor (no bonus tiles).",
+    ],
     [
       "Remove",
       "All flowers &amp; seasons (8 tiles). Remove jokers and blanks if your set has them.",
@@ -687,61 +746,83 @@ function hkSeasonRows(mode) {
   ];
 }
 
-function filipinoSeasonRows(mode) {
-  const honorNote =
-    "Winds and dragons usually stay in as bonus “flowers” — only remove them if your house rules say so.";
+function filipinoSeasonRows(mode, includeJokers) {
+  const T = filipinoTileCount(mode, includeJokers);
+  const wall = wallDealBlurb(T);
+  const jokerBit = includeJokers
+    ? " + <strong>4 jokers</strong>"
+    : "";
+  const jokerRemove = includeJokers
+    ? " Keep the <strong>4 jokers</strong> in the wall."
+    : " Leave jokers out (or confirm with your table).";
+
   if (mode === "flowers") {
     return [
+      ["Wall", wall],
       [
-        "Wall",
-        "144 tiles — 108 suited + winds, dragons &amp; 8 flower tiles (all treated as Flowers).",
-      ],
-      [
-        "Remove",
-        "Nothing required. Confirm joker count with your table.",
+        "Composition",
+        `<strong>${T}</strong> tiles — 108 suited + winds, dragons &amp; 8 flower tiles (all treated as Flowers)${jokerBit}.`,
       ],
       [
         "Flowers",
         "Winds, dragons, and the 8 flower tiles are all “Flowers” — expose and replace when drawn.",
       ],
+      ["Jokers", includeJokers
+        ? "Four physical jokers are in the set (optional house rule)."
+        : "Physical jokers are off — turn on <em>Include Jokers</em> if your table uses them."],
     ];
   }
   if (mode === "include") {
     return [
+      ["Wall", wall],
       [
-        "Wall",
-        "Typically 144+ — suited tiles, honors, flowers &amp; seasons; jokers by house rule.",
+        "Composition",
+        `<strong>${T}</strong> tiles — suited, honors, flowers &amp; seasons${jokerBit}.`,
       ],
       [
         "Remove",
-        "Nothing required for flowers/seasons. Confirm joker count with your table.",
+        `Nothing required for flowers/seasons.${jokerRemove}`,
       ],
-      ["Honors", honorNote],
+      [
+        "Honors",
+        "Winds and dragons usually stay in as bonus “flowers” — only remove them if your house rules say so.",
+      ],
     ];
   }
   if (mode === "blanks") {
     return [
+      ["Wall", wall],
       [
-        "Wall",
-        "Suited + honors, plus blanks as flower/season stand-ins; jokers by house rule.",
+        "Composition",
+        `<strong>${T}</strong> tiles — suited + honors, plus blanks as flower/season stand-ins${jokerBit}.`,
       ],
       [
         "Remove",
-        "Printed flower &amp; season tiles; use blanks instead.",
+        `Printed flower &amp; season tiles; use blanks instead.${jokerRemove}`,
       ],
-      ["Honors", honorNote],
+      [
+        "Honors",
+        "Winds and dragons usually stay in as bonus “flowers” — only remove them if your house rules say so.",
+      ],
     ];
   }
+  // exclude — suited-focused set (matches Filipino Quick Start when Flowers is off)
   return [
+    ["Wall", wall],
     [
-      "Wall",
-      "Often 136 suited/honors (no printed flowers/seasons); jokers by house rule.",
+      "Composition",
+      includeJokers
+        ? `<strong>${T}</strong> tiles — 108 suited + <strong>4 jokers</strong> (no printed flowers/seasons).`
+        : `<strong>${T}</strong> tiles — 108 suited (no printed flowers/seasons or jokers).`,
     ],
     [
       "Remove",
-      "Flowers &amp; seasons if present. Confirm whether jokers are in or out.",
+      `Flowers &amp; seasons if present.${jokerRemove}`,
     ],
-    ["Honors", honorNote],
+    [
+      "Honors",
+      "Winds and dragons are out unless you switch to <em>Include Flowers</em> (Filipino treats them as Flowers).",
+    ],
   ];
 }
 
@@ -751,14 +832,16 @@ function filipinoSeasonRows(mode) {
  */
 function getQuickStartHtml(style, settings) {
   if (style === "riichi") {
+    const T = 136;
     return quickStartDl([
       [
         "Deal",
         "<strong>13</strong> tiles each; dealer takes a <strong>14th</strong> to start.",
       ],
+      ["Wall", wallDealBlurb(T)],
       [
-        "Wall",
-        "136 tiles (4 × 34 suited &amp; honor tiles). Standard Japanese set has no flowers or jokers.",
+        "Composition",
+        "<strong>136</strong> tiles (4 × 34 suited &amp; honor tiles). Standard Japanese set has no flowers or jokers.",
       ],
       [
         "Remove",
@@ -772,14 +855,16 @@ function getQuickStartHtml(style, settings) {
   }
 
   if (style === "nmjl") {
+    const T = 152;
     return quickStartDl([
       [
         "Deal",
         "<strong>13</strong> tiles each; dealer gets a <strong>14th</strong>. Charleston exchanges happen before the first discard.",
       ],
+      ["Wall", wallDealBlurb(T)],
       [
-        "Wall",
-        "152 tiles — 136 suited/honors + <strong>8 flowers</strong> + <strong>8 jokers</strong>.",
+        "Composition",
+        "<strong>152</strong> tiles — 136 suited/honors + <strong>8 flowers</strong> + <strong>8 jokers</strong>.",
       ],
       [
         "Remove",
@@ -814,6 +899,7 @@ function getQuickStartHtml(style, settings) {
 
   if (style === "filipino") {
     const mode = settings.hkSeasons || "exclude";
+    const jokers = !!settings.includeJokers;
     const modeLabel =
       mode === "include"
         ? "Include seasons"
@@ -822,14 +908,15 @@ function getQuickStartHtml(style, settings) {
           : mode === "flowers"
             ? "Include Flowers"
             : "Exclude seasons & flowers";
+    const jokerLabel = jokers ? " · jokers on" : " · jokers off";
     return (
-      `<p class="quick-start-mode">17-tile hands · setup follows <strong>${escapeHtml(modeLabel)}</strong>.</p>` +
+      `<p class="quick-start-mode">17-tile hands · setup follows <strong>${escapeHtml(modeLabel)}</strong>${jokerLabel}.</p>` +
       quickStartDl([
         [
           "Deal",
           "<strong>16</strong> tiles each; dealer receives a <strong>17th</strong> (five melds + pair).",
         ],
-        ...filipinoSeasonRows(mode),
+        ...filipinoSeasonRows(mode, jokers),
       ])
     );
   }

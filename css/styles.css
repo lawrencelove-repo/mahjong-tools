@@ -238,6 +238,62 @@ body {
   display: block;
 }
 
+/* Desktop ruleset glyph (far left, before title); hidden in compact/hamburger mode */
+.ruleset-switcher {
+  position: relative;
+  flex: 0 0 auto;
+  margin: 0 0.35rem 0 0;
+}
+
+.ruleset-switcher-btn .ruleset-switcher-glyph {
+  display: inline-flex;
+  color: var(--accent);
+  line-height: 0;
+}
+
+.ruleset-switcher-btn .ruleset-switcher-glyph svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.ruleset-switcher-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: auto;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.05rem;
+  min-width: 10.5rem;
+  padding: 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+.ruleset-switcher-menu[hidden] {
+  display: none !important;
+}
+
+.ruleset-switcher-link {
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+span.ruleset-switcher-link {
+  cursor: default;
+  opacity: 0.85;
+}
+
+html.nav-compact .ruleset-switcher {
+  display: none !important;
+}
+
 .toolbar h1 {
   font-family: var(--font-display);
   font-size: 1.15rem;

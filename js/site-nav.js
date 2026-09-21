@@ -144,6 +144,16 @@
     return file.includes("quick-start") || Object.values(QUICK_START_PAGES).includes(file);
   }
 
+  function currentCheatsheetFile() {
+    return (location.pathname.split("/").pop() || "").toLowerCase();
+  }
+
+  function isOnCheatsheet(rulesetId) {
+    const file = currentCheatsheetFile();
+    const href = (RULESETS.find((r) => r.id === rulesetId)?.href || "").toLowerCase();
+    return !!href && file === href;
+  }
+
   function fillRulesetNav(nav) {
     if (!nav || nav.dataset.ready === "1") return;
     const current = currentRulesetId();
@@ -154,6 +164,94 @@
       }><span>${r.title}</span><span class="site-menu-link-icon">${r.icon}</span></a>`;
     }).join("");
     nav.dataset.ready = "1";
+  }
+
+  /**
+   * Desktop-only ruleset glyph on the far right; expands to the four style links.
+   * Hidden when compact (hamburger) nav is active.
+   */
+  function injectDesktopRulesetSwitcher(toolbar) {
+    if (!toolbar || toolbar.querySelector("[data-desktop-ruleset-switcher]")) return;
+
+    const currentId = currentRulesetId();
+    const current = RULESETS.find((r) => r.id === currentId) || RULESETS[0];
+
+    const wrap = document.createElement("div");
+    wrap.className = "ruleset-switcher no-print";
+    wrap.dataset.desktopRulesetSwitcher = "1";
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "btn-ruleset-switcher";
+    btn.className = "icon-btn ruleset-switcher-btn";
+    btn.setAttribute("aria-label", `Ruleset: ${current.title}. Switch ruleset`);
+    btn.title = current.title;
+    btn.setAttribute("aria-expanded", "false");
+    btn.setAttribute("aria-haspopup", "true");
+    btn.setAttribute("aria-controls", "ruleset-switcher-menu");
+    btn.innerHTML = `<span class="ruleset-switcher-glyph" aria-hidden="true">${current.icon}</span>`;
+
+    const menu = document.createElement("nav");
+    menu.id = "ruleset-switcher-menu";
+    menu.className = "ruleset-switcher-menu";
+    menu.setAttribute("aria-label", "Rulesets");
+    menu.hidden = true;
+    menu.innerHTML = RULESETS.map((r) => {
+      const onSheet = isOnCheatsheet(r.id);
+      const isCurrentStyle = r.id === currentId;
+      const cls = [
+        "site-menu-link",
+        "ruleset-switcher-link",
+        isCurrentStyle ? "is-current" : "",
+      ]
+        .filter(Boolean)
+        .join(" ");
+      if (onSheet) {
+        return `<span class="${cls}" aria-current="page"><span>${r.title}</span><span class="site-menu-link-icon">${r.icon}</span></span>`;
+      }
+      return `<a class="${cls}" href="${r.href}"><span>${r.title}</span><span class="site-menu-link-icon">${r.icon}</span></a>`;
+    }).join("");
+
+    wrap.append(btn, menu);
+    const title = toolbar.querySelector(".toolbar-main h1, h1");
+    const main = toolbar.querySelector(".toolbar-main");
+    if (title?.parentElement) {
+      title.parentElement.insertBefore(wrap, title);
+    } else if (main?.firstChild) {
+      main.insertBefore(wrap, main.firstChild);
+    } else {
+      toolbar.insertBefore(wrap, toolbar.firstChild);
+    }
+
+    const setOpen = (open) => {
+      wrap.classList.toggle("is-open", open);
+      btn.setAttribute("aria-expanded", String(open));
+      menu.hidden = !open;
+    };
+
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setOpen(!wrap.classList.contains("is-open"));
+    });
+
+    menu.addEventListener("click", (e) => {
+      const t = e.target;
+      if (!(t instanceof Element)) return;
+      if (t.closest("a.ruleset-switcher-link")) setOpen(false);
+    });
+
+    document.addEventListener("pointerdown", (e) => {
+      if (!wrap.classList.contains("is-open")) return;
+      const t = e.target;
+      if (!(t instanceof Node)) return;
+      if (wrap.contains(t)) return;
+      setOpen(false);
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && wrap.classList.contains("is-open")) setOpen(false);
+    });
   }
 
   function injectNavAction(actions, { datasetKey, href, label, iconHtml, skipIf }) {
@@ -380,6 +478,7 @@
     injectRulesLink(menu.querySelector(".toolbar-actions"));
     injectQuickStartLink(menu.querySelector(".toolbar-actions"));
     injectPrintFriendly(menu.querySelector(".toolbar-actions"));
+    injectDesktopRulesetSwitcher(toolbar);
     syncToolbarHeight();
 
     btn.addEventListener("click", (e) => {
