@@ -1012,6 +1012,32 @@ main#print-sheet {
   gap: 0.2rem;
 }
 
+.nmjl-hand-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.nmjl-hand-top .yaku-badges {
+  flex: 1 1 auto;
+}
+
+.nmjl-hand-refresh {
+  margin: 0;
+}
+
+.nmjl-hand-examples {
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.nmjl-hand-examples:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .nmjl-hand .yaku-desc {
   margin: 0;
 }

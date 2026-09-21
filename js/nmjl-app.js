@@ -55,7 +55,7 @@
       grid.className = "yaku-grid nmjl-grid";
 
       for (const hand of cat.hands) {
-        grid.appendChild(renderHandCard(hand));
+        grid.appendChild(renderHandCard(hand, cat.id));
       }
       section.appendChild(grid);
       root.appendChild(section);
@@ -70,7 +70,10 @@
     $("#tile-style").value = settings.tileStyle;
   }
 
-  function renderHandCard(hand) {
+  const REFRESH_SVG =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>';
+
+  function renderHandCard(hand, categoryId) {
     const card = document.createElement("article");
     card.className = "yaku-card nmjl-hand";
     card.dataset.id = hand.id;
@@ -78,6 +81,9 @@
 
     const head = document.createElement("div");
     head.className = "yaku-head";
+
+    const top = document.createElement("div");
+    top.className = "nmjl-hand-top";
 
     const badges = document.createElement("div");
     badges.className = "yaku-badges";
@@ -107,7 +113,17 @@
       v.title = "Placeholder — correct against your licensed card";
       badges.appendChild(v);
     }
-    head.appendChild(badges);
+    top.appendChild(badges);
+
+    const refreshBtn = document.createElement("button");
+    refreshBtn.type = "button";
+    refreshBtn.className = "rules-meld-refresh nmjl-hand-refresh no-print";
+    refreshBtn.setAttribute("aria-label", "Randomize hand example");
+    refreshBtn.title = "Randomize";
+    refreshBtn.innerHTML = REFRESH_SVG;
+    top.appendChild(refreshBtn);
+
+    head.appendChild(top);
 
     if (hand.note) {
       const note = document.createElement("p");
@@ -118,23 +134,53 @@
 
     card.appendChild(head);
 
-    const versions = Array.isArray(hand.tiles) ? hand.tiles : [hand.tiles];
+    const examplesHost = document.createElement("div");
+    examplesHost.className = "nmjl-hand-examples";
+    card.appendChild(examplesHost);
+
+    const paint = () => paintHandExamples(examplesHost, hand, categoryId);
+    paint();
+
+    refreshBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      paint();
+    });
+    examplesHost.addEventListener("click", () => paint());
+    examplesHost.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        paint();
+      }
+    });
+    examplesHost.tabIndex = 0;
+    examplesHost.setAttribute("role", "button");
+    examplesHost.setAttribute("aria-label", "Randomize hand example");
+
+    return card;
+  }
+
+  function paintHandExamples(host, hand, categoryId) {
+    host.replaceChildren();
+    const randomize = window.NMJL_RANDOMIZE?.randomizeHand;
+    const versions = randomize
+      ? randomize(hand, { categoryId })
+      : (Array.isArray(hand.tiles) ? hand.tiles : [hand.tiles]).map((t) =>
+          NMJL_NOTATION.expandHand(t)
+        );
+
     versions.forEach((tiles, i) => {
       if (i > 0) {
         const or = document.createElement("div");
         or.className = "nmjl-or";
         or.textContent = "-or-";
-        card.appendChild(or);
+        host.appendChild(or);
       }
       const ex = document.createElement("div");
       ex.className = "example";
       const expanded = NMJL_NOTATION.expandHand(tiles);
-      ex.appendChild(
-        Tiles.renderHand(expanded, settings.tileStyle, tileOpts())
-      );
-      card.appendChild(ex);
+      ex.appendChild(Tiles.renderHand(expanded, settings.tileStyle, tileOpts()));
+      host.appendChild(ex);
     });
-    return card;
   }
 
   function renderLegend() {

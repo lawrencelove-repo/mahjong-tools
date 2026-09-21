@@ -2,7 +2,7 @@
  * Service worker — offline shell + runtime cache for tiles/assets.
  * Bump CACHE_VERSION when changing precache list or caching strategy.
  */
-const CACHE_VERSION = "mahjong-cheatsheets-v7";
+const CACHE_VERSION = "mahjong-cheatsheets-v8";
 const PRECACHE = [
   "./",
   "./index.html",
@@ -16,6 +16,7 @@ const PRECACHE = [
   "./js/yaku-data.js",
   "./js/app.js",
   "./js/nmjl-data.js",
+  "./js/nmjl-randomize.js",
   "./js/nmjl-app.js",
   "./js/hk-data.js",
   "./js/hk-app.js",
