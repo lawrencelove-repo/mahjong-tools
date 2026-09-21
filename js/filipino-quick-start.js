@@ -274,6 +274,7 @@
     hand.classList.add("rules-example-hand", "rules-meld-hand");
     markClaimedTile(hand, kind);
     host.replaceChildren(hand);
+    equalizeTileWidths(host);
   }
 
   function renderHandExample(article) {
@@ -337,8 +338,11 @@
     if (!el) return;
     const { T, stacks, leftover } = wallStats();
     let leftoverNote = "";
-    if (leftover > 0) {
-      leftoverNote = ` The remaining <strong>${leftover}</strong> tiles sit aside (typically toward the flower / dead end).`;
+    if (leftover === 4) {
+      leftoverNote =
+        ` The remaining <strong>4</strong> tiles are added to the máno’s wall (one extra stack of two on that side).`;
+    } else if (leftover > 0) {
+      leftoverNote = ` The remaining <strong>${leftover}</strong> tiles are added to the máno’s wall.`;
     }
     el.innerHTML = `<p>
       With <strong>${T}</strong> tiles, build <strong>four walls</strong> (one per player).
@@ -354,7 +358,7 @@
     const rows = [
       { name: "Characters (craks)", tiles: "1C 2C 3C 4C 5C 6C 7C 8C 9C" },
       { name: "Circles (dots)", tiles: "1P 2P 3P 4P 5P 6P 7P 8P 9P" },
-      { name: "Bamboo (bams)", tiles: "1B 2B 3B 4B 5B 6B 7B 8B 9B" },
+      { name: "Bamboo (bams, sticks)", tiles: "1B 2B 3B 4B 5B 6B 7B 8B 9B" },
     ];
     for (const row of rows) {
       const block = document.createElement("div");
@@ -460,9 +464,9 @@
     host.replaceChildren();
 
     const suitRows = [
-      { name: "Bamboo", suit: "B" },
-      { name: "Characters", suit: "C" },
-      { name: "Circles", suit: "P" },
+      { name: "Bamboo (bams, sticks)", suit: "B" },
+      { name: "Characters (craks)", suit: "C" },
+      { name: "Circles (dots)", suit: "P" },
     ];
     for (const row of suitRows) {
       const oneThroughNine = [1, 2, 3, 4, 5, 6, 7, 8, 9]

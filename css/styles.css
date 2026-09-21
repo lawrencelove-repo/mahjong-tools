@@ -1638,6 +1638,15 @@ html[data-theme="dark"] .tenbou-legend {
   outline: none;
 }
 
+.filipino-quick-start .rules-meld-tiles:hover,
+.filipino-quick-start .rules-meld-tiles:focus,
+.filipino-quick-start .rules-meld-tiles:focus-visible,
+.filipino-quick-start .rules-meld-tiles:active {
+  border-color: transparent;
+  background: transparent;
+  outline: none;
+}
+
 .rules-example-hand {
   --tile-h: calc(var(--tile-h-base) * var(--ui-scale) * 2);
   pointer-events: none;
