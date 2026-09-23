@@ -120,11 +120,8 @@
     refresh: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>`,
     close: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>`,
     group: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4"/></svg>`,
-    ungroup: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="8" height="8" rx="1"/><rect x="14" y="12" width="8" height="8" rx="1"/><path d="M14 6h4v4M10 18H6v-4"/></svg>`,
     highlight: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`,
-    unhighlight: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/><path d="M2 2l20 20"/></svg>`,
-    check: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>`,
-    cancel: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>`,
+    move: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20"/><path d="M2 12h20"/><path d="M12 2l-3 3"/><path d="M12 2l3 3"/><path d="M12 22l-3-3"/><path d="M12 22l3-3"/><path d="M2 12l3-3"/><path d="M2 12l3 3"/><path d="M22 12l-3-3"/><path d="M22 12l-3 3"/></svg>`,
   };
 
   const SUITS = ["B", "C", "P"];
@@ -137,16 +134,22 @@
   let dialog = null;
   /** @type {"filipino"|"riichi"|"hk"|"nmjl"} */
   let styleId = "filipino";
-  /** @type {{ id: string, groupId: number|null, highlight: string|null }[]} */
+  /** @type {{ id: string|null, groupId: number|null, highlight: string|null }[]} */
   let seats = [];
   let nextGroupId = 1;
-  /** @type {"idle"|"group"|"ungroup"|"highlight"|"unhighlight"} */
+  /** @type {"idle"|"group"|"highlight"|"move"} */
   let mode = "idle";
   /** @type {number[]} */
   let selection = [];
+  /** @type {number|null} */
+  let moveFrom = null;
   let highlightColor = HIGHLIGHT_COLORS[0].value;
   /** @type {number|null} */
   let dragFrom = null;
+  /** Extra empty seats revealed during the current drag (by index). */
+  /** @type {Set<number>} */
+  let dragRevealed = new Set();
+  let layoutListenerBound = false;
 
   function settings() {
     return AppSettings?.loadSettings?.() || {};
@@ -259,10 +262,27 @@
     return shuffle(pool);
   }
 
-  const EXTRA_EMPTY_SEATS = 8;
-
   function seatCountFor(ruleset) {
     return HAND_SIZE[ruleset] || 13;
+  }
+
+  /**
+   * Seat grid by viewport:
+   * - Mobile portrait: 5×4 (20)
+   * - Mobile landscape: 3×8 (24)
+   * - Wide iPad/desktop (≥1000px): one row of hand + 4 extras
+   */
+  function getLayout() {
+    const hand = seatCountFor(styleId);
+    const wide = window.innerWidth >= 1000;
+    const portrait = window.matchMedia("(orientation: portrait)").matches;
+    if (wide) {
+      return { cols: hand + 4, rows: 1, total: hand + 4 };
+    }
+    if (!portrait) {
+      return { cols: 8, rows: 3, total: 24 };
+    }
+    return { cols: 4, rows: 5, total: 20 };
   }
 
   function makeSeat(id) {
@@ -277,9 +297,26 @@
     return !!(seat && seat.id);
   }
 
+  function isExtraIndex(index) {
+    return index >= seatCountFor(styleId);
+  }
+
+  function ensureSeatCapacity() {
+    const { total } = getLayout();
+    while (seats.length < total) seats.push(makeEmptySeat());
+    // Don't trim if trailing seats hold tiles beyond hand size.
+    if (seats.length > total) {
+      let lastFilled = -1;
+      for (let i = 0; i < seats.length; i++) {
+        if (isFilled(seats[i])) lastFilled = i;
+      }
+      const keep = Math.max(total, lastFilled + 1);
+      if (seats.length > keep) seats.length = keep;
+    }
+  }
+
   function padEmptySeats() {
-    const target = seatCountFor(styleId) + EXTRA_EMPTY_SEATS;
-    while (seats.length < target) seats.push(makeEmptySeat());
+    ensureSeatCapacity();
   }
 
   function hasAnnotations() {
@@ -502,29 +539,27 @@
 
   function applyGroupFromSelection() {
     const filledSel = selection.filter((i) => isFilled(seats[i]));
-    if (filledSel.length < 2) return;
+    if (filledSel.length < 2) return false;
     const { start, count } = gatherSelection(filledSel);
-    if (count < 2) return;
+    if (count < 2) return false;
     const gid = nextGroupId++;
     for (let i = start; i < start + count; i++) {
       seats[i].groupId = gid;
     }
-    selection = [];
-    mode = "idle";
+    return true;
   }
 
   function applyHighlightFromSelection() {
     const filledSel = selection.filter((i) => isFilled(seats[i]));
-    if (filledSel.length < 1) return;
+    if (filledSel.length < 1) return false;
     const { start, count } = gatherSelection(filledSel);
-    if (count < 1) return;
+    if (count < 1) return false;
     const gid = count >= 2 ? nextGroupId++ : null;
     for (let i = start; i < start + count; i++) {
       seats[i].highlight = highlightColor;
       seats[i].groupId = gid;
     }
-    selection = [];
-    mode = "idle";
+    return true;
   }
 
   function ungroupAt(index) {
@@ -561,19 +596,13 @@
       </div>
       <div class="teach-toolbar" role="toolbar" aria-label="Teach tools">
         <button type="button" class="icon-btn teach-tool" data-teach-action="group" aria-label="Group" title="Group">${ICONS.group}</button>
-        <button type="button" class="icon-btn teach-tool" data-teach-action="ungroup" aria-label="Ungroup" title="Ungroup">${ICONS.ungroup}</button>
         <button type="button" class="icon-btn teach-tool" data-teach-action="highlight" aria-label="Highlight" title="Highlight">${ICONS.highlight}</button>
-        <button type="button" class="icon-btn teach-tool" data-teach-action="unhighlight" aria-label="Unhighlight" title="Unhighlight">${ICONS.unhighlight}</button>
+        <button type="button" class="icon-btn teach-tool" data-teach-action="move" aria-label="Move" title="Move">${ICONS.move}</button>
         <div class="teach-color-picker" id="teach-color-picker" role="group" aria-label="Highlight color"></div>
         <button type="button" class="icon-btn teach-tool" data-teach-action="refresh" aria-label="Refresh hand" title="Refresh">${ICONS.refresh}</button>
       </div>
-      <div class="teach-mode-bar" id="teach-mode-bar" hidden>
-        <span class="teach-mode-label" id="teach-mode-label"></span>
-        <button type="button" class="teach-mode-btn" id="teach-mode-ok" title="OK" aria-label="OK">${ICONS.check} OK</button>
-        <button type="button" class="teach-mode-btn" id="teach-mode-cancel" title="Cancel" aria-label="Cancel">${ICONS.cancel} Cancel</button>
-      </div>
       <div class="teach-board" id="teach-board" aria-live="polite"></div>
-      <p class="teach-hint" id="teach-hint">Drag tiles between seats to rearrange. Use Group / Highlight to plan melds.</p>
+      <p class="teach-hint" id="teach-hint">Drag tiles between seats to rearrange. Use Group / Highlight / Move to plan melds.</p>
     `;
     document.body.appendChild(dialog);
 
@@ -637,16 +666,21 @@
       onTool(action);
     });
 
-    $("#teach-mode-ok", dialog)?.addEventListener("click", () => {
-      if (mode === "group") applyGroupFromSelection();
-      else if (mode === "highlight") applyHighlightFromSelection();
-      render();
-    });
-    $("#teach-mode-cancel", dialog)?.addEventListener("click", () => {
-      selection = [];
-      mode = "idle";
-      render();
-    });
+    if (!layoutListenerBound) {
+      layoutListenerBound = true;
+      const onLayoutChange = () => {
+        if (!dialog?.open) return;
+        ensureSeatCapacity();
+        render();
+      };
+      window.addEventListener("resize", onLayoutChange);
+      try {
+        window.matchMedia("(orientation: portrait)").addEventListener("change", onLayoutChange);
+        window.matchMedia("(min-width: 1000px)").addEventListener("change", onLayoutChange);
+      } catch (_) {
+        /* older browsers */
+      }
+    }
 
     return dialog;
   }
@@ -681,45 +715,47 @@
     }
   }
 
-  function syncModeBar() {
-    const bar = $("#teach-mode-bar", dialog);
-    const label = $("#teach-mode-label", dialog);
-    const ok = $("#teach-mode-ok", dialog);
-    const cancel = $("#teach-mode-cancel", dialog);
+  function syncToolbar() {
     const hint = $("#teach-hint", dialog);
-    if (!bar) return;
-
-    const selecting = mode === "group" || mode === "highlight";
-    const peeling = mode === "ungroup" || mode === "unhighlight";
-    bar.hidden = !(selecting || peeling);
-    if (ok) {
-      ok.hidden = !selecting;
-      if (mode === "group") ok.disabled = selection.length < 2;
-      else if (mode === "highlight") ok.disabled = selection.length < 1;
-      else ok.disabled = false;
-    }
-    if (cancel) cancel.hidden = !(selecting || peeling);
-
     if (mode === "group") {
-      if (label) label.textContent = `Grouping — select tiles (${selection.length} selected, min 2)`;
-      if (hint) hint.textContent = "Click tiles to select, then OK to group them together. Cancel to exit.";
+      if (hint) {
+        hint.textContent =
+          selection.length > 0
+            ? `Group mode — ${selection.length} selected. Tap more tiles, or tap Group again to finish (min 2). Tap a grouped tile to ungroup.`
+            : "Group mode — tap tiles to select, tap Group again to finish. Tap a grouped tile to ungroup.";
+      }
     } else if (mode === "highlight") {
-      if (label) label.textContent = `Highlighting — select tiles (${selection.length} selected)`;
-      if (hint) hint.textContent = "Click tiles to select, then OK to gather, group, and outline them. Cancel to exit.";
-    } else if (mode === "ungroup") {
-      if (label) label.textContent = "Ungroup — click a grouped tile to remove it";
-      if (hint) hint.textContent = "Click a tile in a group to remove it from that group. Cancel to exit.";
-    } else if (mode === "unhighlight") {
-      if (label) label.textContent = "Unhighlight — click a highlighted tile to clear it";
-      if (hint) hint.textContent = "Click a highlighted tile to remove its highlight (and leave the group). Cancel to exit.";
-    } else {
-      if (hint) hint.textContent = "Drag tiles between seats to rearrange. Use Group / Highlight to plan melds.";
+      if (hint) {
+        hint.textContent =
+          selection.length > 0
+            ? `Highlight mode — ${selection.length} selected. Tap more tiles, or tap Highlight again to finish. Tap a highlighted tile to clear it.`
+            : "Highlight mode — tap tiles to select, tap Highlight again to finish. Tap a highlighted tile to clear it.";
+      }
+    } else if (mode === "move") {
+      if (hint) {
+        hint.textContent = moveFrom == null
+          ? "Move mode — tap a tile, then tap a seat to place it."
+          : "Move mode — tap a seat to place the selected tile (or tap it again to cancel).";
+      }
+    } else if (hint) {
+      hint.textContent = "Drag tiles between seats to rearrange. Use Group / Highlight / Move to plan melds.";
     }
 
     for (const btn of dialog.querySelectorAll(".teach-tool[data-teach-action]")) {
       const a = btn.getAttribute("data-teach-action");
       btn.classList.toggle("is-active", a === mode);
     }
+
+    dialog.classList.toggle("teach-move-mode", mode === "move");
+    dialog.classList.toggle("teach-dragging", dragFrom != null);
+  }
+
+  function exitModeApplying() {
+    if (mode === "group") applyGroupFromSelection();
+    else if (mode === "highlight") applyHighlightFromSelection();
+    selection = [];
+    moveFrom = null;
+    mode = "idle";
   }
 
   function onTool(action) {
@@ -728,16 +764,24 @@
       dealRandom();
       mode = "idle";
       selection = [];
+      moveFrom = null;
       render();
       return;
     }
 
-    if (action === "group" || action === "highlight" || action === "ungroup" || action === "unhighlight") {
+    if (action === "group" || action === "highlight" || action === "move") {
       if (mode === action) {
-        selection = [];
-        mode = "idle";
+        // Toggle off — Group/Highlight apply current selection.
+        if (action === "group" || action === "highlight") exitModeApplying();
+        else {
+          mode = "idle";
+          moveFrom = null;
+          selection = [];
+        }
       } else {
+        // Switching tools: discard unfinished selection without applying.
         selection = [];
+        moveFrom = null;
         mode = action;
       }
       render();
@@ -752,30 +796,57 @@
     dealRandom();
     mode = "idle";
     selection = [];
+    moveFrom = null;
     render();
   }
 
   function onSeatClick(index, e) {
     e.preventDefault();
-    if (!isFilled(seats[index]) && mode !== "idle") {
-      // Empty seats aren't selectable in action modes.
-      if (mode === "group" || mode === "highlight") return;
+
+    if (mode === "move") {
+      if (moveFrom == null) {
+        if (!isFilled(seats[index])) return;
+        moveFrom = index;
+        render();
+        return;
+      }
+      if (moveFrom === index) {
+        moveFrom = null;
+        render();
+        return;
+      }
+      moveSeat(moveFrom, index);
+      moveFrom = null;
+      render();
+      return;
     }
-    if (mode === "group" || mode === "highlight") {
+
+    if (mode === "group") {
       if (!isFilled(seats[index])) return;
+      if (seats[index].groupId != null) {
+        ungroupAt(index);
+        selection = selection.filter((i) => i !== index);
+        render();
+        return;
+      }
       const pos = selection.indexOf(index);
       if (pos >= 0) selection.splice(pos, 1);
       else selection.push(index);
       render();
       return;
     }
-    if (mode === "ungroup") {
-      ungroupAt(index);
-      render();
-      return;
-    }
-    if (mode === "unhighlight") {
-      unhighlightAt(index);
+
+    if (mode === "highlight") {
+      if (!isFilled(seats[index])) return;
+      if (seats[index].highlight != null) {
+        unhighlightAt(index);
+        selection = selection.filter((i) => i !== index);
+        render();
+        return;
+      }
+      const pos = selection.indexOf(index);
+      if (pos >= 0) selection.splice(pos, 1);
+      else selection.push(index);
       render();
       return;
     }
@@ -790,19 +861,31 @@
         return;
       }
       dragFrom = index;
+      dragRevealed = new Set();
       seatEl.classList.add("is-dragging");
+      dialog?.classList.add("teach-dragging");
       e.dataTransfer?.setData("text/plain", String(index));
       if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
     });
     seatEl.addEventListener("dragend", () => {
       seatEl.classList.remove("is-dragging");
       dragFrom = null;
-      dialog?.querySelectorAll(".teach-seat.is-drag-over").forEach((el) => el.classList.remove("is-drag-over"));
+      dragRevealed = new Set();
+      dialog?.classList.remove("teach-dragging");
+      dialog?.querySelectorAll(".teach-seat.is-drag-over, .teach-seat.is-revealed").forEach((el) => {
+        el.classList.remove("is-drag-over", "is-revealed");
+      });
+      // Re-render so extra seats hide again.
+      render();
     });
     seatEl.addEventListener("dragover", (e) => {
       if (mode !== "idle" || dragFrom == null || dragFrom === index) return;
       e.preventDefault();
       seatEl.classList.add("is-drag-over");
+      if (!isFilled(seats[index]) && isExtraIndex(index)) {
+        seatEl.classList.add("is-revealed");
+        dragRevealed.add(index);
+      }
       if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
     });
     seatEl.addEventListener("dragleave", () => {
@@ -815,28 +898,40 @@
       const to = index;
       const from = dragFrom;
       dragFrom = null;
+      dragRevealed = new Set();
+      dialog?.classList.remove("teach-dragging");
       moveSeat(from, to);
       render();
     });
   }
 
+  function emptySeatVisible(index) {
+    if (isFilled(seats[index])) return true;
+    if (!isExtraIndex(index)) return true; // mid-hand gaps stay visible
+    if (mode === "move") return true;
+    if (dragFrom != null && dragRevealed.has(index)) return true;
+    return false;
+  }
+
   function render() {
     ensureDialog();
+    ensureSeatCapacity();
     syncRulesetButton();
     syncColorPicker();
-    syncModeBar();
+    syncToolbar();
 
     const board = $("#teach-board", dialog);
     if (!board || !window.Tiles?.renderTile) return;
     board.replaceChildren();
 
     const { style, rankLabels } = tileOpts();
+    const layout = getLayout();
     const n = seats.length;
-    const handSize = seatCountFor(styleId);
-    const rowSize = handSize > 14 ? Math.ceil(handSize / 2) : Math.min(handSize, 16);
+    const rowSize = layout.cols;
 
     const rowsWrap = document.createElement("div");
     rowsWrap.className = "teach-seat-rows";
+    rowsWrap.style.setProperty("--teach-cols", String(rowSize));
 
     let row = null;
     for (let i = 0; i < n; i++) {
@@ -850,7 +945,11 @@
       const filled = isFilled(seat);
       const seatEl = document.createElement("div");
       seatEl.className = "teach-seat";
-      if (!filled) seatEl.classList.add("is-empty");
+      if (!filled) {
+        seatEl.classList.add("is-empty");
+        if (isExtraIndex(i)) seatEl.classList.add("is-extra");
+        if (emptySeatVisible(i)) seatEl.classList.add("is-revealed");
+      }
       seatEl.dataset.seat = String(i);
       seatEl.setAttribute("role", "listitem");
       seatEl.setAttribute("aria-label", filled ? `Seat ${i + 1}` : `Empty seat ${i + 1}`);
@@ -884,12 +983,11 @@
           if (hlEnd) seatEl.classList.add("is-hl-end");
           if (!hlStart && !hlEnd) seatEl.classList.add("is-hl-mid");
         }
-        if (selection.includes(i)) seatEl.classList.add("is-selected");
+        if (selection.includes(i) || moveFrom === i) seatEl.classList.add("is-selected");
 
         const tile = Tiles.renderTile(seat.id, style, rankLabels);
         seatEl.appendChild(tile);
 
-        // Visual gap before a new group (meld separator)
         if (i > 0) {
           const prevSeat = seats[i - 1];
           const breakBefore =
@@ -914,6 +1012,9 @@
     styleId = opts.styleId || "filipino";
     mode = "idle";
     selection = [];
+    moveFrom = null;
+    dragFrom = null;
+    dragRevealed = new Set();
     highlightColor = HIGHLIGHT_COLORS[0].value;
 
     if (Array.isArray(opts.tiles) && opts.tiles.length) {
@@ -931,6 +1032,7 @@
     setRulesetMenuOpen(false);
     mode = "idle";
     selection = [];
+    moveFrom = null;
     if (dialog.open) dialog.close();
   }
 
