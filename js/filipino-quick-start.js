@@ -626,6 +626,12 @@
     renderStartingHand();
   }
 
+  function currentStartingHandIds() {
+    const ids = sortStartingTiles(startingHandTiles);
+    if (startingDealerTile) ids.push(startingDealerTile);
+    return ids;
+  }
+
   function bindStartingHand() {
     $("#qs-starting-hand-refresh")?.addEventListener("click", () => {
       refreshStartingHand();
@@ -640,7 +646,18 @@
       }
       renderStartingHand();
     });
+    $("#qs-teach-open")?.addEventListener("click", () => {
+      if (!startingHandTiles.length) drawStartingHand();
+      window.Teach?.open?.({
+        styleId: "filipino",
+        tiles: currentStartingHandIds(),
+      });
+    });
   }
+
+  window.FilipinoQuickStart = {
+    getStartingHandIds: currentStartingHandIds,
+  };
 
   function refreshStaticSections() {
     renderSetup();
