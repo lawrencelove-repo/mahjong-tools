@@ -2570,7 +2570,24 @@ a.qs-toc-flowers[hidden] {
 .teach-board {
   padding: 1rem 0.85rem 0.5rem;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   --tile-h: calc(var(--tile-h-base) * var(--ui-scale) * 1.85);
+}
+
+.teach-board::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+.teach-board.teach-fit-seats .teach-seat-rows {
+  max-width: 100%;
+}
+
+.teach-board.teach-fit-seats .teach-seat-row {
+  max-width: 100%;
 }
 
 .teach-seat-rows {

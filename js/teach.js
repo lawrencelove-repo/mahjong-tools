@@ -412,8 +412,10 @@
   }
 
   /**
-   * Move a tile. Empty targets leave a gap (no compacting).
-   * Dropping onto a grouped/highlighted tile joins that group.
+   * Move a tile.
+   * - Empty target: relocate and leave a hole (no compacting).
+   * - Grouped/highlighted target: join that group.
+   * - Occupied ungrouped: insert at `to` and shift the rest (no swap).
    */
   function moveSeat(from, to) {
     if (from === to || from < 0 || to < 0 || from >= seats.length || to >= seats.length) return;
@@ -423,7 +425,6 @@
     const joiningGroup = isFilled(target) && (target.groupId != null || target.highlight != null);
 
     if (!isFilled(target)) {
-      // Relocate into empty seat — leave a hole behind.
       const moving = seats[from];
       const oldGid = moving.groupId;
       seats[from] = makeEmptySeat();
@@ -441,15 +442,25 @@
       return;
     }
 
-    // Occupied, ungrouped target: swap, peeling the moved tile out of any group.
+    insertAndShift(from, to);
+  }
+
+  /**
+   * Insert tile at `to`, shifting neighbors (e.g. A@5 → seat 2 pushes 2–4 → 3–5).
+   * Peels the moved tile out of any prior group.
+   */
+  function insertAndShift(from, to) {
     const oldGid = seats[from].groupId;
     const moving = {
       id: seats[from].id,
       groupId: null,
       highlight: null,
     };
-    seats[from] = seats[to];
-    seats[to] = moving;
+    const next = seats.slice();
+    next.splice(from, 1);
+    // After removal, `to` still means “end up at this seat index”.
+    next.splice(to, 0, moving);
+    seats = next;
     dissolveGroupIfTooSmall(oldGid);
   }
 
@@ -913,6 +924,63 @@
     return false;
   }
 
+  /**
+   * Shrink --tile-h so each layout row (layout.cols seats) fits the board width.
+   * Applies to every form factor / orientation. Overflow can still scroll if needed.
+   */
+  function fitBoardSeats(board, rowsWrap, layout) {
+    if (!board || !rowsWrap) return;
+
+    board.classList.add("teach-fit-seats");
+    board.style.removeProperty("--tile-h");
+
+    const apply = () => {
+      if (!board.isConnected || !rowsWrap.isConnected) return;
+
+      board.style.removeProperty("--tile-h");
+
+      // Reveal collapsed extras so measurement includes the full seat budget.
+      const extras = [...rowsWrap.querySelectorAll(".teach-seat.is-extra")];
+      for (const el of extras) el.classList.add("is-revealed");
+
+      const rows = [...rowsWrap.querySelectorAll(".teach-seat-row")];
+      const available = board.clientWidth;
+      let needed = 0;
+      for (const row of rows) needed = Math.max(needed, row.scrollWidth);
+
+      for (const el of extras) {
+        const idx = Number(el.dataset.seat);
+        if (!emptySeatVisible(idx)) el.classList.remove("is-revealed");
+      }
+
+      if (available < 1 || needed < 1) return;
+
+      const cs = getComputedStyle(board);
+      const basePx = parseFloat(cs.getPropertyValue("--tile-h")) || 64;
+
+      if (needed > available) {
+        const next = Math.max(20, basePx * (available / needed) * 0.98);
+        board.style.setProperty("--tile-h", `${next.toFixed(2)}px`);
+      }
+    };
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(apply);
+      const imgs = [...rowsWrap.querySelectorAll("img.tile-img")];
+      const pending = imgs.filter((img) => !img.complete);
+      if (!pending.length) return;
+      Promise.all(
+        pending.map(
+          (img) =>
+            new Promise((resolve) => {
+              img.addEventListener("load", resolve, { once: true });
+              img.addEventListener("error", resolve, { once: true });
+            })
+        )
+      ).then(() => requestAnimationFrame(apply));
+    });
+  }
+
   function render() {
     ensureDialog();
     ensureSeatCapacity();
@@ -1005,6 +1073,7 @@
     }
 
     board.appendChild(rowsWrap);
+    fitBoardSeats(board, rowsWrap, layout);
   }
 
   function open(opts = {}) {
